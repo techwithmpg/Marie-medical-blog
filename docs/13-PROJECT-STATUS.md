@@ -8,10 +8,10 @@ This file is the authoritative repository record of the currently active develop
 - **Stage authorization:** COMPLETE
 - **Application coding authorized:** NO
 - **Gate status:** PASS
-- **Stable accepted Stage-0 merge:** main @ $mergeCommit — $MergeMessage
+- **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
 - **Active working branch:** none
 - **Next implementation stage:** Stage 1 — Next.js Foundation — NOT AUTHORIZED
-- **Remote:** origin → https://github.com/techwithmpg/Marie-medical-blog.git
+- **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 
 ## Stage 0 outcome
@@ -45,7 +45,7 @@ No application code or application dependencies were initialized during Stage 0.
 
 Until the project owner explicitly authorizes **Stage 1 — Next.js Foundation**:
 
-- do not create stage/01-nextjs-foundation;
+- do not create `stage/01-nextjs-foundation`;
 - do not initialize the Next.js application;
 - do not install project dependencies;
 - do not create application routes/components;
@@ -69,9 +69,9 @@ A future stage transition requires all of the following:
 1. current stage deliverables completed;
 2. relevant quality/security gate passed;
 3. handoff/status documentation updated;
-4. material decisions recorded in docs/11-DECISION-LOG.md;
-5. stage branch merged into main under docs/14-BRANCH-STRATEGY.md;
-6. local main synchronized with origin/main;
+4. material decisions recorded in `docs/11-DECISION-LOG.md`;
+5. stage branch merged into `main` under `docs/14-BRANCH-STRATEGY.md`;
+6. local `main` synchronized with `origin/main`;
 7. ChatGPT Project snapshot refreshed when governance context changed;
 8. explicit owner authorization for the next implementation stage.
 

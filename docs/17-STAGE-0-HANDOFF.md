@@ -4,7 +4,7 @@
 Stage 0 — Repository & Project Governance
 
 ## Objective completed
-Stage 0 governance is complete, its formal gate passed, and the approved Stage-0 branch was merged into main at merge commit $mergeCommit. The repository now has one canonical scope/stack contract, explicit stage authority, a gated branch workflow, GitHub synchronization, a ChatGPT Project synchronization protocol, frozen Stage-1 bootstrap conventions, and shared AI-agent guardrails.
+Stage 0 governance is complete, its formal gate passed, and the approved Stage-0 branch was merged into `main` at merge commit `bca3483d844e3e931f3de300e20dd5670fa2c5ee`. The repository now has one canonical scope/stack contract, explicit stage authority, a gated branch workflow, GitHub synchronization, a ChatGPT Project synchronization protocol, frozen Stage-1 bootstrap conventions, and shared AI-agent guardrails.
 
 No application code has been initialized.
 
@@ -31,9 +31,9 @@ ACTIVE decisions D001–D018 in docs/11-DECISION-LOG.md, including governance/to
 ## Verification performed
 - Stage-0 governance branch gate: PASS.
 - Owner explicitly approved the Stage-0 merge into main.
-- Pre-merge main: 78e4fabea16dd2f2fe575ecd782948018ee985cd.
-- Final Stage-0 branch head: 8d71f38e41ee2817992ff4ae853d73965550d349.
-- Merge commit: $mergeCommit.
+- Pre-merge `main`: `78e4fabea16dd2f2fe575ecd782948018ee985cd`.
+- Final Stage-0 branch head: `8d71f38e41ee2817992ff4ae853d73965550d349`.
+- Merge commit: `bca3483d844e3e931f3de300e20dd5670fa2c5ee`.
 - Merge commit was created with two parents: the approved pre-merge main and approved Stage-0 branch head.
 - No application code or application dependencies were initialized during Stage 0.
 
