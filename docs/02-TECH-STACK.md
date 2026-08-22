@@ -44,3 +44,9 @@ Minor utility packages do not require owner approval if they do not alter archit
 
 ## Current-documentation rule
 Next.js, Supabase, Vercel, Tiptap, and related libraries evolve. Agents must check current official docs before using version-sensitive APIs or security patterns.
+
+## Stage-1 toolchain baseline
+
+The frozen runtime, package-manager, scaffold, TypeScript, lint/format, shadcn structural, environment-variable, and Supabase-CLI timing conventions are defined in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`.
+
+These conventions are implementation-authoritative only when `docs/13-PROJECT-STATUS.md` authorizes Stage 1.

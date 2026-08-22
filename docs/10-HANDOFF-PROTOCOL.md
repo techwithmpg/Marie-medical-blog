@@ -38,5 +38,9 @@ State any tempting but out-of-scope items intentionally left out.
 - READY / BLOCKED
 - blockers if any
 
+### Project status update
+- update `docs/13-PROJECT-STATUS.md` when the stage gate or authorization state changes;
+- do not mark the next implementation stage active without explicit owner authorization.
+
 ## Rule for the next agent
 The next agent must read the most recent handoff before modifying the stage output.

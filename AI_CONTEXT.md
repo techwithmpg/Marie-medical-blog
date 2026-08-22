@@ -203,9 +203,9 @@ Implement/support:
 Before changing anything, an AI agent must:
 1. Read `AI_CONTEXT.md`.
 2. Read `AGENTS.md`.
-3. Read the docs relevant to its stage.
+3. Read `docs/13-PROJECT-STATUS.md` and the docs relevant to its stage.
 4. Inspect the current repository before assuming structure or implementation state.
-5. State the stage/objective being worked on.
+5. State the stage/objective being worked on and confirm that implementation is authorized.
 6. Avoid unrelated refactors.
 7. Preserve completed architecture unless there is a verified defect.
 8. Test the work.

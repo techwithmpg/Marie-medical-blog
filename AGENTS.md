@@ -7,7 +7,7 @@ All AI coding agents must read `AI_CONTEXT.md` before doing any work.
 1. **Do not drift from scope.** V1 scope and exclusions are defined in `AI_CONTEXT.md` and `docs/01-SCOPE-FREEZE.md`.
 2. **Do not change the frozen stack** without explicit owner approval recorded in `docs/11-DECISION-LOG.md`.
 3. **Inspect before editing.** Never assume routes, schema, component structure, or current state.
-4. **One stage at a time.** Work only within the currently assigned development stage unless a blocking dependency requires a narrowly scoped fix.
+4. **One stage at a time.** Read `docs/13-PROJECT-STATUS.md` and work only within the currently authorized development stage unless a blocking dependency requires a narrowly scoped fix.
 5. **No speculative features.** Do not add features because they are "nice to have."
 6. **No silent schema changes.** All database changes require a migration and documentation update.
 7. **RLS is mandatory.** Never disable Row Level Security as a shortcut. Never expose service-role credentials client-side.
@@ -23,9 +23,10 @@ All AI coding agents must read `AI_CONTEXT.md` before doing any work.
 ## Before coding
 
 - Read `AI_CONTEXT.md`.
+- Read `docs/13-PROJECT-STATUS.md`.
 - Read the relevant `/docs` file(s).
 - Inspect `package.json`, app structure, configuration, migrations, and current git diff.
-- Identify the current stage.
+- Identify the current stage and confirm that implementation is explicitly authorized.
 - Confirm dependencies are already present before adding new ones.
 
 ## During coding
