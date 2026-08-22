@@ -17,9 +17,8 @@ When implementing or reviewing UI, use this priority:
 2. ACTIVE decisions in `docs/11-DECISION-LOG.md`;
 3. `AI_CONTEXT.md`;
 4. `docs/01-SCOPE-FREEZE.md`;
-5. this contract and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`;
-6. relevant stage-specific documentation;
-7. existing implementation.
+5. relevant stage-specific documentation, including this contract and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md` when UI-related;
+6. existing implementation.
 
 If a visual mockup conflicts with frozen scope, security, accessibility, factual client content, or this contract, the mockup does not win.
 
@@ -170,7 +169,7 @@ Required hierarchy:
 
 Do not use a full-screen marketing hero before readers encounter the publication.
 
-### `/blog` or `/articles` — Article listing
+### `/blog` — Article listing
 
 - page title/deck;
 - search;
@@ -248,6 +247,8 @@ Canonical modules remain:
 - Comments
 - Messages
 - Settings
+
+`Drafts` is an article workflow/view under the existing admin article contract; it does not authorize a new `/admin/drafts` route. Route authority remains `docs/03-INFORMATION-ARCHITECTURE.md`.
 
 ### Admin rules
 
