@@ -225,14 +225,15 @@ Implement/support:
 Before changing anything, an AI agent must:
 1. Read `AI_CONTEXT.md`.
 2. Read `AGENTS.md`.
-3. Read `docs/13-PROJECT-STATUS.md` and the docs relevant to its stage.
-4. For UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
-5. Inspect the current repository before assuming structure or implementation state.
-6. State the stage/objective being worked on and confirm that implementation is authorized.
-7. Avoid unrelated refactors.
-8. Preserve completed architecture and approved visual contracts unless there is a verified defect and approval to change them.
-9. Test the work.
-10. Write a handoff note if the stage is complete.
+3. When operating through ChatGPT or another remote context that may contain static snapshots, resolve live repository freshness under D021 and `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md` before relying on Project Sources.
+4. Read `docs/13-PROJECT-STATUS.md` and the docs relevant to its stage.
+5. For UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
+6. Inspect the current repository before assuming structure or implementation state.
+7. State the stage/objective being worked on and confirm that implementation is authorized.
+8. Avoid unrelated refactors.
+9. Preserve completed architecture and approved visual contracts unless there is a verified defect and approval to change them.
+10. Test the work.
+11. Write a handoff note if the stage is complete.
 
 ## 13. Source of truth order
 
@@ -246,7 +247,19 @@ If instructions conflict, use this priority:
 
 Never infer a scope or design-contract change from an unfinished experiment, old code, generated mockup wording, or an unapproved package suggestion.
 
-## 14. Research rule
+## 14. Live repository context synchronization
+
+D021 governs ChatGPT Project and remote-context freshness.
+
+- The committed local repository remains the canonical durable source of project truth; synchronized GitHub `main` is the live remote freshness surface.
+- When GitHub access is available, substantial project work must resolve the current accepted `main` SHA and read the required live governance set in `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`.
+- A newer verified accepted `main` supersedes older static ChatGPT Project Sources automatically for repository-derived context.
+- Static Project Sources are bootstrap/fallback context and do not need routine replacement solely because `main` advanced.
+- If GitHub live access is unavailable, use the newest verified fallback snapshot, state its source SHA/freshness limitation, and do not assume it is current.
+- Unmerged branches, experiments, and recommendations remain non-authoritative unless a newer explicit owner instruction says otherwise and is then recorded back into governance.
+
+See `docs/15-CHATGPT-REPO-SYNC.md` and `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`.
+## 15. Research rule
 
 When researching libraries, APIs, SEO behavior, Supabase, Next.js, Vercel, Tiptap, accessibility, or security:
 - verify against current official documentation;
@@ -255,7 +268,7 @@ When researching libraries, APIs, SEO behavior, Supabase, Next.js, Vercel, Tipta
 - prefer current stable features over experimental features unless there is a clear benefit and approval;
 - for UI libraries/components, respect D020 and `docs/18-UI-IMPLEMENTATION-CONTRACT.md`.
 
-## 15. Definition of project success
+## 16. Definition of project success
 
 The website succeeds when:
 - Marie can publish an article without developer assistance;
