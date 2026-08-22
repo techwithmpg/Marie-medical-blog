@@ -4,84 +4,75 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 0 — Repository & Project Governance
-- **Stage authorization:** AUTHORIZED FOR GOVERNANCE CLOSEOUT ONLY
+- **Current stage:** Stage 0 — Repository & Project Governance — COMPLETE
+- **Stage authorization:** COMPLETE
 - **Application coding authorized:** NO
-- **Gate status:** PASS — awaiting Stage 0 merge/transition
-- **Stable baseline:** `main` @ `78e4fab` — `chore: establish project scope and AI guardrails`
-- **Active working branch:** `stage/00-governance-closeout`
-- **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
+- **Gate status:** PASS
+- **Stable accepted Stage-0 merge:** main @ $mergeCommit — $MergeMessage
+- **Active working branch:** none
+- **Next implementation stage:** Stage 1 — Next.js Foundation — NOT AUTHORIZED
+- **Remote:** origin → https://github.com/techwithmpg/Marie-medical-blog.git
 - **Repository visibility:** public by owner decision
 
-## Stage objective
+## Stage 0 outcome
 
-Close the remaining pre-development governance gaps so every human or AI agent can identify the canonical scope, frozen stack, active stage, branch policy, repository/ChatGPT synchronization rules, and the exact authorization boundary before application code begins.
-
-## Stage 0 deliverables
+Stage 0 is complete. The repository now has the governance required for controlled implementation:
 
 - [x] Base Git repository established.
 - [x] AI context and agent instruction files established.
 - [x] Frozen V1 scope and technical stack documented.
 - [x] Development stages and quality gates documented.
-- [x] Local repository linked to GitHub remote.
-- [x] Local `main` and `origin/main` synchronized at baseline commit `78e4fab` before governance closeout.
-- [x] Branch strategy defined in `docs/14-BRANCH-STRATEGY.md`.
-- [x] ChatGPT Project ↔ repository synchronization contract defined in `docs/15-CHATGPT-REPO-SYNC.md`.
-- [x] Stage-1 environment/toolchain baseline researched against current official documentation and frozen in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`.
-- [x] ChatGPT Project context snapshot refreshed from committed governance branch `1bc05ce4d1f1712d15d0affbd0b7c909bcb84fa5`; refresh again from `main` after the approved merge.
-- [x] Stage 0 gate review completed on 2026-08-23 and recorded as PASS.
+- [x] GitHub remote synchronized.
+- [x] Branch strategy defined in docs/14-BRANCH-STRATEGY.md.
+- [x] ChatGPT Project ↔ repository synchronization contract defined in docs/15-CHATGPT-REPO-SYNC.md.
+- [x] Stage-1 environment/toolchain baseline frozen in docs/16-STAGE-1-TOOLCHAIN-BASELINE.md.
+- [x] ACTIVE governance/toolchain decisions D011–D018 recorded.
+- [x] ChatGPT Project mirror refreshed from the governance-closeout branch before gate review.
+- [x] Stage 0 formal gate reviewed and recorded as PASS.
+- [x] Stage 0 governance branch merged into main with owner approval.
 
-## Gate review result
+## Stage 0 gate result
 
-**Result: PASS — 2026-08-23**
+**PASS — 2026-08-23**
 
-The Stage 0 gate was reviewed against committed branch `stage/00-governance-closeout` at `1bc05ce4d1f1712d15d0affbd0b7c909bcb84fa5` and the refreshed ChatGPT Project mirror sourced from that commit.
+The Stage 0 gate confirmed that every human or AI agent can identify the canonical scope, frozen stack, current authorization boundary, branch policy, repository/ChatGPT synchronization rules, and Stage-1 bootstrap conventions.
 
-Verified at gate review:
-- canonical scope and frozen stack are identifiable;
-- current stage and authorization boundary are explicit;
-- branch strategy is documented;
-- ChatGPT Project ↔ repository synchronization rules are documented;
-- ACTIVE governance/toolchain decisions D011–D018 are recorded;
-- Stage-1 bootstrap conventions are frozen;
-- local/remote governance branch state was synchronized before review;
-- no application code or project dependencies have been initialized.
+No application code or application dependencies were initialized during Stage 0.
 
-## Remaining transition gates
+## Current authorization boundary
 
-Stage 0 has passed its quality/governance gate, but the transition is not complete until:
-1. this PASS/handoff record is committed and pushed;
-2. the project owner approves the Stage 0 branch merge;
-3. `stage/00-governance-closeout` is merged into `main`;
-4. local `main` and `origin/main` are synchronized;
-5. the ChatGPT Project mirror is refreshed from merged `main`;
-6. the project owner explicitly authorizes **Stage 1 — Next.js Foundation**.
+**Stage 1 has NOT been authorized.**
 
-Stage 1 remains unauthorized until the final explicit authorization.
+Until the project owner explicitly authorizes **Stage 1 — Next.js Foundation**:
 
-## Authorization boundary
-
-Until this file records **Stage 0 gate: PASS** and the owner explicitly authorizes Stage 1:
-
+- do not create stage/01-nextjs-foundation;
 - do not initialize the Next.js application;
 - do not install project dependencies;
 - do not create application routes/components;
 - do not create Supabase schema or migrations;
-- do not implement UI, auth, publishing, comments, SEO features, or product functionality.
+- do not implement UI, auth, publishing, comments, SEO features, or other product functionality.
 
-Research, documentation, repository governance, and non-code preparation required to close Stage 0 are permitted.
+Permitted work is limited to repository synchronization, Project-context refresh, review, research, and governance maintenance that does not implement Stage 1.
+
+## Remaining pre-Stage-1 transition requirements
+
+1. Push and verify the finalized main.
+2. Refresh the ChatGPT Project mirror from the final main commit produced by this transition.
+3. Verify Project Source retrieval resolves to that final main commit.
+4. Obtain explicit project-owner authorization for **Stage 1 — Next.js Foundation**.
+5. Only then create the Stage-1 branch from synchronized main.
 
 ## Stage transition rule
 
-A stage transition requires all of the following:
+A future stage transition requires all of the following:
 
 1. current stage deliverables completed;
 2. relevant quality/security gate passed;
 3. handoff/status documentation updated;
-4. material decisions recorded in `docs/11-DECISION-LOG.md`;
-5. branch merged into `main` under `docs/14-BRANCH-STRATEGY.md`;
-6. local `main` synchronized with `origin/main`;
+4. material decisions recorded in docs/11-DECISION-LOG.md;
+5. stage branch merged into main under docs/14-BRANCH-STRATEGY.md;
+6. local main synchronized with origin/main;
 7. ChatGPT Project snapshot refreshed when governance context changed;
 8. explicit owner authorization for the next implementation stage.
 
-The presence of a later-stage branch, research note, or partial experiment is never authorization to begin that stage.
+A branch name, research note, chat recommendation, or partial experiment never grants implementation authorization.
