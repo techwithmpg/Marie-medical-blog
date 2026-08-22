@@ -4,12 +4,14 @@ Only one major stage should be the active focus at a time.
 
 ## Stage 0 — Repository & project governance
 Deliver:
-- base repo
+- base repo and synchronized GitHub remote
 - AI context files
+- authoritative active-stage/status contract
 - branch strategy
-- README/environment docs
+- ChatGPT Project ↔ repository synchronization contract
+- README/environment/toolchain baseline docs
 - source-of-truth documents
-Gate: every agent can identify stack, scope, and active stage.
+Gate: every agent can identify stack, scope, active stage, authorization boundary, and branch/sync rules; Stage-1 bootstrap conventions are frozen.
 
 ## Stage 1 — Next.js foundation
 Deliver:
