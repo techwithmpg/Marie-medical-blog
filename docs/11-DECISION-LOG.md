@@ -114,6 +114,24 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner through Stage-0 toolchain closeout authorization.
 **Status:** ACTIVE / FROZEN.
 
+## ACTIVE — D019 — Evidence Folio V1 UI design system
+**Date:** 2026-08-23
+**Decision:** Freeze the owner-accepted V1 visual direction as **Warm Medical Editorial with Scientific Restraint — The Evidence Folio**. The canonical UI contract is `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and the accepted visual-reference manifest is `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`. The signature system is Evidence Rail + Folio Numbers + Split Rule + Reference Ledger + Topic Imprint; primary typography is Newsreader + Source Sans 3; the accepted semantic palette centers parchment/paper, ink, oxide and deep sage; public/admin experiences remain deliberately distinct; responsive design is first-class.
+**Reason:** The owner approved the research-backed visual direction and desktop/tablet/mobile prototype set. Recording the system prevents later AI/developer implementation from collapsing into default shadcn, generic beige editorial styling, or inconsistent page-by-page redesign.
+**Alternatives considered:** leaving visual direction as informal chat/mockups; default shadcn styling; generic healthcare/hospital-blue styling; Clinical Ledger; Human Atlas.
+**Impact:** UI implementation stages must conform to the canonical contract and visual manifest. Generated mockup text/data are visual placeholders only and may not override scope, data, security or factual-content governance. Any material redesign requires owner approval and a decision-log update.
+**Approved by:** project owner in the 2026-08-23 UI research/design review.
+**Status:** ACTIVE / FROZEN FOR V1 VISUAL IMPLEMENTATION.
+
+## ACTIVE — D020 — UI dependency, motion and no-drift implementation policy
+**Date:** 2026-08-23
+**Decision:** Keep the UI dependency surface minimal and stage-gated. Use the frozen Tailwind v4 + customized shadcn/Base UI foundation; use Marie-specific custom components for the Evidence Folio identity; allow the approved helper categories in `docs/18-UI-IMPLEMENTATION-CONTRACT.md` only when the owning stage is authorized and a real need exists. Restrained `motion`, Sonner, Zod, React Hook Form/resolvers, controlled Tiptap extensions, and later Playwright/axe verification are allowed under that stage policy. Manual reorder tooling such as dnd-kit remains decision-gated. Do not add competing UI kits, generic global-state/data libraries, chart/carousel/animation stacks, dark-mode infrastructure, article-PDF generation, AI editor plugins, collaboration tooling, or other convenience dependencies without a verified need and approval.
+**Reason:** The accepted experience needs high visual quality but the product remains a small single-author publication. A controlled package policy reduces bundle weight, security/dependency surface and AI drift while preserving room for the interactions actually represented by the approved design.
+**Alternatives considered:** broad package installation up front; defaulting to large component suites; using GSAP/Redux/TanStack Query/charting/carousel stacks by convenience; treating mockup interactions as automatic package requirements.
+**Impact:** A package being named as allowed does not authorize installation out of stage. Agents must inspect existing dependencies first, add only the smallest justified dependency within an authorized stage, and document any deviation. `docs/18-UI-IMPLEMENTATION-CONTRACT.md` is the detailed policy.
+**Approved by:** project owner in the 2026-08-23 UI implementation-planning review.
+**Status:** ACTIVE / FROZEN FOR V1 UI IMPLEMENTATION POLICY.
+
 ---
 
 ## New decision template

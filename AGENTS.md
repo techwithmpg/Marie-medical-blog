@@ -19,25 +19,30 @@ All AI coding agents must read `AI_CONTEXT.md` before doing any work.
 13. **Preserve performance.** Optimize images, avoid unnecessary client JS, and prevent avoidable data waterfalls.
 14. **Do not fabricate medical or professional credentials.** Use placeholders until verified client content is provided.
 15. **Use safe sample content.** Development fixtures must be clearly synthetic and must not make misleading medical claims.
+16. **Preserve the accepted UI contract.** Before UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`. Do not redesign the Evidence Folio system, replace it with default shadcn styling, install unapproved UI libraries, or treat generated mockup text/data as product truth without explicit owner approval and decision-log updates.
 
 ## Before coding
 
 - Read `AI_CONTEXT.md`.
+- Read `AGENTS.md`.
 - Read `docs/13-PROJECT-STATUS.md`.
 - Read the relevant `/docs` file(s).
+- For any UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
 - Inspect `package.json`, app structure, configuration, migrations, and current git diff.
 - Identify the current stage and confirm that implementation is explicitly authorized.
-- Confirm dependencies are already present before adding new ones.
+- Confirm dependencies are already present or explicitly allowed for the authorized stage before adding new ones.
 
 ## During coding
 
 - Keep changes focused.
 - Reuse established components/tokens.
+- Preserve Evidence Folio signature devices where the contract specifies them.
 - Avoid broad rewrites unless required by the assigned stage.
 - Keep Server/Client Component boundaries intentional.
 - Validate all public input server-side.
 - Sanitize/render rich content safely.
 - Keep secrets server-only.
+- Never copy synthetic medical/profile/business claims from visual mockups into real content.
 
 ## Before handoff
 
@@ -47,6 +52,7 @@ Run the appropriate checks available in the repo, such as:
 - unit/integration tests
 - production build
 - targeted browser verification
+- accessibility/visual verification for UI stages
 - migration/security verification for database changes
 
 Then update `docs/10-HANDOFF-PROTOCOL.md` or append a stage handoff note in the repository's chosen handoff log.
