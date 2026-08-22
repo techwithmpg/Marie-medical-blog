@@ -22,14 +22,20 @@ Deliver:
 - environment template
 Gate: clean production build with no product features invented.
 
+Stage 1 does not broadly implement the Evidence Folio design. It establishes only the frozen foundation required for later Stage 2 implementation.
+
 ## Stage 2 — Design system & application shells
 Deliver:
-- finalized tokens
-- public shell/header/footer
+- implement the accepted Evidence Folio contract from `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
+- finalized CSS-variable tokens
+- Newsreader + Source Sans 3 font foundation
+- Evidence Rail / Folio Marker / Split Rule / Topic Imprint / Reference Ledger primitives
+- public shell/header/footer/mobile navigation
 - admin shell
 - reusable base UI
 - responsive foundations
-Gate: mobile/desktop shells approved before page proliferation.
+- only Stage-2-approved dependencies from D020
+Gate: mobile/tablet/desktop shells and signature system conform to `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md` before page proliferation.
 
 ## Stage 3 — Supabase database & security foundation [CRITICAL]
 Deliver:
@@ -55,7 +61,8 @@ Deliver:
 - Portfolio shell
 - Contact shell
 - Disclaimer
-Gate: core public brand and responsive system are stable.
+- responsive behavior matching the accepted Evidence Folio public references
+Gate: core public brand and responsive system are stable without inventing client credentials/content.
 
 ## Stage 6 — Article reading & discovery
 Deliver:
@@ -65,7 +72,8 @@ Deliver:
 - search
 - related/featured article presentation
 - references/author/disclaimer renderer
-Gate: synthetic published content is excellent on mobile and indexable.
+- article experience matching the Evidence Folio reading/reference contract
+Gate: synthetic published content is excellent on mobile, indexable, accessible and visually conformant.
 
 ## Stage 7 — Writer dashboard & Tiptap editor [CRITICAL]
 Deliver:
@@ -76,6 +84,7 @@ Deliver:
 - references UI
 - SEO fields
 - draft saving
+- approved admin UI patterns from the canonical contract
 Gate: author can create and reliably reopen a draft without data loss.
 
 ## Stage 8 — Publishing workflow [CRITICAL]
@@ -96,6 +105,7 @@ Deliver:
 - contact message submission/inbox
 - basic site settings
 - portfolio featuring controls
+- admin UI remains single-writer and does not invent review/enterprise workflows
 Gate: public submission abuse surface is validated/protected and private inbox remains private.
 
 ## Stage 10 — SEO, social, analytics
@@ -113,12 +123,13 @@ Gate: representative pages validate and private/admin URLs are excluded appropri
 Deliver:
 - accessibility review
 - responsive/browser review
+- visual-conformance/regression review against canonical UI references
 - performance review
 - security/RLS test matrix
 - error/empty/loading states
 - production build
-- dependency/config review
-Gate: no known critical security, publishing, or mobile usability issue remains.
+- dependency/config review against D020
+Gate: no known critical security, publishing, accessibility, visual-contract, performance or mobile usability issue remains.
 
 ## Stage 12 — Real content, client acceptance & launch [CRITICAL]
 Deliver:
@@ -130,7 +141,8 @@ Deliver:
 - analytics/search setup
 - client training
 - launch acceptance checklist
-Gate: Marie can independently log in, edit, preview, publish, moderate, and update core content.
+- replacement of synthetic visual-fixture copy with verified client-approved content
+Gate: Marie can independently log in, edit, preview, publish, moderate, and update core content, and the client accepts the final responsive visual experience.
 
 ## Stage rule
 An agent may prepare a later stage only if doing so does not bypass the current gate. "Preparation" must not become hidden implementation of out-of-order architecture.

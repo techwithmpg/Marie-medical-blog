@@ -120,20 +120,42 @@ Do NOT add these unless the project owner explicitly approves a scope change:
 - custom email-marketing platform
 - custom analytics engine
 
-## 6. UX direction
+## 6. UX direction — Evidence Folio
 
-The design should be:
+The owner has accepted and frozen the V1 visual direction as:
+
+**Warm Medical Editorial with Scientific Restraint — The Evidence Folio.**
+
+The site should be:
 - professional;
 - warm;
-- modern;
 - editorial;
+- calm;
+- intelligent;
 - medically credible;
-- colorful in a restrained way;
-- soft/nude rather than sterile hospital blue.
+- restrained;
+- contemporary;
+- distinctive without visual excess.
 
-Aim for a visual personality that feels intelligent, warm, trustworthy, and polished.
+The accepted signature system is:
+- Evidence Rail;
+- Folio Numbers;
+- Split Rule;
+- Reference Ledger;
+- Topic Imprint.
 
-Do not require a personal profile photo in V1. Marie previously preferred to keep personal information limited and asked whether the site could work without her picture.
+The accepted primary typography direction is Newsreader for public editorial display plus Source Sans 3 for body/UI/admin.
+
+The accepted palette direction uses parchment/paper, deep ink, oxide and deep sage semantic roles.
+
+The full UI implementation contract is `docs/18-UI-IMPLEMENTATION-CONTRACT.md`.
+The accepted visual-reference manifest is `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
+
+Do not reduce the design to generic beige + serif styling or default shadcn. Do not redesign the visual system without explicit owner approval and decision-log updates.
+
+Do not require a personal profile photo in V1. The accepted layouts must remain complete without one.
+
+Generated mockup text/data are visual placeholders and are not factual client content.
 
 ## 7. Core architectural constraints
 
@@ -204,12 +226,13 @@ Before changing anything, an AI agent must:
 1. Read `AI_CONTEXT.md`.
 2. Read `AGENTS.md`.
 3. Read `docs/13-PROJECT-STATUS.md` and the docs relevant to its stage.
-4. Inspect the current repository before assuming structure or implementation state.
-5. State the stage/objective being worked on and confirm that implementation is authorized.
-6. Avoid unrelated refactors.
-7. Preserve completed architecture unless there is a verified defect.
-8. Test the work.
-9. Write a handoff note if the stage is complete.
+4. For UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
+5. Inspect the current repository before assuming structure or implementation state.
+6. State the stage/objective being worked on and confirm that implementation is authorized.
+7. Avoid unrelated refactors.
+8. Preserve completed architecture and approved visual contracts unless there is a verified defect and approval to change them.
+9. Test the work.
+10. Write a handoff note if the stage is complete.
 
 ## 13. Source of truth order
 
@@ -218,10 +241,10 @@ If instructions conflict, use this priority:
 2. `docs/11-DECISION-LOG.md` decisions marked ACTIVE.
 3. `AI_CONTEXT.md`.
 4. `docs/01-SCOPE-FREEZE.md`.
-5. Stage-specific documentation.
+5. Stage-specific documentation, including the canonical UI contract when relevant.
 6. Existing implementation.
 
-Never infer a scope change from an unfinished experiment or old code.
+Never infer a scope or design-contract change from an unfinished experiment, old code, generated mockup wording, or an unapproved package suggestion.
 
 ## 14. Research rule
 
@@ -229,7 +252,8 @@ When researching libraries, APIs, SEO behavior, Supabase, Next.js, Vercel, Tipta
 - verify against current official documentation;
 - record any decision that affects architecture in `docs/11-DECISION-LOG.md`;
 - do not implement a major technology change based only on a blog post or memory;
-- prefer current stable features over experimental features unless there is a clear benefit and approval.
+- prefer current stable features over experimental features unless there is a clear benefit and approval;
+- for UI libraries/components, respect D020 and `docs/18-UI-IMPLEMENTATION-CONTRACT.md`.
 
 ## 15. Definition of project success
 
@@ -239,4 +263,5 @@ The website succeeds when:
 - an employer can quickly assess Marie's writing quality and professional profile;
 - published content is indexable and shareable;
 - private/admin content stays private;
+- the accepted Evidence Folio visual language remains coherent across desktop/tablet/mobile;
 - the site remains fast, maintainable, and easy to extend later without V1 scope creep.

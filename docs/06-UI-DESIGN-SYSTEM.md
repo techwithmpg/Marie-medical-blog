@@ -1,6 +1,21 @@
 # 06 — UI / Design Direction
 
-## Brand personality
+## Status
+
+**OWNER-ACCEPTED / FROZEN FOR V1 VISUAL IMPLEMENTATION**
+
+The canonical detailed contract is:
+
+- `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
+- `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`
+
+ACTIVE decision authority: D019 and D020.
+
+## Brand direction
+
+**Warm Medical Editorial with Scientific Restraint — The Evidence Folio**
+
+Brand personality:
 - professional
 - editorial
 - calm
@@ -8,66 +23,84 @@
 - contemporary
 - trustworthy
 - medically credible
+- intelligent
+- restrained
 - distinctive without visual excess
 
-## Color direction
-Use a restrained soft/nude palette rather than default hospital blue.
-Suggested families to explore during design:
-- warm cream / ivory backgrounds
-- muted blush or clay accents
-- soft sage
-- restrained terracotta accent
-- deep charcoal text
-- white/near-white reading surfaces
+## Signature system
 
-Exact tokens must be finalized in the UI foundation stage and then reused consistently.
+The approved identity is carried by:
+- Evidence Rail
+- Folio Numbers
+- Split Rule
+- Reference Ledger
+- Topic Imprint
 
-## Typography
-Article typography is a product feature.
-Priorities:
-- high readability;
-- comfortable line length;
-- strong heading hierarchy;
-- generous paragraph rhythm;
-- clear references/captions;
-- excellent mobile behavior.
+Do not replace this system with default shadcn styling or generic beige editorial templates.
 
-A refined editorial serif/sans pairing may be considered if performance/licensing/implementation remain clean. Do not add decorative typography that harms readability.
+## Core visual direction
+
+Accepted semantic palette direction:
+- parchment / warm-ivory page surfaces
+- near-white reading surfaces
+- deep ink foreground
+- oxide brand accent
+- deep sage secondary accent
+- restrained functional colors for focus/status
+
+Accepted typography:
+- Newsreader for public editorial display
+- Source Sans 3 for body/UI/metadata/references/admin
 
 ## Layout principles
-- mobile-first;
-- generous whitespace;
-- fewer, stronger sections rather than card overload;
-- consistent max-width containers;
-- article content width narrower than general marketing layouts;
-- obvious calls to action without aggressive marketing patterns.
 
-## Components to establish before broad page work
+- mobile-first
+- generous whitespace
+- fewer, stronger sections rather than card overload
+- consistent max-width containers
+- article content narrower than general public composition
+- typography/rules/spacing before floating cards
+- obvious but restrained calls to action
+- admin is intentionally quieter/utilitarian
+
+## Component contract
+
+Establish reusable components before page proliferation:
 - site header/navigation
+- mobile navigation
 - footer
-- button styles
-- text link styles
-- article card
-- topic/category chip
-- section heading
-- form controls and validation states
-- empty/loading/error states
+- buttons/links/forms
+- article card/list item
+- topic imprint
+- split rule/folio marker/evidence rail
 - article typography renderer
+- reference ledger
+- key-takeaway block
 - author block
 - disclaimer block
-- reference list
-- admin table/list patterns
+- empty/loading/error states
 - admin shell/navigation
+- admin table/list/status patterns
 
-## Privacy preference
-Do not design the About page around a required portrait. The experience should look complete without one.
+See `docs/18-UI-IMPLEMENTATION-CONTRACT.md` for the complete component and dependency policy.
+
+## Privacy/content safety
+
+A portrait is optional and must never be structurally required.
+
+Generated visual mockups contain synthetic content. Do not copy their medical claims, credentials, statistics, emails, response-time promises, dates or workflow labels into production unless separately verified/approved.
 
 ## Accessibility
-- semantic landmarks/headings;
-- labels for every form field;
-- keyboard navigation;
-- visible focus;
-- adequate contrast;
-- descriptive alt text support;
-- reduced motion where relevant;
-- no information conveyed by color alone.
+
+Target WCAG 2.2 AA.
+
+At minimum:
+- semantic landmarks/headings
+- labels for every form field
+- keyboard navigation
+- visible/unobscured focus
+- adequate text/control contrast
+- descriptive alt-text support
+- reduced-motion support
+- responsive reflow
+- no information conveyed by color alone
