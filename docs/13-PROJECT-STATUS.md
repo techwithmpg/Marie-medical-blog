@@ -7,7 +7,7 @@ This file is the authoritative repository record of the currently active develop
 - **Current stage:** Stage 0 — Repository & Project Governance
 - **Stage authorization:** AUTHORIZED FOR GOVERNANCE CLOSEOUT ONLY
 - **Application coding authorized:** NO
-- **Gate status:** BLOCKED
+- **Gate status:** PASS — awaiting Stage 0 merge/transition
 - **Stable baseline:** `main` @ `78e4fab` — `chore: establish project scope and AI guardrails`
 - **Active working branch:** `stage/00-governance-closeout`
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
@@ -28,14 +28,36 @@ Close the remaining pre-development governance gaps so every human or AI agent c
 - [x] Branch strategy defined in `docs/14-BRANCH-STRATEGY.md`.
 - [x] ChatGPT Project ↔ repository synchronization contract defined in `docs/15-CHATGPT-REPO-SYNC.md`.
 - [x] Stage-1 environment/toolchain baseline researched against current official documentation and frozen in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`.
-- [ ] ChatGPT Project context snapshot refreshed from the committed governance-closeout branch before the final Stage 0 gate review; refresh again from `main` after merge if the authoritative commit reference changes.
-- [ ] Stage 0 gate review completed and recorded as PASS.
+- [x] ChatGPT Project context snapshot refreshed from committed governance branch `1bc05ce4d1f1712d15d0affbd0b7c909bcb84fa5`; refresh again from `main` after the approved merge.
+- [x] Stage 0 gate review completed on 2026-08-23 and recorded as PASS.
 
-## Current blockers / open gates
+## Gate review result
 
-1. The ChatGPT Project mirror must be refreshed from the committed governance-closeout branch before the final gate review.
-2. Stage 0 has not yet passed its final gate review.
-3. Stage 1 has not been explicitly authorized by the project owner.
+**Result: PASS — 2026-08-23**
+
+The Stage 0 gate was reviewed against committed branch `stage/00-governance-closeout` at `1bc05ce4d1f1712d15d0affbd0b7c909bcb84fa5` and the refreshed ChatGPT Project mirror sourced from that commit.
+
+Verified at gate review:
+- canonical scope and frozen stack are identifiable;
+- current stage and authorization boundary are explicit;
+- branch strategy is documented;
+- ChatGPT Project ↔ repository synchronization rules are documented;
+- ACTIVE governance/toolchain decisions D011–D018 are recorded;
+- Stage-1 bootstrap conventions are frozen;
+- local/remote governance branch state was synchronized before review;
+- no application code or project dependencies have been initialized.
+
+## Remaining transition gates
+
+Stage 0 has passed its quality/governance gate, but the transition is not complete until:
+1. this PASS/handoff record is committed and pushed;
+2. the project owner approves the Stage 0 branch merge;
+3. `stage/00-governance-closeout` is merged into `main`;
+4. local `main` and `origin/main` are synchronized;
+5. the ChatGPT Project mirror is refreshed from merged `main`;
+6. the project owner explicitly authorizes **Stage 1 — Next.js Foundation**.
+
+Stage 1 remains unauthorized until the final explicit authorization.
 
 ## Authorization boundary
 
