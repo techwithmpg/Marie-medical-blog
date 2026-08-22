@@ -20,12 +20,14 @@ All AI coding agents must read `AI_CONTEXT.md` before doing any work.
 14. **Do not fabricate medical or professional credentials.** Use placeholders until verified client content is provided.
 15. **Use safe sample content.** Development fixtures must be clearly synthetic and must not make misleading medical claims.
 16. **Preserve the accepted UI contract.** Before UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`. Do not redesign the Evidence Folio system, replace it with default shadcn styling, install unapproved UI libraries, or treat generated mockup text/data as product truth without explicit owner approval and decision-log updates.
+17. **Resolve live repository context for remote/ChatGPT work.** When operating through ChatGPT or another environment that may hold stale static snapshots, resolve current accepted `main` and read `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md` plus its required live governance set before substantial architecture, UX, data, security, SEO, dependency, implementation, or scope work. Static Project Sources never outrank a newer verified accepted `main`.
 
 ## Before coding
 
 - Read `AI_CONTEXT.md`.
 - Read `AGENTS.md`.
 - Read `docs/13-PROJECT-STATUS.md`.
+- When working through ChatGPT/remote context, complete the D021 live-context freshness check in `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`.
 - Read the relevant `/docs` file(s).
 - For any UI/UX/component work, read `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`.
 - Inspect `package.json`, app structure, configuration, migrations, and current git diff.

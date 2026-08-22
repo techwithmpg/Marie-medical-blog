@@ -26,22 +26,31 @@ When instructions conflict, use the project-wide order already defined in `AI_CO
 
 For current-stage authorization, `docs/13-PROJECT-STATUS.md` is the authoritative stage/status record unless superseded by a newer explicit owner instruction that is then recorded back into the repository.
 
-## Repository → ChatGPT refresh triggers
+## Repository → ChatGPT live freshness
 
-Refresh the ChatGPT Project context snapshot whenever a committed change materially affects:
+D021 replaces routine manual Project Source refreshes with live repository reads when GitHub access is available.
 
-- `AI_CONTEXT.md`;
-- `AGENTS.md` or agent-specific instruction files;
-- scope, stack, routes, data model, security, UI/UX, SEO/content standards;
-- development stages or testing gates;
-- handoff rules;
-- ACTIVE decisions in `docs/11-DECISION-LOG.md`;
-- `docs/13-PROJECT-STATUS.md`;
-- `docs/14-BRANCH-STRATEGY.md`;
-- this synchronization protocol.
+Before substantial architecture, UX, data, security, SEO, dependency, implementation, or scope work in ChatGPT or another remote context:
 
-Each refreshed snapshot should identify the source branch and commit used to produce it.
+1. resolve the current accepted `main` SHA from GitHub;
+2. read `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`;
+3. read the minimum required live governance set named by that manifest;
+4. read the stage/domain-specific documents relevant to the task;
+5. compare the live `main` SHA with any static Project Source snapshot SHA if one is present;
+6. when accepted `main` is newer, use the live repository state automatically;
+7. identify the live source SHA in material handoffs, stage transitions, or governance reviews where freshness matters.
 
+Only accepted merged `main` is the live canonical remote mirror. An unmerged branch, pull request, local experiment, research result, or chat recommendation does not become project authority merely because it is newer.
+
+Static ChatGPT Project Sources are now **bootstrap/fallback context**, not the routine freshness mechanism. They remain useful for:
+
+- non-repository client/research artifacts;
+- deliberate immutable/archive snapshots;
+- fallback context when GitHub live access is unavailable.
+
+They do not need to be replaced solely because `main` advanced.
+
+If GitHub live access is unavailable, use the newest verified Project snapshot available, state its source branch/SHA and freshness limitation, and avoid claiming it is current.
 ## ChatGPT → Repository rule
 
 A ChatGPT answer, web search result, recommendation, or remembered project detail is not implementation-authoritative by itself.
@@ -95,15 +104,16 @@ Before a new major stage begins:
 2. confirm the current `main` commit;
 3. read `docs/13-PROJECT-STATUS.md`;
 4. read the latest ACTIVE decisions and relevant stage documents;
-5. refresh the ChatGPT Project snapshot when governance changed;
-6. record the source commit in the refreshed snapshot;
+5. resolve the current accepted GitHub `main` SHA and live governance set under D021 / `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`;
+6. if GitHub live access is unavailable, identify the newest verified fallback snapshot and its source SHA;
 7. obtain explicit owner authorization for the next stage;
 8. create the stage branch from the synchronized `main` branch.
 
-## Newer snapshot rule
+## Newer live-context rule
 
-If the owner supplies a newer repository snapshot in a Project chat, inspect it before using it. Once verified as newer, it supersedes an older Project mirror for that conversation. The newer repository state must not be silently overwritten by stale Project memory.
+When GitHub live access is available, the current accepted `main` supersedes an older static Project Source snapshot after the SHA is verified. The older snapshot may remain as bootstrap/fallback context; it must not silently override newer repository governance.
 
+If the owner supplies a newer local or branch snapshot that is not yet merged, inspect it and honor any explicit latest owner instruction, but do not silently treat unmerged repository state as canonical `main`.
 ## No-drift rule
 
 Project memory is useful for continuity but is never stronger than current repository governance. Web research is evidence, not project authority. A stage branch is not stage authorization. An experiment is not a decision. An unmerged chat recommendation is not a contract.

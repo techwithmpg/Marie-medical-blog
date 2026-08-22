@@ -56,7 +56,7 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Decision:** The committed local Git repository remains the canonical durable source of project truth; GitHub is its synchronized remote mirror, and the ChatGPT Project is a controlled research/planning mirror. Material ChatGPT recommendations require owner approval and repository documentation before implementation authority exists.
 **Reason:** Prevents web research, chat memory, stale Project sources, and local coding agents from creating contradictory architecture or scope.
 **Alternatives considered:** Treating ChatGPT Project memory as independent authority; treating web research as self-executing implementation guidance.
-**Impact:** Governance changes trigger Project snapshot refreshes; research outputs must distinguish facts, constraints, recommendations, decision impact, and implementation status.
+**Impact:** Synchronization mechanics are refined by D021: when GitHub access is available, live accepted `main` reads replace routine manual Project Source refreshes; research outputs must still distinguish facts, constraints, recommendations, decision impact, and implementation status.
 **Approved by:** project owner.
 **Status:** ACTIVE / FROZEN.
 
@@ -132,6 +132,14 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner in the 2026-08-23 UI implementation-planning review.
 **Status:** ACTIVE / FROZEN FOR V1 UI IMPLEMENTATION POLICY.
 
+## ACTIVE — D021 — Live repository context synchronization for ChatGPT
+**Date:** 2026-08-23
+**Decision:** When GitHub access is available, the ChatGPT Project and other remote research/review contexts must use the current accepted GitHub `main` as the live freshness surface for repository governance. Before substantial architecture, UX, data, security, SEO, dependency, implementation, or scope work, resolve the current `main` SHA and read the required live governance set defined in `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`. Static ChatGPT Project Sources are bootstrap/fallback context only; a newer verified accepted `main` supersedes them without requiring manual re-upload. Unmerged branches do not become canonical.
+**Reason:** Manually regenerating and re-uploading Project Source snapshots after every accepted merge is repetitive and can itself create stale duplicate context. Live repository reads preserve the repository as canonical while reducing synchronization overhead.
+**Alternatives considered:** manually replacing Project Sources after every merge; treating ChatGPT memory as authoritative; building an external automation that mutates ChatGPT Project uploads.
+**Impact:** Repository-to-ChatGPT freshness is checked at task time. Static Project Sources remain useful when GitHub access is unavailable or for non-repository artifacts, but they no longer need to be refreshed solely because `main` advanced. If live access is unavailable, use the newest verified snapshot, state its source SHA/limitation, and do not assume freshness. This decision refines D012 only for synchronization mechanics and does not authorize any implementation stage.
+**Approved by:** project owner in the 2026-08-23 synchronization-governance review.
+**Status:** ACTIVE / FROZEN.
 ---
 
 ## New decision template

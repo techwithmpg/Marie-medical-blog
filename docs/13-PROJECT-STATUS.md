@@ -15,6 +15,7 @@ This file is the authoritative repository record of the currently active develop
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
 - **Accepted visual-reference manifest:** `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`
+- **Live ChatGPT context manifest:** `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md` — D021
 
 ## Stage 0 outcome
 
@@ -28,12 +29,13 @@ Stage 0 is complete. The repository now has the governance required for controll
 - [x] Branch strategy defined in `docs/14-BRANCH-STRATEGY.md`.
 - [x] ChatGPT Project ↔ repository synchronization contract defined in `docs/15-CHATGPT-REPO-SYNC.md`.
 - [x] Stage-1 environment/toolchain baseline frozen in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`.
-- [x] ACTIVE governance/toolchain decisions D011–D018 recorded.
+- [x] ACTIVE governance/toolchain/UI/synchronization decisions D011–D021 recorded.
 - [x] ChatGPT Project mirror refreshed from final Stage-0 main and verified.
 - [x] Stage 0 formal gate reviewed and recorded as PASS.
 - [x] Stage 0 governance branch merged into main with owner approval.
 - [x] Owner accepted the Evidence Folio design direction and responsive visual prototypes.
-- [x] Canonical UI implementation/dependency/no-drift policy prepared for governance merge under D019–D020.
+- [x] Canonical UI implementation/dependency/no-drift policy merged and canonical under D019–D020.
+- [x] Live GitHub context synchronization model accepted under D021 with static Project Sources retained as bootstrap/fallback only.
 
 No application code or application dependencies were initialized during Stage 0 or by the UI research/design process.
 
@@ -67,14 +69,14 @@ Permitted work is limited to repository synchronization, Project-context refresh
 
 ## Remaining pre-Stage-1 transition requirements
 
-After the UI-governance patch is merged into `main`:
+After the live-context synchronization governance is merged into `main`:
 
 1. synchronize local `main` and `origin/main`;
-2. refresh the ChatGPT Project mirror because governance/design authority changed;
-3. verify Project Source retrieval resolves to the new final `main` commit and includes D019/D020 plus the UI contract;
-4. obtain explicit project-owner authorization for **Stage 1 — Next.js Foundation**;
-5. only then create the Stage-1 branch from synchronized `main`.
-
+2. verify live GitHub retrieval resolves to the final accepted `main` commit and includes D021 plus `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`;
+3. retain static ChatGPT Project Sources as bootstrap/fallback context; no manual re-upload is required solely because repository `main` advanced;
+4. add the one-time live-repository freshness instruction to the ChatGPT Project instructions if it is not already present;
+5. obtain explicit project-owner authorization for **Stage 1 — Next.js Foundation**;
+6. only then create the Stage-1 branch from synchronized `main`.
 ## Stage transition rule
 
 A future stage transition requires all of the following:
@@ -85,7 +87,7 @@ A future stage transition requires all of the following:
 4. material decisions recorded in `docs/11-DECISION-LOG.md`;
 5. stage branch merged into `main` under `docs/14-BRANCH-STRATEGY.md`;
 6. local `main` synchronized with `origin/main`;
-7. ChatGPT Project snapshot refreshed when governance context changed;
+7. ChatGPT live-context freshness verified against current accepted `main` under D021 / `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md` (or newest verified fallback snapshot if live access is unavailable);
 8. explicit owner authorization for the next implementation stage.
 
 A branch name, research note, chat recommendation, visual prototype, or partial experiment never grants implementation authorization.
