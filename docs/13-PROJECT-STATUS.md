@@ -4,11 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 2 — Design System & Application Shells — COMPLETE / MERGED
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-24
-- **Application coding authorized:** NO — STAGE 2 IS COMPLETE; STAGE 3 IS NOT AUTHORIZED
-- **Gate status:** PASS
-- **Active working branch:** `main` — no implementation stage currently active
+- **Current stage:** Stage 3 — Supabase Database & Security Foundation — ACTIVE
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Application coding authorized:** YES — STAGE 3 SCOPE ONLY
+- **Gate status:** IN PROGRESS
+- **Active working branch:** `stage/03-supabase-security`
+- **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
 - **Stage-1 implementation commit:** `d99879076ac6283ef84e546f99dacc55fcc9374c`
@@ -25,7 +26,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-2 merge parents:**
   - first parent (prior main): `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
   - second parent (approved Stage-2 head): `e33875485ab5f37fe813081479e40fabf39bc4bb`
-- **Next implementation stage:** Stage 3 — Supabase Database & Security Foundation — NOT AUTHORIZED
+- **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -113,7 +114,7 @@ Stage 2 is complete, verified, and merged into `main`:
 - [x] No authentication, sessions, or login workflows initialized;
 - [x] No Tiptap editor, draft persistence, or publishing workflows initialized;
 - [x] No secrets or credentials added;
-- [x] Stage 3 remains NOT AUTHORIZED.
+- [x] Stage 3 authorized separately.
 
 Final Stage-2 post-merge gate record (on `21c74c6c4025e63f8ae396678f1dfc95b892f900`):
 - `npm ci`: PASS (375 packages added, 376 audited, 0 vulnerabilities)
@@ -138,45 +139,44 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 2 — Design System & Application Shells is COMPLETE, PASS, and MERGED into main.**
+**Stage 3 — Supabase Database & Security Foundation is AUTHORIZED and ACTIVE.**
 
-Owner authorization was given on **2026-08-24** in ChatGPT after Stage 1 was fully merged and verified under D021, and owner merge approval was given on **2026-08-25**.
+Owner authorization was given on **2026-08-25** in ChatGPT after Stage 2 was fully merged, synchronized, and verified on `main`.
 
-Stage 2 implementation delivered:
+Stage 3 may implement only:
 
-- finalized Evidence Folio CSS-variable tokens;
-- Newsreader + Source Sans 3 framework font foundation;
-- `EvidenceRail`;
-- `FolioMarker`;
-- `SplitRule`;
-- `TopicImprint`;
-- `ReferenceLedger`;
-- public shell;
-- `SiteHeader`;
-- `MobileNav`;
-- `SiteFooter`;
-- `AdminShell`;
-- `AdminMobileNav`;
-- reusable Stage-2 Base UI (`Button`, `Separator`, `Sheet`);
-- responsive foundations;
-- only dependencies genuinely required by Stage 2 and permitted under D020.
+- Supabase project-local development foundation;
+- schema migrations;
+- database constraints and indexes;
+- Auth database foundation and Supabase integration foundation only;
+- Row Level Security policies;
+- Postgres grants;
+- Storage buckets and Storage policies only if Stage-3 design proves they are required;
+- synthetic seed/development fixtures;
+- database/security verification tests;
+- generated database types if appropriate to the approved Stage-3 implementation.
 
-Stage 2 did NOT implement:
+Stage 3 must NOT implement:
 
-- Supabase schema, migrations, RLS or CLI initialization;
-- authentication or user sessions;
+- Marie sign-in UI;
+- login forms;
+- logout UI;
+- session refresh UI;
+- protected admin routing;
+- authenticated dashboard route implementation;
+- Stage-4 unauthorized/access-denied UX;
 - Tiptap rich-text editor;
+- article editor implementation;
 - publishing workflows;
-- comments or contact message functionality;
-- real data integration;
-- full homepage, About, Contact, or other page content;
-- full article discovery or read experience;
-- later-stage admin features;
-- analytics;
-- real client content;
-- any Stage-3-or-later functionality.
+- public article page implementation;
+- comments UI;
+- contact UI;
+- inbox UI;
+- later-stage product features;
+- reader accounts;
+- multi-author roles or permission systems.
 
-No further Stage-2 application implementation is authorized. No new implementation stage is active. Stage 3 remains NOT AUTHORIZED.
+Stage 4 remains NOT AUTHORIZED.
 
 ## Stage-1 start record
 
@@ -215,6 +215,29 @@ Start conditions verified:
 8. `stage/02-design-system` was created from the verified base.
 
 Stage 2 implementation, review corrections, closeout, and merge into `main` at `21c74c6c4025e63f8ae396678f1dfc95b892f900` are complete.
+
+## Stage-3 start record
+
+Stage 3 began from verified canonical base:
+
+`main @ e9480f7e0ae1a945203066aeedf04050112ac154`
+
+Start conditions verified:
+
+1. Stage 2 was fully completed, merged and synchronized into `main`;
+2. working tree was clean;
+3. Node.js `v24.19.0` was active;
+4. npm `11.17.0` was available;
+5. Git `2.53.0.windows.2` was available;
+6. canonical GitHub/local `main` was verified at `e9480f7e0ae1a945203066aeedf04050112ac154`;
+7. project owner explicitly authorized Stage 3 in ChatGPT on 2026-08-25;
+8. `stage/03-supabase-security` was created from that exact canonical `main`;
+9. this authorization commit contains governance only;
+10. no schema implementation occurred in this commit;
+11. no package installation occurred in this commit;
+12. no Supabase initialization occurred in this commit;
+13. no hosted Supabase project was created or linked in this commit;
+14. Stage 4 remains NOT AUTHORIZED.
 
 ## Stage transition rule
 
