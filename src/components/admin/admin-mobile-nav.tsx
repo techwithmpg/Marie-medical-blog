@@ -20,7 +20,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetClose,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +90,7 @@ export function AdminMobileNav({ activeModule }: AdminMobileNavProps) {
         render={
           <button
             type="button"
-            className="inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-[#D2C9BC] bg-card text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none md:hidden"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-[#D2C9BC] bg-card text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none md:hidden"
             aria-label="Open admin navigation menu"
           />
         }
@@ -116,21 +115,20 @@ export function AdminMobileNav({ activeModule }: AdminMobileNavProps) {
               const isActive = activeModule === item.id;
 
               return (
-                <SheetClose key={item.id} render={<div />}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none",
-                      isActive
-                        ? "bg-[#E8E2D7] font-semibold text-[#7B3F35]"
-                        : "text-[#5E5953] hover:bg-[#E8E2D7]/60 hover:text-[#242321]",
-                    )}
-                  >
-                    <Icon className="size-4 shrink-0 text-[#7B3F35]" />
-                    <span>{item.label}</span>
-                  </Link>
-                </SheetClose>
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none",
+                    isActive
+                      ? "bg-[#E8E2D7] font-semibold text-[#7B3F35]"
+                      : "text-[#5E5953] hover:bg-[#E8E2D7]/60 hover:text-[#242321]",
+                  )}
+                >
+                  <Icon className="size-4 shrink-0 text-[#7B3F35]" />
+                  <span>{item.label}</span>
+                </Link>
               );
             })}
           </nav>
@@ -138,7 +136,7 @@ export function AdminMobileNav({ activeModule }: AdminMobileNavProps) {
 
         <div className="border-t border-[#D2C9BC] pt-4 text-xs text-[#5E5953]">
           <p className="font-semibold text-[#242321]">Marie Medere</p>
-          <p>Medical Writer / Admin</p>
+          <p>Writer / Admin</p>
         </div>
       </SheetContent>
     </Sheet>

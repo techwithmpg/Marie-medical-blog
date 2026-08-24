@@ -18,8 +18,7 @@ const sourceSans3 = Source_Sans_3({
 
 export const metadata: Metadata = {
   title: "Marie Medere — Medical Writing Portfolio & Educational Blog",
-  description:
-    "Evidence-based medical writing, health communication, and clinical education.",
+  description: "Medical Writing Portfolio & Educational Blog",
 };
 
 export default function RootLayout({

@@ -18,7 +18,7 @@ const SheetBackdrop = React.forwardRef<
   <Dialog.Backdrop
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-[#242321]/40 backdrop-blur-xs transition-opacity duration-300 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+      "fixed inset-0 z-50 bg-[#242321]/40 backdrop-blur-xs transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 motion-reduce:transition-none",
       className,
     )}
     {...props}
@@ -27,16 +27,16 @@ const SheetBackdrop = React.forwardRef<
 SheetBackdrop.displayName = "SheetBackdrop";
 
 const sheetVariants = cva(
-  "fixed z-50 bg-[#FFFDF9] p-6 shadow-xl transition-transform duration-300 ease-out border-[#D2C9BC]",
+  "fixed z-50 bg-[#FFFDF9] p-6 shadow-xl transition-transform duration-200 ease-out border-[#D2C9BC] motion-reduce:transition-none",
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b data-[starting-style]:-translate-y-full data-[ending-style]:-translate-y-full",
+        top: "inset-x-0 top-0 border-b data-[starting-style]:-translate-y-full data-[ending-style]:-translate-y-full motion-reduce:data-[starting-style]:translate-y-0 motion-reduce:data-[ending-style]:translate-y-0",
         bottom:
-          "inset-x-0 bottom-0 border-t data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
-        left: "inset-y-0 left-0 h-full w-3/4 max-w-sm border-r data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full",
+          "inset-x-0 bottom-0 border-t data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full motion-reduce:data-[starting-style]:translate-y-0 motion-reduce:data-[ending-style]:translate-y-0",
+        left: "inset-y-0 left-0 h-full w-3/4 max-w-sm border-r data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full motion-reduce:data-[starting-style]:translate-x-0 motion-reduce:data-[ending-style]:translate-x-0",
         right:
-          "inset-y-0 right-0 h-full w-3/4 max-w-sm border-l data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full",
+          "inset-y-0 right-0 h-full w-3/4 max-w-sm border-l data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full motion-reduce:data-[starting-style]:translate-x-0 motion-reduce:data-[ending-style]:translate-x-0",
       },
     },
     defaultVariants: {

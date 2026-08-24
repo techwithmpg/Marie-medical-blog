@@ -1,7 +1,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { MobileNav } from "@/components/site/mobile-nav";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface NavLink {
   label: string;
@@ -52,9 +53,12 @@ export function SiteHeader() {
         {/* CTA & Mobile Menu */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <Button variant="default" size="sm" asChild>
-              <Link href="/contact">Download CV</Link>
-            </Button>
+            <Link
+              href="/contact"
+              className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+            >
+              Contact
+            </Link>
           </div>
 
           <MobileNav />

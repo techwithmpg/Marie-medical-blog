@@ -9,9 +9,9 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetClose,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
   label: string;
@@ -56,30 +56,31 @@ export function MobileNav() {
             className="mt-8 flex flex-col space-y-1"
           >
             {navItems.map((item) => (
-              <SheetClose key={item.href} render={<div />}>
-                <Link
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="flex h-12 items-center rounded-md px-3 font-sans text-base font-medium text-[#242321] transition-colors hover:bg-[#E8E2D7] hover:text-[#7B3F35] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
-                >
-                  {item.label}
-                </Link>
-              </SheetClose>
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="flex h-12 items-center rounded-md px-3 font-sans text-base font-medium text-[#242321] transition-colors hover:bg-[#E8E2D7] hover:text-[#7B3F35] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+              >
+                {item.label}
+              </Link>
             ))}
           </nav>
         </div>
 
         <div className="mt-8 flex flex-col gap-3 border-t border-[#D2C9BC] pt-6">
-          <Button
-            variant="default"
-            size="lg"
-            className="w-full justify-center"
+          <Link
+            href="/contact"
             onClick={() => setOpen(false)}
+            className={cn(
+              buttonVariants({ variant: "default", size: "lg" }),
+              "w-full justify-center",
+            )}
           >
-            Download CV
-          </Button>
+            Contact
+          </Link>
           <p className="text-center text-xs text-[#5E5953]">
-            Evidence-based healthcare communication
+            Medical Writing Portfolio &amp; Educational Blog
           </p>
         </div>
       </SheetContent>

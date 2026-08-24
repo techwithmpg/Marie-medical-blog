@@ -21,18 +21,21 @@ export function ReferenceLedger({
   className,
   ...props
 }: ReferenceLedgerProps) {
+  const generatedId = React.useId();
+  const titleId = `${generatedId}-title`;
+
   return (
     <section
       className={cn(
         "rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-5 text-sm text-[#5E5953] sm:p-7",
         className,
       )}
-      aria-labelledby="reference-ledger-title"
+      aria-labelledby={titleId}
       {...props}
     >
       <div className="mb-4 flex items-center justify-between border-b border-[#D2C9BC] pb-3">
         <h3
-          id="reference-ledger-title"
+          id={titleId}
           className="font-serif text-base font-medium tracking-tight text-[#242321]"
         >
           {title}

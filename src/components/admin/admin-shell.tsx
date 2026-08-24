@@ -101,7 +101,7 @@ export function AdminShell({
               Marie Medere
             </span>
             <span className="text-[0.625rem] font-semibold tracking-widest text-[#7B3F35] uppercase">
-              Editorial Workspace
+              Workspace
             </span>
           </Link>
           <Link
@@ -159,7 +159,7 @@ export function AdminShell({
                 Marie Medere
               </span>
               <span className="text-[0.625rem] tracking-wider text-[#5E5953] uppercase">
-                Author &amp; Editor
+                Writer / Admin
               </span>
             </div>
           </div>

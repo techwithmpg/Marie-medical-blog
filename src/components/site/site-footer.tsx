@@ -25,8 +25,7 @@ export function SiteFooter() {
               Marie Medere
             </span>
             <p className="max-w-sm text-xs leading-relaxed text-[#5E5953]">
-              Evidence-based medical writing, health communications, and
-              clinical education with scientific rigor and editorial clarity.
+              Medical Writing Portfolio &amp; Educational Blog
             </p>
           </div>
 
@@ -57,16 +56,21 @@ export function SiteFooter() {
               Medical Disclaimer
             </span>
             <p className="text-xs leading-relaxed text-[#5E5953]">
-              This publication is for informational and educational purposes
-              only and does not constitute medical advice. Consult your
-              healthcare provider for personalized guidance.
+              This publication provides educational content only and does not
+              constitute medical advice. Read the full{" "}
+              <Link
+                href="/disclaimer"
+                className="text-[#704037] underline underline-offset-2 hover:text-[#582A22]"
+              >
+                medical disclaimer
+              </Link>
+              .
             </p>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-[#D2C9BC] pt-6 text-xs text-[#5E5953] sm:flex-row">
           <p>© {new Date().getFullYear()} Marie Medere. All rights reserved.</p>
-          <p className="italic">Evidence Folio Editorial System</p>
         </div>
       </div>
     </footer>

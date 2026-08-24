@@ -11,13 +11,13 @@ export default function Home() {
   const sampleReferences = [
     {
       id: 1,
-      text: "Standardized methodology for clinical evidence synthesis and peer-reviewed communication.",
-      citation: "Evidence Review Standards, 2024",
+      text: "Reference layout placeholder one demonstrating source presentation formatting.",
+      citation: "Layout Reference A",
     },
     {
       id: 2,
-      text: "Accessible health literacy frameworks and Plain Language Summaries in clinical practice.",
-      citation: "Health Literacy Guidelines, 2023",
+      text: "Reference layout placeholder two demonstrating citation and ledger structure.",
+      citation: "Layout Reference B",
     },
   ];
 
@@ -32,13 +32,13 @@ export default function Home() {
           </div>
 
           <h1 className="max-w-3xl font-serif text-4xl leading-[1.12] font-medium tracking-tight text-[#242321] sm:text-5xl lg:text-6xl">
-            Evidence-based medical writing with editorial clarity.
+            Marie Medere Medical Writing Portfolio &amp; Educational Blog
           </h1>
 
           <p className="max-w-2xl font-sans text-lg leading-relaxed text-[#5E5953] sm:text-xl">
-            The Evidence Folio system pairs rigorous medical accuracy with calm,
-            restrained editorial design for clinical publications and
-            educational portfolios.
+            Editorial design-system validation fixture establishing typography
+            scale, restrained surfaces, and signature Evidence Folio structural
+            primitives.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -111,8 +111,8 @@ export default function Home() {
                   on desktop without competing with the primary reading flow.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
-                  <TopicImprint variant="default">Clinical</TopicImprint>
-                  <TopicImprint variant="sage">Research</TopicImprint>
+                  <TopicImprint variant="default">Topic A</TopicImprint>
+                  <TopicImprint variant="sage">Topic B</TopicImprint>
                 </div>
               </EvidenceRail>
 
