@@ -1,0 +1,88 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "Articles", href: "/blog" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
+export function MobileNav() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger
+        render={
+          <button
+            type="button"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-[#D2C9BC] bg-card text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:ring-offset-2 focus-visible:outline-none md:hidden"
+            aria-label="Open navigation menu"
+          />
+        }
+      >
+        <Menu className="size-5" />
+      </SheetTrigger>
+      <SheetContent side="right" className="flex flex-col justify-between">
+        <div>
+          <SheetHeader>
+            <SheetTitle className="text-xl">Marie Medere</SheetTitle>
+            <p className="text-xs tracking-wider text-[#5E5953] uppercase">
+              Medical Writing Portfolio
+            </p>
+          </SheetHeader>
+
+          <nav
+            aria-label="Mobile Navigation"
+            className="mt-8 flex flex-col space-y-1"
+          >
+            {navItems.map((item) => (
+              <SheetClose key={item.href} render={<div />}>
+                <Link
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center rounded-md px-3 font-sans text-base font-medium text-[#242321] transition-colors hover:bg-[#E8E2D7] hover:text-[#7B3F35] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+                >
+                  {item.label}
+                </Link>
+              </SheetClose>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 border-t border-[#D2C9BC] pt-6">
+          <Button
+            variant="default"
+            size="lg"
+            className="w-full justify-center"
+            onClick={() => setOpen(false)}
+          >
+            Download CV
+          </Button>
+          <p className="text-center text-xs text-[#5E5953]">
+            Evidence-based healthcare communication
+          </p>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
