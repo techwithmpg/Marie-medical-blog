@@ -4,10 +4,10 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 2 — Design System & Application Shells — ACTIVE
+- **Current stage:** Stage 2 — Design System & Application Shells — COMPLETE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-24
-- **Application coding authorized:** YES — STAGE 2 SCOPE ONLY
-- **Gate status:** IN PROGRESS
+- **Application coding authorized:** NO FURTHER STAGE-2 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Gate status:** PASS
 - **Active working branch:** `stage/02-design-system`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
@@ -15,6 +15,10 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-1 closeout commit:** `fdcfaebc1dd24486c88304326cd8c52e3fca028c`
 - **Stage-1 merge commit:** `7703d507d491acaf4c33d341f328ff41bbd69293`
 - **Stage-1 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-24
+- **Stage-2 authorization commit:** `18dc2c65aed7ae76b5905b5a02add28babfbec0a`
+- **Stage-2 implementation commit:** `69844dab57380959abdb4ff43779035be6498446`
+- **Stage-2 correction commit:** `c5e89f0617c9b2b56f6f75418ab62eed750c7a3d`
+- **Stage-2 merge status:** NOT YET MERGED — AWAITING PROJECT-OWNER APPROVAL
 - **Next implementation stage:** Stage 3 — Supabase Database & Security Foundation — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
@@ -81,6 +85,38 @@ Final post-merge gate record:
 - `git diff --check`: PASS
 - `git diff --cached --check`: PASS
 
+## Stage 2 outcome
+
+Stage 2 is complete, code-reviewed, and verified:
+
+- [x] Evidence Folio CSS tokens implemented in `src/app/globals.css` with `@theme inline` mappings;
+- [x] Newsreader and Source Sans 3 typography integrated via `next/font/google` in `src/app/layout.tsx`;
+- [x] Evidence Folio signature primitives implemented: `EvidenceRail`, `FolioMarker`, `SplitRule`, `TopicImprint`, and `ReferenceLedger`;
+- [x] Public application shell implemented: `PublicShell`, `SiteHeader`, `MobileNav`, and `SiteFooter`;
+- [x] Admin application shell implemented: `AdminShell` and `AdminMobileNav`;
+- [x] Minimal reusable Base UI primitives implemented: `Button`, `Separator`, and `Sheet`;
+- [x] Only justified direct dependencies added: `@base-ui/react`, `class-variance-authority`, `lucide-react`;
+- [x] Code review corrections applied: Button/Link semantics fixed, misleading actions removed, unverified claims removed, fake references replaced with neutral placeholders, ReferenceLedger IDs wired via `React.useId()`, mobile drawer semantics streamlined, reduced motion added, admin touch target increased;
+- [x] Clean install verified (`npm ci` PASS, 0 vulnerabilities);
+- [x] Typecheck PASS (`tsc --noEmit`);
+- [x] Lint PASS (`eslint .`);
+- [x] Format check PASS (`prettier . --check`);
+- [x] Production build PASS (`next build`);
+- [x] Git diff check PASS (`git diff --check`);
+- [x] No Supabase, database schema, migrations, or RLS initialized;
+- [x] No authentication, sessions, or login workflows initialized;
+- [x] No Tiptap editor, draft persistence, or publishing workflows initialized;
+- [x] No secrets or credentials added;
+- [x] Stage 3 remains NOT AUTHORIZED.
+
+Final Stage-2 gate record:
+- `npm ci`: PASS (375 packages added, 376 audited, 0 vulnerabilities)
+- `npm run typecheck`: PASS
+- `npm run lint`: PASS
+- `npm run format:check`: PASS
+- `npm run build`: PASS
+- `git diff --check`: PASS
+
 ## Accepted UI governance
 
 The owner accepted **Warm Medical Editorial with Scientific Restraint — The Evidence Folio** as the V1 visual direction.
@@ -96,11 +132,11 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 2 — Design System & Application Shells is AUTHORIZED and ACTIVE.**
+**Stage 2 — Design System & Application Shells is COMPLETE and AWAITING OWNER MERGE APPROVAL.**
 
 Owner authorization was given on **2026-08-24** in ChatGPT after Stage 1 was fully merged and verified under D021.
 
-Stage 2 may implement only:
+Stage 2 implementation delivered:
 
 - finalized Evidence Folio CSS-variable tokens;
 - Newsreader + Source Sans 3 framework font foundation;
@@ -114,11 +150,12 @@ Stage 2 may implement only:
 - `MobileNav`;
 - `SiteFooter`;
 - `AdminShell`;
-- reusable Stage-2 base UI;
+- `AdminMobileNav`;
+- reusable Stage-2 Base UI (`Button`, `Separator`, `Sheet`);
 - responsive foundations;
 - only dependencies genuinely required by Stage 2 and permitted under D020.
 
-Stage 2 must NOT implement:
+Stage 2 did NOT implement:
 
 - Supabase schema, migrations, RLS or CLI initialization;
 - authentication or user sessions;
@@ -171,7 +208,7 @@ Start conditions verified:
 7. project owner explicitly authorized Stage 2 in ChatGPT on 2026-08-24;
 8. `stage/02-design-system` was created from the verified base.
 
-Stage 2 remains subject to its documented gate before merge or Stage-3 authorization.
+Stage 2 implementation, review corrections, and gate verification are complete.
 
 ## Stage transition rule
 
