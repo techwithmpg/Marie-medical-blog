@@ -4,9 +4,14 @@
 Stage 1 — Next.js Foundation
 
 ## Objective completed
-The Stage 1 Next.js Foundation is complete and has passed its documented quality gate. Implementation commit `d99879076ac6283ef84e546f99dacc55fcc9374c` established a clean, reproducible, production-quality Next.js App Router and toolchain baseline without altering repository governance or initializing out-of-scope features.
+The Stage 1 Next.js Foundation is complete, its formal quality gate passed, and the approved `stage/01-nextjs-foundation` branch was merged into `main` at merge commit `7703d507d491acaf4c33d341f328ff41bbd69293` with explicit project-owner approval.
 
-The working branch `stage/01-nextjs-foundation` is ready for project owner merge review. It has not been merged into `main`.
+Stage 1 established a clean, reproducible, production-quality Next.js App Router and toolchain baseline without altering repository governance or initializing out-of-scope features.
+
+Key commit record:
+- **Implementation commit:** `d99879076ac6283ef84e546f99dacc55fcc9374c` (`build: establish stage 1 nextjs foundation`)
+- **Stage-1 closeout commit:** `fdcfaebc1dd24486c88304326cd8c52e3fca028c` (`docs: close stage 1 foundation gate`)
+- **Stage-1 merge commit:** `7703d507d491acaf4c33d341f328ff41bbd69293` (merged `--no-ff` into `main` from parents `5e30fac03bdb2efc334399800a7842aa5af8e584` and `fdcfaebc1dd24486c88304326cd8c52e3fca028c`)
 
 ## Files/areas changed
 Stage 1 foundation changes are represented by:
@@ -15,6 +20,7 @@ Stage 1 foundation changes are represented by:
 - `.nvmrc`: Node runtime pinned to `24`.
 - `.env.example`: Tracked environment variable template.
 - `.gitignore`: Merged Next.js and build exclusions while preserving all security rules and governance comments.
+- `.gitattributes`: Repository-level line ending normalization (`* text=auto eol=lf`).
 - `.prettierrc` & `.prettierignore`: Exact Prettier formatting configuration with Tailwind v4 plugin, with governance documents explicitly scoped to avoid churn.
 - `eslint.config.mjs`: ESLint 9 flat configuration integrating `eslint-config-next` and `eslint-config-prettier`.
 - `tsconfig.json`: Strict TypeScript compiler configuration with `@/*` path mapping.
@@ -71,8 +77,35 @@ Quality gate results:
 - `npm run format:check`: **PASS** (`prettier . --check` verified all matched files).
 - `npm run build`: **PASS** (Turbopack production build succeeded; static routes generated).
 - `git diff --check`: **PASS** (zero whitespace or conflict defects).
-- Implementation commit: `d99879076ac6283ef84e546f99dacc55fcc9374c`.
-- Remote Stage-1 implementation commit verified on GitHub (`origin/stage/01-nextjs-foundation`).
+- `git diff --cached --check`: **PASS**.
+- Stage-1 implementation commit: `d99879076ac6283ef84e546f99dacc55fcc9374c`.
+- Stage-1 closeout commit: `fdcfaebc1dd24486c88304326cd8c52e3fca028c`.
+- Stage-1 merge commit: `7703d507d491acaf4c33d341f328ff41bbd69293`.
+
+## Post-merge verification and regression correction
+The first post-merge Prettier check failed because Windows Git `core.autocrlf=true` checked LF repository blobs out as CRLF in the worktree.
+
+The source blobs themselves remained LF and no application-content difference existed.
+
+A repository-level `.gitattributes` policy was added to enforce LF for normal text while preserving CRLF for `.bat`/`.cmd` files:
+```text
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+```
+
+After normalization:
+- all targeted source/config files reported `i/lf w/lf`;
+- `npm ci`: **PASS** (0 vulnerabilities);
+- `npm run typecheck`: **PASS**;
+- `npm run lint`: **PASS**;
+- `npm run format:check`: **PASS**;
+- `npm run build`: **PASS**;
+- `git diff --check`: **PASS**;
+- `git diff --cached --check`: **PASS**.
+
+This is repository/toolchain hygiene under the existing formatting contract (`D017`), not a new product/architecture/security/scope decision.
 
 ## Known limitations
 Stage 1 is strictly a foundation stage and intentionally does NOT provide:
@@ -99,15 +132,12 @@ The following Stage-2-and-later functionality was intentionally excluded from St
 - Third-party analytics, backend services, or AI integrations.
 
 ## Next stage readiness
-- **Stage 1:** COMPLETE / PASS.
-- **Stage-1 branch:** READY FOR OWNER MERGE APPROVAL.
+- **Stage 1:** COMPLETE / PASS / MERGED.
 - **Stage 2:** NOT AUTHORIZED.
 
-Stage 2 may not begin until all of the following occur:
-1. this closeout is committed to `stage/01-nextjs-foundation`;
-2. the Stage-1 branch is pushed to GitHub;
-3. the project owner reviews and approves the merge;
-4. the Stage-1 branch is merged into `main`;
-5. local and remote `main` are synchronized;
-6. accepted `main` is re-verified under D021;
-7. the project owner explicitly authorizes Stage 2.
+Before Stage 2 may begin:
+1. finalized `main` must be pushed to GitHub;
+2. `origin/main` must be verified;
+3. local `main` must match `origin/main`;
+4. ChatGPT live-context freshness must be re-resolved under D021;
+5. the project owner must explicitly authorize Stage 2.

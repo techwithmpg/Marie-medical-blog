@@ -4,14 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 1 — Next.js Foundation — COMPLETE / PASS — AWAITING OWNER MERGE APPROVAL
+- **Current stage:** Stage 1 — Next.js Foundation — COMPLETE / PASS / MERGED
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-23
-- **Application coding authorized:** NO — Stage-1 implementation scope is complete; only approved closeout/merge actions remain.
+- **Application coding authorized:** NO — Stage 1 is complete. Stage 2 remains NOT AUTHORIZED.
 - **Gate status:** PASS
+- **Active canonical branch:** `main`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
-- **Active working branch:** `stage/01-nextjs-foundation`
 - **Stage-1 implementation commit:** `d99879076ac6283ef84e546f99dacc55fcc9374c`
-- **Merge status:** NOT YET MERGED / AWAITING OWNER APPROVAL
+- **Stage-1 closeout commit:** `fdcfaebc1dd24486c88304326cd8c52e3fca028c`
+- **Stage-1 merge commit:** `7703d507d491acaf4c33d341f328ff41bbd69293`
+- **Merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-24
 - **Next implementation stage:** Stage 2 — Design System & Application Shells — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
@@ -43,7 +45,7 @@ No application code or application dependencies were initialized during Stage 0 
 
 ## Stage 1 outcome
 
-Stage 1 is complete and has passed its documented gate:
+Stage 1 is complete, verified, and merged into `main`:
 
 - [x] Next.js App Router + TypeScript foundation established;
 - [x] Node 24.x / npm / `package-lock.json` contract established;
@@ -58,9 +60,25 @@ Stage 1 is complete and has passed its documented gate:
 - [x] Production build PASS (`next build`);
 - [x] Git diff check PASS (`git diff --check`);
 - [x] No database, auth, editor, or product feature scope was implemented;
-- [x] No credentials or secrets were introduced.
+- [x] No credentials or secrets were introduced;
+- [x] Project owner explicitly approved the Stage-1 merge;
+- [x] Merge used `--no-ff` at merge commit `7703d507d491acaf4c33d341f328ff41bbd69293`;
+- [x] Merge commit verified with expected two parents:
+  - `5e30fac03bdb2efc334399800a7842aa5af8e584` (accepted pre-merge `main`)
+  - `fdcfaebc1dd24486c88304326cd8c52e3fca028c` (Stage-1 branch head)
+- [x] Initial post-merge format check exposed Windows CRLF checkout behavior from global `core.autocrlf=true`;
+- [x] Repository-level `.gitattributes` added (`* text=auto eol=lf`, `*.bat text eol=crlf`, `*.cmd text eol=crlf`);
+- [x] Zero application source content modified during LF normalization;
+- [x] Complete post-merge gate re-run and passed 100%.
 
-Implementation commit `d99879076ac6283ef84e546f99dacc55fcc9374c` established the foundation.
+Final post-merge gate record:
+- `npm ci`: PASS, 0 vulnerabilities
+- `npm run typecheck`: PASS
+- `npm run lint`: PASS
+- `npm run format:check`: PASS
+- `npm run build`: PASS
+- `git diff --check`: PASS
+- `git diff --cached --check`: PASS
 
 Stage 2 remains NOT AUTHORIZED.
 
@@ -79,11 +97,9 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 1 — Next.js Foundation is AUTHORIZED and ACTIVE.**
+**Stage 1 — Next.js Foundation is COMPLETE and MERGED.**
 
-Owner authorization was given on **2026-08-23** after successful Stage-0 completion, live-context verification, and local-machine preflight.
-
-Stage 1 may implement only the frozen foundation defined in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`, including:
+Stage 1 implemented the frozen foundation defined in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`, including:
 
 - Next.js App Router + TypeScript foundation;
 - Tailwind CSS foundation;
@@ -93,7 +109,7 @@ Stage 1 may implement only the frozen foundation defined in `docs/16-STAGE-1-TOO
 - `.env.example` placeholders only;
 - required npm/package/build scripts.
 
-Stage 1 must NOT implement:
+Stage 1 did NOT implement:
 
 - broad Evidence Folio UI/page design;
 - Supabase schema, migrations, RLS or CLI initialization;
@@ -124,7 +140,7 @@ Start conditions verified:
 7. project owner explicitly authorized Stage 1;
 8. `stage/01-nextjs-foundation` was created from the verified base and pushed to GitHub.
 
-Stage 1 remains subject to its documented gate before merge or Stage-2 authorization.
+Stage 1 implementation and merge closeout are complete.
 
 ## Stage transition rule
 
