@@ -20,7 +20,7 @@ Key commit record:
 - **Evidence Folio Semantic Palette:** Implemented CSS variables in `src/app/globals.css` with `@theme inline` mappings:
   - Parchment background (`#F6F1E8`), Reading paper surface (`#FFFDF9`), Primary ink (`#242321`), Muted ink (`#5E5953`), Brand oxide (`#7B3F35`), Deep sage (`#3F5E52`), Inline link (`#704037`), Subtle field (`#E8E2D7`), Subtle divider (`#D2C9BC`), Control boundary (`#918579`), Focus slate ring (`#265D7A`).
 - **Typography:** Integrated `Newsreader` (editorial serif for display headings, masthead, folio markers) and `Source_Sans_3` (sans-serif for body, UI, metadata, navigation, admin) via `next/font/google` in `src/app/layout.tsx`.
-- **Dark Mode Policy:** No dark mode implemented; dark mode styles removed in adherence to V1 scope freeze (`D007`).
+- **Dark Mode Policy:** No dark-mode product functionality was implemented. The Stage-2 design foundation remains the frozen light Evidence Folio direction under D019/D020 and the UI implementation contract; no `next-themes` or theme-switching infrastructure was added.
 
 ### 2. Evidence Folio Signature Components (`src/components/evidence/`)
 - `EvidenceRail`: Restrained vertical structural rail on desktop that collapses to a compact horizontal folio rule on mobile viewports.
