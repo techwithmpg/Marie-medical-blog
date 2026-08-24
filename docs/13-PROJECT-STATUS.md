@@ -81,6 +81,7 @@ Stage 1 must NOT implement:
 - Stage-2-or-later application features.
 
 Stage 2 remains NOT AUTHORIZED.
+
 ## Stage-1 start record
 
 Stage 1 began from verified canonical base:
@@ -99,6 +100,7 @@ Start conditions verified:
 8. `stage/01-nextjs-foundation` was created from the verified base and pushed to GitHub.
 
 Stage 1 remains subject to its documented gate before merge or Stage-2 authorization.
+
 ## Stage transition rule
 
 A future stage transition requires all of the following:

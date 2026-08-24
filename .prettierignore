@@ -1,0 +1,13 @@
+.next
+node_modules
+dist
+build
+package-lock.json
+docs/
+.github/
+AI_CONTEXT.md
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+README-PROJECT-CONTEXT.md
+README.md
