@@ -2,6 +2,7 @@
 node_modules/
 .pnp/
 .pnp.js
+.pnp.*
 
 # Next.js
 .next/
@@ -37,6 +38,7 @@ pnpm-debug.log*
 # OS/editor
 .DS_Store
 Thumbs.db
+*.pem
 .vscode/
 .idea/
 

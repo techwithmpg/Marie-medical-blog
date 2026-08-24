@@ -4,13 +4,15 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 0 — Repository & Project Governance — COMPLETE
-- **Stage authorization:** COMPLETE
-- **Application coding authorized:** NO
+- **Current stage:** Stage 1 — Next.js Foundation — COMPLETE / PASS — AWAITING OWNER MERGE APPROVAL
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-23
+- **Application coding authorized:** NO — Stage-1 implementation scope is complete; only approved closeout/merge actions remain.
 - **Gate status:** PASS
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
-- **Active working branch:** none on accepted `main`
-- **Next implementation stage:** Stage 1 — Next.js Foundation — NOT AUTHORIZED
+- **Active working branch:** `stage/01-nextjs-foundation`
+- **Stage-1 implementation commit:** `d99879076ac6283ef84e546f99dacc55fcc9374c`
+- **Merge status:** NOT YET MERGED / AWAITING OWNER APPROVAL
+- **Next implementation stage:** Stage 2 — Design System & Application Shells — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -39,6 +41,29 @@ Stage 0 is complete. The repository now has the governance required for controll
 
 No application code or application dependencies were initialized during Stage 0 or by the UI research/design process.
 
+## Stage 1 outcome
+
+Stage 1 is complete and has passed its documented gate:
+
+- [x] Next.js App Router + TypeScript foundation established;
+- [x] Node 24.x / npm / `package-lock.json` contract established;
+- [x] Tailwind CSS v4 foundation established;
+- [x] Structural shadcn/ui Base UI configuration established;
+- [x] Strict TypeScript, ESLint, and Prettier tooling established;
+- [x] `.env.example` placeholder contract established;
+- [x] Clean install verified (`npm ci` PASS, 0 vulnerabilities);
+- [x] Typecheck PASS (`tsc --noEmit`);
+- [x] Lint PASS (`eslint .`);
+- [x] Format check PASS (`prettier . --check`);
+- [x] Production build PASS (`next build`);
+- [x] Git diff check PASS (`git diff --check`);
+- [x] No database, auth, editor, or product feature scope was implemented;
+- [x] No credentials or secrets were introduced.
+
+Implementation commit `d99879076ac6283ef84e546f99dacc55fcc9374c` established the foundation.
+
+Stage 2 remains NOT AUTHORIZED.
+
 ## Accepted UI governance
 
 The owner accepted **Warm Medical Editorial with Scientific Restraint — The Evidence Folio** as the V1 visual direction.
@@ -54,29 +79,53 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 1 has NOT been authorized.**
+**Stage 1 — Next.js Foundation is AUTHORIZED and ACTIVE.**
 
-Until the project owner explicitly authorizes **Stage 1 — Next.js Foundation**:
+Owner authorization was given on **2026-08-23** after successful Stage-0 completion, live-context verification, and local-machine preflight.
 
-- do not create `stage/01-nextjs-foundation`;
-- do not initialize the Next.js application;
-- do not install project dependencies;
-- do not create application routes/components;
-- do not create Supabase schema or migrations;
-- do not implement UI, auth, publishing, comments, SEO features, or other product functionality.
+Stage 1 may implement only the frozen foundation defined in `docs/16-STAGE-1-TOOLCHAIN-BASELINE.md`, including:
 
-Permitted work is limited to repository synchronization, Project-context refresh, review, research, and governance maintenance that does not implement Stage 1.
+- Next.js App Router + TypeScript foundation;
+- Tailwind CSS foundation;
+- structural shadcn/ui Base UI foundation;
+- `src/` structure and aliases;
+- strict TypeScript, ESLint and Prettier tooling;
+- `.env.example` placeholders only;
+- required npm/package/build scripts.
 
-## Remaining pre-Stage-1 transition requirements
+Stage 1 must NOT implement:
 
-After the live-context synchronization governance is merged into `main`:
+- broad Evidence Folio UI/page design;
+- Supabase schema, migrations, RLS or CLI initialization;
+- authentication;
+- Tiptap/editor functionality;
+- publishing workflows;
+- comments/contact functionality;
+- product SEO implementation;
+- real client content;
+- Stage-2-or-later application features.
 
-1. synchronize local `main` and `origin/main`;
-2. verify live GitHub retrieval resolves to the final accepted `main` commit and includes D021 plus `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`;
-3. retain static ChatGPT Project Sources as bootstrap/fallback context; no manual re-upload is required solely because repository `main` advanced;
-4. add the one-time live-repository freshness instruction to the ChatGPT Project instructions if it is not already present;
-5. obtain explicit project-owner authorization for **Stage 1 — Next.js Foundation**;
-6. only then create the Stage-1 branch from synchronized `main`.
+Stage 2 remains NOT AUTHORIZED.
+
+## Stage-1 start record
+
+Stage 1 began from verified canonical base:
+
+`main @ 5e30fac03bdb2efc334399800a7842aa5af8e584`
+
+Start conditions verified:
+
+1. local `main` matched `origin/main`;
+2. working tree was clean;
+3. Node.js `v24.19.0` was active;
+4. npm `11.17.0` was available;
+5. Git `2.53.0.windows.2` was available;
+6. no `.env*` files were detected;
+7. project owner explicitly authorized Stage 1;
+8. `stage/01-nextjs-foundation` was created from the verified base and pushed to GitHub.
+
+Stage 1 remains subject to its documented gate before merge or Stage-2 authorization.
+
 ## Stage transition rule
 
 A future stage transition requires all of the following:
