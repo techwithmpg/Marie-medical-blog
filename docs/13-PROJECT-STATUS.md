@@ -4,11 +4,11 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 2 — Design System & Application Shells — COMPLETE
+- **Current stage:** Stage 2 — Design System & Application Shells — COMPLETE / MERGED
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-24
-- **Application coding authorized:** NO FURTHER STAGE-2 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Application coding authorized:** NO — STAGE 2 IS COMPLETE; STAGE 3 IS NOT AUTHORIZED
 - **Gate status:** PASS
-- **Active working branch:** `stage/02-design-system`
+- **Active working branch:** `main` — no implementation stage currently active
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
 - **Stage-1 implementation commit:** `d99879076ac6283ef84e546f99dacc55fcc9374c`
@@ -18,7 +18,13 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-2 authorization commit:** `18dc2c65aed7ae76b5905b5a02add28babfbec0a`
 - **Stage-2 implementation commit:** `69844dab57380959abdb4ff43779035be6498446`
 - **Stage-2 correction commit:** `c5e89f0617c9b2b56f6f75418ab62eed750c7a3d`
-- **Stage-2 merge status:** NOT YET MERGED — AWAITING PROJECT-OWNER APPROVAL
+- **Stage-2 closeout commit:** `4593adfba196582e4ce89e348530d80be20c434c`
+- **Stage-2 governance-reference correction:** `e33875485ab5f37fe813081479e40fabf39bc4bb`
+- **Stage-2 merge commit:** `21c74c6c4025e63f8ae396678f1dfc95b892f900`
+- **Stage-2 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-2 merge parents:**
+  - first parent (prior main): `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
+  - second parent (approved Stage-2 head): `e33875485ab5f37fe813081479e40fabf39bc4bb`
 - **Next implementation stage:** Stage 3 — Supabase Database & Security Foundation — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
@@ -87,7 +93,7 @@ Final post-merge gate record:
 
 ## Stage 2 outcome
 
-Stage 2 is complete, code-reviewed, and verified:
+Stage 2 is complete, verified, and merged into `main`:
 
 - [x] Evidence Folio CSS tokens implemented in `src/app/globals.css` with `@theme inline` mappings;
 - [x] Newsreader and Source Sans 3 typography integrated via `next/font/google` in `src/app/layout.tsx`;
@@ -97,24 +103,24 @@ Stage 2 is complete, code-reviewed, and verified:
 - [x] Minimal reusable Base UI primitives implemented: `Button`, `Separator`, and `Sheet`;
 - [x] Only justified direct dependencies added: `@base-ui/react`, `class-variance-authority`, `lucide-react`;
 - [x] Code review corrections applied: Button/Link semantics fixed, misleading actions removed, unverified claims removed, fake references replaced with neutral placeholders, ReferenceLedger IDs wired via `React.useId()`, mobile drawer semantics streamlined, reduced motion added, admin touch target increased;
-- [x] Clean install verified (`npm ci` PASS, 0 vulnerabilities);
-- [x] Typecheck PASS (`tsc --noEmit`);
-- [x] Lint PASS (`eslint .`);
-- [x] Format check PASS (`prettier . --check`);
-- [x] Production build PASS (`next build`);
-- [x] Git diff check PASS (`git diff --check`);
+- [x] Project owner explicitly approved the Stage-2 merge on 2026-08-25;
+- [x] Merge used `--no-ff` at merge commit `21c74c6c4025e63f8ae396678f1dfc95b892f900`;
+- [x] Merge commit verified with expected two parents:
+  - `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717` (prior `main`)
+  - `e33875485ab5f37fe813081479e40fabf39bc4bb` (approved Stage-2 branch head)
+- [x] Complete post-merge quality gate re-run on `main` and passed 100%;
 - [x] No Supabase, database schema, migrations, or RLS initialized;
 - [x] No authentication, sessions, or login workflows initialized;
 - [x] No Tiptap editor, draft persistence, or publishing workflows initialized;
 - [x] No secrets or credentials added;
 - [x] Stage 3 remains NOT AUTHORIZED.
 
-Final Stage-2 gate record:
+Final Stage-2 post-merge gate record (on `21c74c6c4025e63f8ae396678f1dfc95b892f900`):
 - `npm ci`: PASS (375 packages added, 376 audited, 0 vulnerabilities)
 - `npm run typecheck`: PASS
 - `npm run lint`: PASS
 - `npm run format:check`: PASS
-- `npm run build`: PASS
+- `npm run build`: PASS (`/` and `/_not-found` generated statically via Next.js 16.3.2 / Turbopack)
 - `git diff --check`: PASS
 
 ## Accepted UI governance
@@ -132,9 +138,9 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 2 — Design System & Application Shells is COMPLETE and AWAITING OWNER MERGE APPROVAL.**
+**Stage 2 — Design System & Application Shells is COMPLETE, PASS, and MERGED into main.**
 
-Owner authorization was given on **2026-08-24** in ChatGPT after Stage 1 was fully merged and verified under D021.
+Owner authorization was given on **2026-08-24** in ChatGPT after Stage 1 was fully merged and verified under D021, and owner merge approval was given on **2026-08-25**.
 
 Stage 2 implementation delivered:
 
@@ -170,7 +176,7 @@ Stage 2 did NOT implement:
 - real client content;
 - any Stage-3-or-later functionality.
 
-Stage 3 remains NOT AUTHORIZED.
+No further Stage-2 application implementation is authorized. No new implementation stage is active. Stage 3 remains NOT AUTHORIZED.
 
 ## Stage-1 start record
 
@@ -191,7 +197,7 @@ Start conditions verified:
 
 Stage 1 implementation and merge closeout are complete.
 
-## Stage-2 start record
+## Stage-2 start & merge record
 
 Stage 2 began from verified canonical base:
 
@@ -208,7 +214,7 @@ Start conditions verified:
 7. project owner explicitly authorized Stage 2 in ChatGPT on 2026-08-24;
 8. `stage/02-design-system` was created from the verified base.
 
-Stage 2 implementation, review corrections, and gate verification are complete.
+Stage 2 implementation, review corrections, closeout, and merge into `main` at `21c74c6c4025e63f8ae396678f1dfc95b892f900` are complete.
 
 ## Stage transition rule
 

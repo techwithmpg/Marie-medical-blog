@@ -4,7 +4,7 @@
 Stage 2 — Design System & Application Shells
 
 ## Objective completed
-The Stage 2 Evidence Folio design system and application shells are complete, fully corrected following technical code review, and have passed the formal Stage-2 quality gate.
+The Stage 2 Evidence Folio design system and application shells are complete, fully corrected following technical code review, approved for merge by the project owner on 2026-08-25, merged into `main` at merge commit `21c74c6c4025e63f8ae396678f1dfc95b892f900` (parents `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717` and `e33875485ab5f37fe813081479e40fabf39bc4bb`), and have passed the complete post-merge quality gate on `main`.
 
 Stage 2 established the reusable visual language, typography foundation, signature editorial primitives, and responsive public/admin application shells for the Marie Medere Medical Writing publication without implementing out-of-scope backend, authentication, or product content.
 
@@ -12,7 +12,11 @@ Key commit record:
 - **Authorization commit:** `18dc2c65aed7ae76b5905b5a02add28babfbec0a` (`docs: authorize stage 2 design system`)
 - **Implementation commit:** `69844dab57380959abdb4ff43779035be6498446` (`feat: establish evidence folio design system`)
 - **Correction commit:** `c5e89f0617c9b2b56f6f75418ab62eed750c7a3d` (`fix: refine stage 2 shell semantics`)
-- **Canonical Stage-1 main base:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
+- **Stage-2 closeout commit:** `4593adfba196582e4ce89e348530d80be20c434c` (`docs: close stage 2 design system gate`)
+- **Governance-reference correction commit:** `e33875485ab5f37fe813081479e40fabf39bc4bb` (`docs: correct stage 2 governance reference`)
+- **Stage-2 merge commit:** `21c74c6c4025e63f8ae396678f1dfc95b892f900` (`merge: complete stage 2 design system`)
+- **Merge parents:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717` (prior `main`) + `e33875485ab5f37fe813081479e40fabf39bc4bb` (approved Stage-2 branch head)
+- **Merge approval date:** 2026-08-25
 
 ## Delivered scope
 
@@ -63,12 +67,12 @@ Formal technical review identified and corrected the following items prior to cl
 
 ## Verification performed
 
-### Quality Gate Results
+### Quality Gate Results (Post-Merge on main)
 - `npm ci`: **PASS** (375 packages added, 376 audited, 0 vulnerabilities).
 - `npm run typecheck`: **PASS** (`tsc --noEmit` exited 0).
 - `npm run lint`: **PASS** (`eslint .` exited 0).
 - `npm run format:check`: **PASS** (`prettier . --check` verified all 25 files).
-- `npm run build`: **PASS** (Turbopack static production build succeeded).
+- `npm run build`: **PASS** (Turbopack static production build succeeded: `/` and `/_not-found` generated statically).
 - `git diff --check`: **PASS** (zero whitespace or conflict defects).
 
 ### Production Build Route Summary
@@ -111,12 +115,11 @@ Stage 2 is strictly a design-system and application-shell stage and intentionall
 The root page (`/`) serves as a neutral Stage-2 design-system validation fixture.
 
 ## Next stage readiness
-- **Stage 2:** COMPLETE / PASS / AWAITING OWNER MERGE APPROVAL.
+- **Stage 2:** COMPLETE / PASS / MERGED.
 - **Stage 3:** NOT AUTHORIZED.
 
 Before Stage 3 may begin:
-1. Stage-2 closeout must be approved by the project owner;
-2. `stage/02-design-system` must be merged into `main` under `docs/14-BRANCH-STRATEGY.md`;
-3. `main` must be synchronized with `origin/main`;
-4. ChatGPT live-context freshness must be verified against current accepted `main` under D021;
-5. the project owner must explicitly authorize Stage 3.
+1. final local `main` including this governance finalization must be pushed and synchronized with `origin/main`;
+2. accepted GitHub `main` must be re-resolved under D021;
+3. project owner must explicitly authorize Stage 3;
+4. only after that may `stage/03-supabase-security` be created.
