@@ -326,6 +326,22 @@ project owner — explicit hosted-deployment authorization on 2026-08-26.
 **Status:**
 ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
 
+### D031 Execution Addendum — First Hosted Apply Attempt & Blocker Record
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The first D031-authorized Stage-8 `apply_migration` invocation targeting project `eoexnnhqzrkurbqgbtnx` was attempted with migration `supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`.
+2. The invocation was rejected because the active MCP runtime session remained in read-only mode (`"Cannot apply migration in read-only mode."`).
+3. Immediate post-attempt inspection confirmed **ZERO hosted mutations** occurred:
+   - Hosted applied migrations remained unchanged: `20260825054917`, `20260825081012`, `20260825200129`.
+   - Stage-8 lifecycle RPC count remained 0/6 (`publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, `delete_article` all absent).
+   - `public.save_article_draft` remained intact and unaffected.
+   - Storage buckets (`draft-assets` private, `public-assets` public) and Auth configuration remained unchanged.
+4. The first authorized write attempt is **CONSUMED**.
+5. **NO replacement migration attempt is currently authorized.**
+6. The next gate is write-channel runtime recovery, dual-namespace configuration isolation (`supabase` read-only vs `supabase_stage8_write` write-capable), runtime reload, and read-only inspection proof only.
+
 ---
 
 ## New decision template
