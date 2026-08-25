@@ -140,6 +140,22 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Impact:** Repository-to-ChatGPT freshness is checked at task time. Static Project Sources remain useful when GitHub access is unavailable or for non-repository artifacts, but they no longer need to be refreshed solely because `main` advanced. If live access is unavailable, use the newest verified snapshot, state its source SHA/limitation, and do not assume freshness. This decision refines D012 only for synchronization mechanics and does not authorize any implementation stage.
 **Approved by:** project owner in the 2026-08-23 synchronization-governance review.
 **Status:** ACTIVE / FROZEN.
+## ACTIVE — D022 — Stage-3 database and single-admin security baseline
+**Date:** 2026-08-25
+**Decision:** Implement the Stage-3 Supabase PostgreSQL schema, RLS policies, PostgreSQL privileges, Storage bucket, and automated pgTAP tests under the design frozen in `docs/23-STAGE-3-DATABASE-SECURITY-DESIGN.md`:
+1. Version-controlled SQL migrations in `supabase/migrations/` are the authoritative executable schema source of truth;
+2. Single-admin authorization via `private.admin_users` and `private.is_admin()` with search_path safety instead of complex multi-user RBAC or client-editable JWT metadata;
+3. No reader or multi-author permission system in V1;
+4. Defense in depth combining explicit PostgreSQL table/column `GRANT`/`REVOKE` privileges with fine-grained Row Level Security;
+5. Commenter email privacy enforced by revoking SELECT privileges on `commenter_email` from `anon`;
+6. Narrow public comment and contact message submission via restricted INSERT column grants and RLS checks forcing safe pending/new statuses;
+7. Optional media metadata table deferred in favor of Storage metadata + direct asset paths;
+8. Single `public-assets` Storage bucket with public read access and admin-only mutation policies.
+**Reason:** Provides the minimum secure database and authorization architecture required for a single-writer V1 publication while strictly enforcing public/private boundaries, preventing data leakage, and creating a reliable foundation for Stage 4 Auth.
+**Alternatives considered:** Generic RBAC roles table; storing role in `raw_user_meta_data`; using a security-invoker view for comments; exposing entire comments table with frontend filtering; creating separate media metadata and portfolio content tables.
+**Impact:** Authorizes the creation of the Stage-3 initial migration, synthetic development seed fixtures, and automated pgTAP security tests. Prohibits any schema changes via Supabase Dashboard Table/SQL Editor or remote seed data deployment.
+**Approved by:** project owner through the 2026-08-25 Stage-3 execution instruction.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
 ---
 
 ## New decision template
