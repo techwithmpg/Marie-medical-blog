@@ -4,12 +4,13 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 4 — Authentication & Admin Access — ACTIVE
+- **Current stage:** Stage 4 — Authentication & Admin Access — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** YES — STAGE 4 SCOPE ONLY
-- **Gate status:** IN PROGRESS
+- **Application coding authorized:** COMPLETE — STAGE 4 SCOPE ONLY
+- **Gate status:** PASS / READY FOR OWNER MERGE REVIEW
+- **Stage-4 merge status:** NOT YET AUTHORIZED
 - **Active working branch:** `stage/04-auth-admin`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
@@ -361,24 +362,51 @@ Start conditions verified:
 10. no application code or package installation occurred in this commit;
 11. Stage 5 remains NOT AUTHORIZED.
 
-## Stage-4 progress & local verification record
+## Stage-4 final gate
 
-Stage 4 local implementation and verification record:
+STAGE 4 — AUTHENTICATION & ADMIN ACCESS
 
-- **Stage status:** Stage 4 is ACTIVE / IMPLEMENTATION IN PROGRESS
+- **IMPLEMENTATION:** COMPLETE
+- **D026:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 single-admin authentication & route protection architecture)
+- **D027:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 controlled MCP migration deployment and version reconciliation)
+- **LOCAL DATABASE / SECURITY GATE:** PASS
+- **HOSTED DATABASE GATE:** PASS
+- **HOSTED AUTH CONFIGURATION:** PASS / OWNER VERIFIED — 2026-08-25
+  - Allow new users to sign up: OFF
+  - Anonymous sign-ins: OFF
+  - Email/password authentication: ENABLED
+  - Phone authentication/provider for V1: DISABLED
+  - OAuth/social providers for V1: DISABLED
+  - Auth Hooks added: NO
+- **PRODUCTION ADMIN PROVISIONING:** PASS
+- **AUTH USERS:** 1
+- **ADMIN ALLOWLIST ROWS:** 1
+- **VALID AUTH/ADMIN ASSOCIATIONS:** 1 (0 orphan allowlist rows)
+- **REAL ADMIN LOGIN:** PASS / OWNER VERIFIED
+- **PROTECTED /admin ACCESS:** PASS
+- **SESSION REFRESH / PERSISTENCE:** PASS
+- **LOGOUT:** PASS
+- **POST-LOGOUT /admin DENIAL:** PASS
+- **PGTAP:** 8 files / 95 tests / PASS (100%)
+- **DATABASE LINT:** PASS — 0 errors / 0 warnings
+- **TYPECHECK:** PASS (0 errors)
+- **LINT:** PASS (0 errors, 0 warnings)
+- **FORMAT:** PASS (All files match Prettier style)
+- **BUILD:** PASS (Production build successful)
+- **STAGE-4 GATE:** PASS / READY FOR OWNER MERGE REVIEW
+- **STAGE-4 MERGE:** NOT YET AUTHORIZED
+- **ACTIVE WORKING BRANCH:** `stage/04-auth-admin`
+- **NEXT STAGE:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
+
+### Stage 4 detailed technical and provenance record
+
 - **D026 activation commit:** `f72aad0b995c08a7978b689a67c7d3b6ebaeb9d4` (`docs: activate stage 4 auth architecture`)
 - **Stage-4 implementation commit:** `1fb556382be70f0ec3f073a46279bd777fd68e55` (`feat: implement stage 4 authentication foundation`)
-- **Active decisions:**
-  - D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
-  - D027 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 controlled MCP migration deployment and version reconciliation)
-- **Controlled deployment & provisioning authorization:**
-  - Controlled hosted Stage-4 migration deployment authorized under D027 (COMPLETED)
-  - D027 replacement attempt: OWNER AUTHORIZED — 2026-08-25 (SUCCESS)
-  - Hosted D026 Supabase Auth configuration authorized (COMPLETED / OWNER VERIFIED)
-  - FINAL STAGE-4 PRODUCTION-ADMIN PROVISIONING: OWNER AUTHORIZED — 2026-08-25
-    - Authorized operations: exactly one Marie Supabase Auth identity, exactly one matching private.admin_users row, real admin login/access/logout verification, Stage-4 gate closeout if all tests pass
-    - NO OTHER AUTH USERS AUTHORIZED
-  - Stage 5 NOT AUTHORIZED
+- **D027 authorization commit:** `c521a5b6ae867a16e347f6e3ecd4464373a34893` (`docs: authorize stage 4 hosted deployment`)
+- **D027 replacement authorization commit:** `6049f146581ed6cc2d5c1818fcc7120c0fd8260e` (`docs: authorize stage 4 migration replacement attempt`)
+- **Stage-4 hosted deployment & reconciliation commit:** `d8c359421bec9b98a321a32a9f3473952d86f4b7` (`feat: deploy stage 4 auth migration and reconcile version`)
+- **Hosted Auth hardening confirmation commit:** `67d86a4fbe138a2ffe2b0dd85017e150dc35233b` (`docs: record hosted auth hardening`)
+- **Final provisioning authorization commit:** `f7f0c27e39582a3fab24131eb47ad9aff1ca4a66` (`docs: authorize final stage 4 admin provisioning`)
 - **Local Supabase Auth hardening (`supabase/config.toml`):**
   - `auth.enable_signup = false`
   - `auth.email.enable_signup = false`
@@ -395,36 +423,15 @@ Stage 4 local implementation and verification record:
   - Function: `public.is_admin()` defined as `SECURITY INVOKER` with `set search_path = ''`, 0 arguments, delegating to `private.is_admin()`
   - Permissions: revoked from `public, anon`; granted to `authenticated`
   - Zero exposure of `private.admin_users`
-- **MCP deployment record:**
-  - D027 replacement authorization commit: `6049f146581ed6cc2d5c1818fcc7120c0fd8260e`
-  - First invocation: rejected by stale read-only MCP session (`Cannot apply migration in read-only mode.`); zero hosted mutations
-  - Replacement invocation: exactly 1 call via `supabase_stage4_write/apply_migration` (SUCCESS)
-  - Hosted Stage-4 migration version: `20260825081012` (`add_public_is_admin_rpc`)
-  - Migration history parity: YES (`20260825054917`, `20260825081012`)
-  - Temporary write server `supabase_stage4_write` removed immediately from `mcp_config.json`
-  - Safe read-only server `supabase` restored/retained (`read_only=true`)
-- **Hosted database verification (via read-only `supabase` MCP):**
+- **Hosted database state (via read-only `supabase` MCP):**
   - Hosted migrations: `[{"version":"20260825054917","name":"initial_database_security_foundation"},{"version":"20260825081012","name":"add_public_is_admin_rpc"}]`
   - `public.is_admin()` verified: `SECURITY INVOKER`, 0 arguments, boolean return, `search_path locked to empty`, stable
   - `public.is_admin()` permissions: `anon` EXECUTE denied, `authenticated` EXECUTE granted
   - `private.is_admin()` verified: `SECURITY DEFINER`, stable, unchanged
-  - `private.admin_users`: 0 rows (empty)
+  - `private.admin_users`: 1 row (matches the single authorized Marie Auth user)
   - Application tables: 7 public tables, all RLS enabled, 0 rows
   - Hosted security advisors: 0 security errors/warnings (1 expected INFO notice on `private.admin_users`)
-  - Seed / synthetic production data: NONE exists hosted (all tables have 0 rows)
-- **Database tests & security regression:**
-  - New test file: `supabase/tests/database/08_public_is_admin_rpc.test.sql`
-  - Local `supabase db reset`: PASS (2 migrations applied cleanly, seed loaded)
-  - pgTAP test suite: Files = 8, Tests = 95, Result = PASS (100%)
-    - `01_schema_structure.test.sql`: PASS
-    - `02_anonymous_access.test.sql`: PASS
-    - `03_comments_security.test.sql`: PASS
-    - `04_contact_messages_security.test.sql`: PASS
-    - `05_authenticated_non_admin.test.sql`: PASS
-    - `06_admin_access.test.sql`: PASS
-    - `07_storage_security.test.sql`: PASS
-    - `08_public_is_admin_rpc.test.sql`: PASS (10 new assertion tests)
-  - Local database lint (`supabase db lint --level warning --local`): PASS (0 errors, 0 warnings)
+  - Seed / synthetic production data: NONE exists hosted (all application tables have 0 rows)
 - **Application auth & client helpers:**
   - `src/lib/supabase/client.ts`: browser client using `createBrowserClient` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
   - `src/lib/supabase/server.ts`: request-scoped server client using `createServerClient` and `cookies()`
@@ -436,29 +443,10 @@ Stage 4 local implementation and verification record:
   - `src/app/admin/layout.tsx`: protected layout invoking `requireAdmin()` before rendering `AdminShell`
   - `src/app/admin/page.tsx`: authenticated editorial workspace overview (restrained Data Access / Protected by RLS status)
   - `src/components/admin/admin-shell.tsx` & `admin-mobile-nav.tsx`: logout action wired to Server Action form
-- **Project quality gates:**
-  - `npm run typecheck`: PASS (0 errors)
-  - `npm run lint`: PASS (0 errors, 0 warnings)
-  - `npm run format:check`: PASS (All files formatted)
-  - `npm run build`: PASS (Production build successful, routes /admin and /admin/login generated)
-  - `git diff --check`: PASS
 - **Route & auth HTTP verification:**
   - Anonymous `GET /admin`: 307 redirect to `/admin/login` (PASS)
   - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
-- **Hosted execution boundary:**
-  - HOSTED STAGE-4 MIGRATION: DEPLOYED (`20260825081012_add_public_is_admin_rpc`)
-  - HOSTED AUTH CONFIGURATION: COMPLETED / OWNER VERIFIED — 2026-08-25
-    - Allow new users to sign up: OFF
-    - Anonymous sign-ins: OFF
-    - Email/password authentication: ENABLED
-    - Phone authentication/provider for V1: DISABLED
-    - OAuth/social providers for V1: DISABLED
-    - Auth Hooks added: NO
-  - MARIE PRODUCTION USER: NOT YET PROVISIONED — NOT AUTHORIZED
-  - HOSTED `private.admin_users`: 0 ROWS
-  - STAGE-4 GATE: NOT YET CLOSED (Remaining gate: single production-admin provisioning and real admin login/logout/access verification)
-  - STAGE 5: NOT AUTHORIZED
 
 ## Stage transition rule
 
