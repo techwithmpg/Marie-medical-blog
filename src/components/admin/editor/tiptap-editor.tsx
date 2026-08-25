@@ -31,42 +31,42 @@ export function TiptapEditor({
           openOnClick: false,
           autolink: true,
           HTMLAttributes: {
-            class: "text-[#704037] underline underline-offset-2",
+            class:
+              "text-oxide-link underline underline-offset-2 hover:text-oxide",
             rel: "noopener noreferrer",
           },
         },
         codeBlock: {
           HTMLAttributes: {
             class:
-              "rounded border border-[#D2C9BC] bg-[#E8E2D7] p-4 font-mono text-sm text-[#242321] my-4 overflow-x-auto",
+              "rounded border border-subtle-divider bg-subtle-field p-4 font-mono text-sm text-ink my-4 overflow-x-auto",
           },
         },
         blockquote: {
           HTMLAttributes: {
-            class:
-              "border-l-2 border-[#7B3F35] pl-4 italic text-[#5E5953] my-4",
+            class: "border-l-2 border-oxide pl-4 italic text-ink-muted my-4",
           },
         },
         bulletList: {
           HTMLAttributes: {
-            class: "list-disc pl-6 space-y-1.5 my-3 text-[#242321]",
+            class: "list-disc pl-6 space-y-1.5 my-3 text-ink",
           },
         },
         orderedList: {
           HTMLAttributes: {
-            class: "list-decimal pl-6 space-y-1.5 my-3 text-[#242321]",
+            class: "list-decimal pl-6 space-y-1.5 my-3 text-ink",
           },
         },
         horizontalRule: {
           HTMLAttributes: {
-            class: "my-6 border-t border-[#D2C9BC]",
+            class: "my-6 border-t border-subtle-divider",
           },
         },
       }),
       Placeholder.configure({
         placeholder: "Write Marie's medical article content here...",
         emptyEditorClass:
-          "before:content-[attr(data-placeholder)] before:text-[#5E5953]/50 before:float-left before:pointer-events-none before:h-0",
+          "before:content-[attr(data-placeholder)] before:text-ink-muted/50 before:float-left before:pointer-events-none before:h-0",
       }),
     ],
     content: initialContent,
@@ -78,7 +78,7 @@ export function TiptapEditor({
         role: "textbox",
         "aria-label": "Article content",
         class:
-          "prose min-h-[360px] max-w-none px-6 py-5 text-[#242321] font-sans text-base leading-relaxed focus:outline-none focus-visible:outline-none",
+          "min-h-[360px] max-w-none px-6 py-5 text-ink font-sans text-base leading-relaxed focus:outline-none focus-visible:outline-none [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-ink [&_h2]:mt-6 [&_h2]:mb-3 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-ink [&_h3]:mt-5 [&_h3]:mb-2 [&_p]:font-sans [&_p]:text-base [&_p]:leading-relaxed [&_p]:text-ink [&_p]:my-3 [&_code]:font-mono [&_code]:text-sm [&_code]:bg-subtle-field [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-ink",
       },
     },
   });
@@ -93,8 +93,8 @@ export function TiptapEditor({
   return (
     <div
       className={cn(
-        "rounded-md border border-[#D2C9BC] bg-[#FFFDF9] shadow-xs transition-colors focus-within:border-[#265D7A] focus-within:ring-1 focus-within:ring-[#265D7A]",
-        disabled && "bg-[#E8E2D7]/30 opacity-60",
+        "rounded-md border border-subtle-divider bg-paper shadow-xs transition-colors focus-within:border-focus-slate focus-within:ring-1 focus-within:ring-focus-slate",
+        disabled && "bg-subtle-field/30 opacity-60",
       )}
     >
       <TiptapToolbar editor={editor} disabled={disabled} />

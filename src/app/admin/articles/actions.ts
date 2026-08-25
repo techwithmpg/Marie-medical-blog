@@ -4,6 +4,9 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export interface SaveDraftReferenceInput {
   title: string;
   source_name: string;
@@ -13,7 +16,6 @@ export interface SaveDraftReferenceInput {
 
 export interface SaveDraftPayload {
   articleId?: string | null;
-  slug?: string | null;
   title: string;
   excerpt?: string | null;
   content_json: Record<string, unknown>;
@@ -40,10 +42,10 @@ export interface SaveDraftResult {
 export async function saveDraftAction(
   payload: SaveDraftPayload,
 ): Promise<SaveDraftResult> {
-  try {
-    // 1. Authorize caller against admin allowlist
-    await requireAdmin();
+  // 1. Authorize caller against admin allowlist OUTSIDE try/catch so redirect() is not intercepted
+  await requireAdmin();
 
+  try {
     // 2. Validate application input
     const trimmedTitle = payload.title?.trim();
     if (!trimmedTitle || trimmedTitle.length === 0) {
@@ -62,12 +64,17 @@ export async function saveDraftAction(
       };
     }
 
-    // Determine article identity
+    // Determine and validate article identity
     const isNewArticle = !payload.articleId;
+    if (payload.articleId && !UUID_REGEX.test(payload.articleId)) {
+      return { success: false, error: "Invalid article ID format." };
+    }
     const articleId = isNewArticle ? crypto.randomUUID() : payload.articleId!;
-    const provisionalSlug = isNewArticle
-      ? `draft-${articleId}`
-      : payload.slug || `draft-${articleId}`;
+    const provisionalSlug = `draft-${articleId}`;
+
+    if (payload.category_id && !UUID_REGEX.test(payload.category_id)) {
+      return { success: false, error: "Invalid category ID format." };
+    }
 
     // Featured image validation
     const trimmedImagePath = payload.featured_image_path?.trim() || null;

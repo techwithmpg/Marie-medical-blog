@@ -21,8 +21,16 @@ function getSafeUrl(href: unknown): {
   const trimmed = href.trim();
   if (!trimmed) return { url: null, isExternal: false };
 
-  // Allow relative paths and anchor links
-  if (trimmed.startsWith("/") || trimmed.startsWith("#")) {
+  // Allow single root-relative paths and anchor links, rejecting protocol-relative (//) or (/\)
+  if (
+    trimmed.startsWith("/") &&
+    !trimmed.startsWith("//") &&
+    !trimmed.startsWith("/\\")
+  ) {
+    return { url: trimmed, isExternal: false };
+  }
+
+  if (trimmed.startsWith("#")) {
     return { url: trimmed, isExternal: false };
   }
 
@@ -71,7 +79,7 @@ function renderTextWithMarks(
         break;
       case "strike":
         element = (
-          <s key={markKey} className="text-muted-ink line-through">
+          <s key={markKey} className="text-ink-muted line-through">
             {element}
           </s>
         );
@@ -95,7 +103,7 @@ function renderTextWithMarks(
               href={url}
               target={isExternal ? "_blank" : undefined}
               rel={isExternal ? "noopener noreferrer" : undefined}
-              className="text-inline-link hover:text-brand-oxide underline underline-offset-2 transition-colors"
+              className="text-oxide-link underline underline-offset-2 transition-colors hover:text-oxide"
             >
               {element}
             </a>
@@ -195,7 +203,7 @@ function renderNode(
       return (
         <blockquote
           key={key}
-          className="border-brand-oxide text-muted-ink my-6 border-l-2 pl-5 text-[18px] leading-[1.65] italic md:text-[19px]"
+          className="my-6 border-l-2 border-oxide pl-5 text-[18px] leading-[1.65] text-ink-muted italic md:text-[19px]"
         >
           {children}
         </blockquote>
@@ -243,7 +251,7 @@ export function ArticleTypography({
     (contentJson as { type: string }).type !== "doc"
   ) {
     return (
-      <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-6 text-center text-sm">
+      <div className="rounded-lg border border-subtle-divider bg-paper p-6 text-center text-sm text-ink-muted">
         Article content is temporarily unavailable.
       </div>
     );

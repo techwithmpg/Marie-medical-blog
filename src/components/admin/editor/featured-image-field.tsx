@@ -83,6 +83,7 @@ export function FeaturedImageField({
   }, [imagePath]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (uploading) return;
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -134,7 +135,6 @@ export function FeaturedImageField({
       }
 
       onImagePathChange(storagePath);
-      // If no alt text is set yet, propose a reasonable starter or require prompt
       if (!imageAlt) {
         onImageAltChange("");
       }
@@ -148,23 +148,30 @@ export function FeaturedImageField({
   };
 
   const handleRemoveImage = () => {
+    if (uploading || disabled) return;
     onImagePathChange(null);
     onImageAltChange("");
     setPreviewUrl(null);
     setUploadError(null);
   };
 
+  const handleTriggerUpload = () => {
+    if (disabled || uploading || isNewUnsavedArticle) return;
+    fileInputRef.current?.click();
+  };
+
   return (
-    <div className="space-y-3 rounded-lg border border-[#D2C9BC] bg-[#FFFDF9] p-5 shadow-xs">
+    <div className="space-y-3 rounded-lg border border-subtle-divider bg-paper p-5 shadow-xs">
       <div className="flex items-center justify-between">
-        <label className="block text-xs font-semibold tracking-wider text-[#242321] uppercase">
+        <label className="block text-xs font-semibold tracking-wider text-ink uppercase">
           Featured Image (Private Draft)
         </label>
         {imagePath && !disabled && (
           <button
             type="button"
             onClick={handleRemoveImage}
-            className="flex items-center gap-1 text-xs font-medium text-[#9A3636] transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+            disabled={uploading}
+            className="flex min-h-[36px] items-center gap-1 text-xs font-medium text-destructive transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-50"
           >
             <X className="size-3.5" />
             Remove
@@ -173,19 +180,19 @@ export function FeaturedImageField({
       </div>
 
       {isNewUnsavedArticle ? (
-        <div className="rounded-md border border-dashed border-[#D2C9BC] bg-[#F6F1E8]/50 p-5 text-center">
-          <ImageIcon className="mx-auto size-6 text-[#5E5953]/60" />
-          <p className="mt-2 text-xs font-medium text-[#5E5953]">
+        <div className="rounded-md border border-dashed border-subtle-divider bg-parchment/50 p-5 text-center">
+          <ImageIcon className="mx-auto size-6 text-ink-muted/60" />
+          <p className="mt-2 text-xs font-medium text-ink-muted">
             Save the draft once before adding a featured image.
           </p>
         </div>
       ) : imagePath ? (
         <div className="space-y-3">
           {/* Image Preview Canvas */}
-          <div className="relative aspect-video w-full overflow-hidden rounded-md border border-[#D2C9BC] bg-[#E8E2D7]">
+          <div className="relative aspect-video w-full overflow-hidden rounded-md border border-subtle-divider bg-subtle-field">
             {loadingPreview ? (
               <div className="flex h-full items-center justify-center">
-                <Loader2 className="size-6 animate-spin text-[#7B3F35]" />
+                <Loader2 className="size-6 animate-spin text-oxide" />
               </div>
             ) : previewUrl ? (
               <Image
@@ -198,8 +205,8 @@ export function FeaturedImageField({
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center p-4 text-center">
-                <ImageIcon className="size-6 text-[#5E5953]" />
-                <span className="mt-1 text-xs text-[#5E5953]">
+                <ImageIcon className="size-6 text-ink-muted" />
+                <span className="mt-1 text-xs text-ink-muted">
                   Preview unavailable (stored: {imagePath.split("/").pop()})
                 </span>
               </div>
@@ -210,22 +217,22 @@ export function FeaturedImageField({
           <div>
             <label
               htmlFor="featured-image-alt"
-              className="block text-xs font-semibold text-[#242321]"
+              className="block text-xs font-semibold text-ink"
             >
-              Alt Text (Required) <span className="text-[#7B3F35]">*</span>
+              Alt Text (Required) <span className="text-oxide">*</span>
             </label>
             <input
               id="featured-image-alt"
               type="text"
               value={imageAlt || ""}
               onChange={(e) => onImageAltChange(e.target.value)}
-              disabled={disabled}
+              disabled={disabled || uploading}
               placeholder="Descriptive explanation of the medical illustration or diagram"
               required
-              className="mt-1 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-2 text-sm text-[#242321] placeholder-[#5E5953]/50 focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none disabled:opacity-50"
+              className="mt-1 w-full rounded-md border border-control-border bg-paper px-3 py-2 text-sm text-ink placeholder-ink-muted/50 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-50"
             />
             {(!imageAlt || imageAlt.trim().length === 0) && (
-              <p className="mt-1 text-xs text-[#9A3636]">
+              <p className="mt-1 text-xs text-destructive">
                 Alt text is required when a featured image is attached.
               </p>
             )}
@@ -239,16 +246,28 @@ export function FeaturedImageField({
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/avif"
                 onChange={handleFileChange}
+                disabled={uploading}
                 className="sr-only"
                 id="replace-image-input"
               />
-              <label
-                htmlFor="replace-image-input"
-                className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-1.5 text-xs font-semibold text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+              <button
+                type="button"
+                onClick={handleTriggerUpload}
+                disabled={uploading}
+                className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-control-border bg-paper px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Upload className="size-3.5 text-[#7B3F35]" />
-                {uploading ? "Uploading..." : "Replace Image"}
-              </label>
+                {uploading ? (
+                  <>
+                    <Loader2 className="size-3.5 animate-spin text-oxide" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="size-3.5 text-oxide" />
+                    Replace Image
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>
@@ -263,37 +282,39 @@ export function FeaturedImageField({
             className="sr-only"
             id="featured-image-input"
           />
-          <label
-            htmlFor="featured-image-input"
+          <button
+            type="button"
+            onClick={handleTriggerUpload}
+            disabled={disabled || uploading}
             className={cn(
-              "flex min-h-[44px] cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-[#D2C9BC] bg-[#F6F1E8]/30 p-6 text-center transition-colors focus-within:ring-2 focus-within:ring-[#265D7A] hover:bg-[#E8E2D7]/40",
+              "flex min-h-[44px] w-full cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-subtle-divider bg-parchment/30 p-6 text-center transition-colors hover:bg-subtle-field/40 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
               (disabled || uploading) && "cursor-not-allowed opacity-50",
             )}
           >
             {uploading ? (
               <div className="flex items-center gap-2">
-                <Loader2 className="size-5 animate-spin text-[#7B3F35]" />
-                <span className="text-xs font-medium text-[#242321]">
+                <Loader2 className="size-5 animate-spin text-oxide" />
+                <span className="text-xs font-medium text-ink">
                   Uploading to private draft assets...
                 </span>
               </div>
             ) : (
               <>
-                <Upload className="size-5 text-[#7B3F35]" />
-                <span className="mt-1.5 text-xs font-semibold text-[#242321]">
+                <Upload className="size-5 text-oxide" />
+                <span className="mt-1.5 text-xs font-semibold text-ink">
                   Click to select featured image
                 </span>
-                <span className="mt-0.5 text-[0.6875rem] text-[#5E5953]">
+                <span className="mt-0.5 text-[0.6875rem] text-ink-muted">
                   JPEG, PNG, WebP, AVIF up to 5MB
                 </span>
               </>
             )}
-          </label>
+          </button>
         </div>
       )}
 
       {uploadError && (
-        <div className="flex items-center gap-1.5 text-xs font-medium text-[#9A3636]">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-destructive">
           <AlertCircle className="size-4 shrink-0" />
           <span>{uploadError}</span>
         </div>

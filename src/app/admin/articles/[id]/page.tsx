@@ -9,6 +9,9 @@ import {
 import { ArticleEditor } from "@/components/admin/editor/article-editor";
 import { ReadOnlyArticleView } from "@/components/admin/editor/read-only-article-view";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const metadata: Metadata = {
   title: "Edit Article Draft | Marie Medere Workspace",
   description: "Edit article draft in Evidence Folio workspace.",
@@ -31,6 +34,11 @@ export default async function AdminArticleDetailPage({
 
   const resolvedParams = await params;
   const articleId = resolvedParams.id;
+
+  // Validate route ID format prior to database query
+  if (!articleId || !UUID_REGEX.test(articleId)) {
+    notFound();
+  }
 
   // Concurrent data loading
   const [article, categories, references] = await Promise.all([

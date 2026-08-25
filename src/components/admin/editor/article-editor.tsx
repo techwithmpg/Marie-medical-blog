@@ -25,6 +25,7 @@ import {
 import { TiptapEditor } from "./tiptap-editor";
 import { FeaturedImageField } from "./featured-image-field";
 import { ReferenceLedger } from "./reference-ledger";
+import { formatAdminDate } from "@/lib/utils";
 
 interface ArticleEditorProps {
   article: AdminArticleDetail | null;
@@ -69,7 +70,8 @@ export function ArticleEditor({
     })),
   );
 
-  // Persistence & Feedback State
+  // Revision-aware dirty tracking to prevent in-flight save races
+  const changeRevisionRef = React.useRef(0);
   const [isDirty, setIsDirty] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
@@ -78,11 +80,14 @@ export function ArticleEditor({
   );
 
   const markDirty = () => {
-    if (!isDirty) setIsDirty(true);
+    changeRevisionRef.current += 1;
+    setIsDirty(true);
     setErrorMessage(null);
   };
 
   const handleSave = async () => {
+    if (saving) return;
+
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setErrorMessage("Please enter an article title.");
@@ -97,13 +102,13 @@ export function ArticleEditor({
       return;
     }
 
+    const savingRevision = changeRevisionRef.current;
     setSaving(true);
     setErrorMessage(null);
 
     try {
       const result = await saveDraftAction({
         articleId: article?.id || null,
-        slug: slug || null,
         title: trimmedTitle,
         excerpt: excerpt.trim() || null,
         content_json: contentJson,
@@ -115,12 +120,21 @@ export function ArticleEditor({
         references: references,
       });
 
+      if (!result) {
+        // Server redirected (e.g. auth session invalidated)
+        router.push("/admin/login");
+        return;
+      }
+
       if (!result.success) {
         setErrorMessage(result.error || "Failed to save draft.");
         return;
       }
 
-      setIsDirty(false);
+      // Only clear dirty state if no newer local changes occurred during save request flight
+      if (changeRevisionRef.current === savingRevision) {
+        setIsDirty(false);
+      }
       setLastSavedAt(result.updatedAt || new Date().toISOString());
 
       if (isNew && result.articleId) {
@@ -130,6 +144,17 @@ export function ArticleEditor({
         if (result.slug) setSlug(result.slug);
       }
     } catch (err: unknown) {
+      if (
+        err instanceof Error &&
+        ((err as { digest?: string }).digest?.startsWith("NEXT_REDIRECT") ||
+          err.message === "NEXT_REDIRECT" ||
+          err.message.includes("NEXT_REDIRECT") ||
+          err.message.includes("unexpected response was received"))
+      ) {
+        // Server redirected or session expired -> redirect to login
+        router.push("/admin/login");
+        return;
+      }
       const msg = err instanceof Error ? err.message : "Failed to save draft.";
       setErrorMessage(msg);
     } finally {
@@ -180,11 +205,11 @@ export function ArticleEditor({
   return (
     <div className="space-y-6">
       {/* Top Workspace Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#D2C9BC] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-subtle-divider pb-4">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/articles"
-            className="flex items-center gap-1.5 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] px-3 py-2 text-xs font-semibold text-[#5E5953] transition-colors hover:bg-[#E8E2D7] hover:text-[#242321] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+            className="flex min-h-[44px] items-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-3 py-2 text-xs font-semibold text-ink-muted transition-colors hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
           >
             <ArrowLeft className="size-3.5" />
             Articles
@@ -192,12 +217,12 @@ export function ArticleEditor({
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex size-2 rounded-full bg-[#8B5A13]" />
-              <span className="text-xs font-semibold tracking-wider text-[#8B5A13] uppercase">
+              <span className="inline-flex size-2 rounded-full bg-warning" />
+              <span className="text-xs font-semibold tracking-wider text-warning uppercase">
                 {isNew ? "New Draft" : "Draft Article"}
               </span>
             </div>
-            <p className="mt-0.5 text-xs text-[#5E5953]">
+            <p className="mt-0.5 text-xs text-ink-muted">
               {isNew
                 ? "Unsaved composition workspace"
                 : `Provisional slug: ${slug || "draft-" + article?.id}`}
@@ -209,25 +234,25 @@ export function ArticleEditor({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-xs">
             {saving ? (
-              <span className="flex items-center gap-1.5 font-medium text-[#265D7A]">
+              <span className="flex items-center gap-1.5 font-medium text-focus-slate">
                 <Loader2 className="size-3.5 animate-spin" />
                 Saving draft...
               </span>
             ) : isDirty ? (
-              <span className="flex items-center gap-1.5 font-medium text-[#8B5A13]">
-                <span className="inline-block size-1.5 rounded-full bg-[#8B5A13]" />
+              <span className="flex items-center gap-1.5 font-medium text-warning">
+                <span className="inline-block size-1.5 rounded-full bg-warning" />
                 Unsaved changes
               </span>
             ) : lastSavedAt ? (
               <span
                 suppressHydrationWarning
-                className="flex items-center gap-1.5 text-[#3D5A4C]"
+                className="flex items-center gap-1.5 text-success"
               >
                 <CheckCircle2 className="size-3.5" />
                 Saved at {formatSavedTime(lastSavedAt)}
               </span>
             ) : (
-              <span className="text-[#5E5953]">Clean draft</span>
+              <span className="text-ink-muted">Clean draft</span>
             )}
           </div>
 
@@ -235,7 +260,7 @@ export function ArticleEditor({
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md bg-[#7B3F35] px-5 py-2.5 text-sm font-semibold text-[#FFFDF9] shadow-xs transition-colors hover:bg-[#704037] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none disabled:opacity-50"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md bg-oxide px-5 py-2.5 text-sm font-semibold text-paper shadow-xs transition-colors hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="size-4 animate-spin" />
@@ -249,7 +274,7 @@ export function ArticleEditor({
 
       {/* Controlled Error Banner */}
       {errorMessage && (
-        <div className="flex items-center gap-3 rounded-lg border border-[#9A3636]/30 bg-[#9A3636]/10 p-4 text-sm text-[#9A3636]">
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
           <AlertCircle className="size-5 shrink-0" />
           <p className="font-medium">{errorMessage}</p>
         </div>
@@ -260,15 +285,15 @@ export function ArticleEditor({
         {/* Left / Primary Editorial Column (2 cols on large screens) */}
         <div className="space-y-6 lg:col-span-2">
           {/* Document Title Input */}
-          <div className="rounded-lg border border-[#D2C9BC] bg-[#FFFDF9] p-5 shadow-xs sm:p-6">
+          <div className="rounded-lg border border-subtle-divider bg-paper p-5 shadow-xs sm:p-6">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="article-title"
-                className="block text-xs font-semibold tracking-wider text-[#242321] uppercase"
+                className="block text-xs font-semibold tracking-wider text-ink uppercase"
               >
-                Article Title <span className="text-[#7B3F35]">*</span>
+                Article Title <span className="text-oxide">*</span>
               </label>
-              <span className="text-xs text-[#5E5953]">
+              <span className="text-xs text-ink-muted">
                 {title.length} characters
               </span>
             </div>
@@ -282,17 +307,17 @@ export function ArticleEditor({
               }}
               placeholder="e.g. Clinical Evidence in Pediatric Respiratory Care"
               required
-              className="mt-2 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-4 py-3 font-serif text-xl font-medium text-[#242321] placeholder-[#5E5953]/40 focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none sm:text-2xl"
+              className="mt-2 w-full rounded-md border border-control-border bg-paper px-4 py-3 font-serif text-xl font-medium text-ink placeholder-ink-muted/40 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none sm:text-2xl"
             />
           </div>
 
           {/* Tiptap Rich Text Editor */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-semibold tracking-wider text-[#242321] uppercase">
+              <span className="text-xs font-semibold tracking-wider text-ink uppercase">
                 Article Body
               </span>
-              <span className="text-xs text-[#5E5953]">
+              <span className="text-xs text-ink-muted">
                 Evidence Folio Tiptap Canvas
               </span>
             </div>
@@ -318,10 +343,10 @@ export function ArticleEditor({
         {/* Right / Secondary Context Column (1 col on large screens) */}
         <div className="space-y-6">
           {/* Metadata Card: Status & Category */}
-          <div className="space-y-4 rounded-lg border border-[#D2C9BC] bg-[#FFFDF9] p-5 shadow-xs">
-            <div className="flex items-center gap-2 border-b border-[#D2C9BC] pb-3">
-              <Layers className="size-4 text-[#7B3F35]" />
-              <h3 className="font-serif text-sm font-semibold text-[#242321]">
+          <div className="space-y-4 rounded-lg border border-subtle-divider bg-paper p-5 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-subtle-divider pb-3">
+              <Layers className="size-4 text-oxide" />
+              <h3 className="font-serif text-sm font-semibold text-ink">
                 Editorial Classification
               </h3>
             </div>
@@ -330,7 +355,7 @@ export function ArticleEditor({
             <div>
               <label
                 htmlFor="article-category"
-                className="block text-xs font-semibold text-[#242321]"
+                className="block text-xs font-semibold text-ink"
               >
                 Category
               </label>
@@ -341,7 +366,7 @@ export function ArticleEditor({
                   setCategoryId(e.target.value);
                   markDirty();
                 }}
-                className="mt-1.5 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-2 text-sm text-[#242321] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+                className="mt-1.5 w-full rounded-md border border-control-border bg-paper px-3 py-2 text-sm text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
               >
                 <option value="">No category (Unassigned)</option>
                 {initialCategories.map((cat) => (
@@ -357,11 +382,11 @@ export function ArticleEditor({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="article-excerpt"
-                  className="block text-xs font-semibold text-[#242321]"
+                  className="block text-xs font-semibold text-ink"
                 >
                   Editorial Excerpt / Teaser
                 </label>
-                <span className="text-[0.6875rem] text-[#5E5953]">
+                <span className="text-[0.6875rem] text-ink-muted">
                   {excerpt.length} chars
                 </span>
               </div>
@@ -374,23 +399,20 @@ export function ArticleEditor({
                   markDirty();
                 }}
                 placeholder="Concise summary for article cards and RSS feeds..."
-                className="mt-1.5 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-2 text-sm text-[#242321] placeholder-[#5E5953]/40 focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+                className="mt-1.5 w-full rounded-md border border-control-border bg-paper px-3 py-2 text-sm text-ink placeholder-ink-muted/40 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
               />
             </div>
 
             {/* Dates info */}
             {!isNew && (
-              <div className="space-y-1 border-t border-[#D2C9BC]/60 pt-3 text-xs text-[#5E5953]">
+              <div className="space-y-1 border-t border-subtle-divider/60 pt-3 text-xs text-ink-muted">
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="size-3.5 text-[#5E5953]" />
-                  <span>
-                    Created: {new Date(article.created_at).toLocaleDateString()}
-                  </span>
+                  <Calendar className="size-3.5 text-ink-muted" />
+                  <span>Created: {formatAdminDate(article.created_at)}</span>
                 </div>
                 <div>
                   <span>
-                    Last updated:{" "}
-                    {new Date(article.updated_at).toLocaleDateString()}
+                    Last updated: {formatAdminDate(article.updated_at)}
                   </span>
                 </div>
               </div>
@@ -413,10 +435,10 @@ export function ArticleEditor({
           />
 
           {/* Search Engine Optimization (SEO) */}
-          <div className="space-y-4 rounded-lg border border-[#D2C9BC] bg-[#FFFDF9] p-5 shadow-xs">
-            <div className="flex items-center gap-2 border-b border-[#D2C9BC] pb-3">
-              <Globe className="size-4 text-[#7B3F35]" />
-              <h3 className="font-serif text-sm font-semibold text-[#242321]">
+          <div className="space-y-4 rounded-lg border border-subtle-divider bg-paper p-5 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-subtle-divider pb-3">
+              <Globe className="size-4 text-oxide" />
+              <h3 className="font-serif text-sm font-semibold text-ink">
                 Search Optimization
               </h3>
             </div>
@@ -425,11 +447,11 @@ export function ArticleEditor({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="seo-title"
-                  className="block text-xs font-semibold text-[#242321]"
+                  className="block text-xs font-semibold text-ink"
                 >
                   SEO Title
                 </label>
-                <span className="text-[0.6875rem] text-[#5E5953]">
+                <span className="text-[0.6875rem] text-ink-muted">
                   {seoTitle.length} chars
                 </span>
               </div>
@@ -444,7 +466,7 @@ export function ArticleEditor({
                 placeholder={
                   title || "Custom search title (defaults to article title)"
                 }
-                className="mt-1.5 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-2 text-sm text-[#242321] placeholder-[#5E5953]/40 focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+                className="mt-1.5 w-full rounded-md border border-control-border bg-paper px-3 py-2 text-sm text-ink placeholder-ink-muted/40 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
               />
             </div>
 
@@ -452,11 +474,11 @@ export function ArticleEditor({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="seo-description"
-                  className="block text-xs font-semibold text-[#242321]"
+                  className="block text-xs font-semibold text-ink"
                 >
                   SEO Meta Description
                 </label>
-                <span className="text-[0.6875rem] text-[#5E5953]">
+                <span className="text-[0.6875rem] text-ink-muted">
                   {seoDescription.length} chars
                 </span>
               </div>
@@ -472,7 +494,7 @@ export function ArticleEditor({
                   excerpt ||
                   "Search snippet description (defaults to excerpt)..."
                 }
-                className="mt-1.5 w-full rounded-md border border-[#918579] bg-[#FFFDF9] px-3 py-2 text-sm text-[#242321] placeholder-[#5E5953]/40 focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+                className="mt-1.5 w-full rounded-md border border-control-border bg-paper px-3 py-2 text-sm text-ink placeholder-ink-muted/40 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
               />
             </div>
           </div>
