@@ -252,6 +252,17 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 - No additional retry is authorized.
 - All other D029 restrictions remain unchanged.
 
+### D029 execution addendum 2 — authenticated write transport verified and final migration attempt authorized
+- **Date:** 2026-08-26
+- The first `apply_migration` invocation was rejected by read-only MCP with zero hosted mutation.
+- The owner-authorized replacement invocation was also rejected by read-only MCP with zero hosted mutation.
+- Transport troubleshooting then configured and OAuth-authenticated `supabase_stage7_write` (using the official project-scoped URL with the `read_only` parameter omitted).
+- Live inspection through `supabase_stage7_write` succeeded: `list_migrations` returned existing migrations `20260825054917` and `20260825081012`; SELECT-only query confirmed `draft-assets` and `public.save_article_draft` remain absent.
+- Project owner explicitly authorized exactly ONE ADDITIONAL `apply_migration` invocation on 2026-08-26.
+- That invocation MUST use the already authenticated `supabase_stage7_write` server.
+- No further retry is authorized.
+- All other D029 restrictions remain unchanged.
+
 ---
 
 ## New decision template

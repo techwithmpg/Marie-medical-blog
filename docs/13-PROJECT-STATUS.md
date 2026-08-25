@@ -19,7 +19,7 @@ This file is the authoritative repository record of the currently active develop
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
 - **Gate status:** IN PROGRESS — HOSTED VERIFICATION
-- **Hosted Stage-7 deployment:** AUTHORIZED / FIRST TRANSPORT ATTEMPT REJECTED WITH ZERO MUTATION / ONE OWNER-AUTHORIZED REPLACEMENT ATTEMPT PENDING
+- **Hosted Stage-7 deployment:** AUTHORIZED / TWO PREVIOUS TRANSPORT CALLS REJECTED WITH ZERO MUTATION / WRITE TRANSPORT VERIFIED / ONE FINAL OWNER-AUTHORIZED MIGRATION INVOCATION PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -578,7 +578,7 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
 - **Gate status:** IN PROGRESS — HOSTED VERIFICATION
-- **Hosted Stage-7 deployment:** AUTHORIZED / FIRST TRANSPORT ATTEMPT REJECTED WITH ZERO MUTATION / ONE OWNER-AUTHORIZED REPLACEMENT ATTEMPT PENDING
+- **Hosted Stage-7 deployment:** AUTHORIZED / TWO PREVIOUS TRANSPORT CALLS REJECTED WITH ZERO MUTATION / WRITE TRANSPORT VERIFIED / ONE FINAL OWNER-AUTHORIZED MIGRATION INVOCATION PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 - **Phase 7A deliverables completed:**
