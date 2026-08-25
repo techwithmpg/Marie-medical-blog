@@ -4,8 +4,14 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 5 — Public Static / Identity Pages — COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Current stage:** Stage 5 — Public Static / Identity Pages — COMPLETE / MERGED / GATE PASS
+- **Stage-5 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
+- **Stage-5 merge commit:** `cd1007538a16868deca1f404ae62f54142df308c`
+- **Stage-5 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-5 merge parents:**
+  - first parent (prior main): `420a487cf38c991119965c0a0735a46d565be2d6`
+  - second parent (approved Stage-5 head): `adc77b6bf1deb92951879a5746597cbe34e029cd`
 - **Stage-4 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-4 approved branch head:** `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-4 merge commit:** `f88b84e65b1e7f30d133fdb7bd61d30f2059223b`
@@ -15,9 +21,9 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO — STAGE 5 IMPLEMENTATION FROZEN PENDING MERGE
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
-- **Active working branch:** `stage/05-public-identity`
+- **Active working branch:** `main`
 - **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
@@ -461,35 +467,34 @@ STAGE 4 — AUTHENTICATION & ADMIN ACCESS
   - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
 
-## Stage-5 progress & implementation record
+## Stage 5 outcome
 
-Stage 5 — Public Static / Identity Pages:
+Stage 5 is complete, verified, and merged into `main`:
 
-- **Stage status:** COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
+- **Stage status:** COMPLETE / MERGED / GATE PASS
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
-- **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
-- **Active working branch:** `stage/05-public-identity`
+- **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
+- **Stage-5 merge commit:** `cd1007538a16868deca1f404ae62f54142df308c`
+- **Stage-5 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-5 merge parents:**
+  - first parent (prior main): `420a487cf38c991119965c0a0735a46d565be2d6`
+  - second parent (approved Stage-5 head): `adc77b6bf1deb92951879a5746597cbe34e029cd`
 - **Final implementation commit:** `8d8f82c37e7a6bbd13f694ec6be9e34e4aa0b45f`
-- **Implemented routes:**
-  - `/` (Homepage structure)
-  - `/about` (Author profile & editorial approach)
-  - `/portfolio` (Selected Writing / portfolio shell)
-  - `/contact` (Contact shell with non-live notice)
-  - `/disclaimer` (Medical & educational disclaimer)
-- **Evidence Folio public identity:** IMPLEMENTED
-- **Content-truth review:** PASS (All unverified specialization/methodology claims removed; safe canonical identity only)
-- **Desktop visual review (1440x900):** PASS
-- **Tablet visual review (1024x768):** PASS
-- **Mobile 390 visual review (390x844):** PASS
-- **Narrow 320 visual review (320x640):** PASS
-- **Responsive overflow verification:** PASS (0px overflow; Playwright viewport emulation verified `scrollWidth === innerWidth`)
-- **Accessibility manual review:** PASS (Semantic headings, skip link, persistent labels, 44px touch targets, contrast)
-- **Typecheck (`tsc --noEmit`):** PASS (0 errors)
-- **Lint (`eslint .`):** PASS (0 errors, 0 warnings)
-- **Format (`prettier . --check`):** PASS (All matched files use Prettier style)
-- **Build (`next build`):** PASS (All 8 routes compiled successfully)
-- **Stage-5 gate:** PASS — AWAITING EXPLICIT OWNER MERGE APPROVAL
-- **Stage 6:** NOT AUTHORIZED
+- [x] Evidence Folio public identity pages implemented: `/`, `/about`, `/portfolio`, `/contact`, `/disclaimer`;
+- [x] Reusable public components implemented: `PageIntro`, `EmptyEditorialState`, `ContactFormShell`, `MedicalDisclaimer`;
+- [x] Public data helpers and CV public URL resolution implemented in `src/lib/public-data.ts`;
+- [x] Public shell navigation refined for Stage-5 routes: `SiteHeader`, `MobileNav`, `SiteFooter`;
+- [x] Content-truth external review PASS (zero fabricated credentials, unverified services, or speculative claims);
+- [x] Desktop visual review (1440x900) PASS;
+- [x] Tablet visual review (1024x768) PASS;
+- [x] Mobile 390 visual review (390x844) PASS;
+- [x] Narrow 320 visual review (320x640) PASS;
+- [x] Responsive overflow verification PASS (0px overflow via true Playwright viewport emulation);
+- [x] Accessibility manual review PASS (semantic headings, skip link, persistent labels, 44px touch targets, contrast);
+- [x] Quality gates: typecheck, lint, format, and production build PASS;
+- [x] Stage-5 gate PASS;
+- [x] Stage 5 merged into `main` at merge commit `cd1007538a16868deca1f404ae62f54142df308c`;
+- [x] Next implementation stage: Stage 6 — Article Reading & Discovery — NOT AUTHORIZED.
 
 ## Stage transition rule
 
