@@ -140,6 +140,47 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Impact:** Repository-to-ChatGPT freshness is checked at task time. Static Project Sources remain useful when GitHub access is unavailable or for non-repository artifacts, but they no longer need to be refreshed solely because `main` advanced. If live access is unavailable, use the newest verified snapshot, state its source SHA/limitation, and do not assume freshness. This decision refines D012 only for synchronization mechanics and does not authorize any implementation stage.
 **Approved by:** project owner in the 2026-08-23 synchronization-governance review.
 **Status:** ACTIVE / FROZEN.
+## ACTIVE — D022 — Stage-3 database and single-admin security baseline
+**Date:** 2026-08-25
+**Decision:** Implement the Stage-3 Supabase PostgreSQL schema, RLS policies, PostgreSQL privileges, Storage bucket, and automated pgTAP tests under the design frozen in `docs/23-STAGE-3-DATABASE-SECURITY-DESIGN.md`:
+1. Version-controlled SQL migrations in `supabase/migrations/` are the authoritative executable schema source of truth;
+2. Single-admin authorization via `private.admin_users` and `private.is_admin()` with search_path safety instead of complex multi-user RBAC or client-editable JWT metadata;
+3. No reader or multi-author permission system in V1;
+4. Defense in depth combining explicit PostgreSQL table/column `GRANT`/`REVOKE` privileges with fine-grained Row Level Security;
+5. Commenter email privacy enforced by revoking SELECT privileges on `commenter_email` from `anon`;
+6. Narrow public comment and contact message submission via restricted INSERT column grants and RLS checks forcing safe pending/new statuses;
+7. Optional media metadata table deferred in favor of Storage metadata + direct asset paths;
+8. Single `public-assets` Storage bucket with public read access and admin-only mutation policies.
+**Reason:** Provides the minimum secure database and authorization architecture required for a single-writer V1 publication while strictly enforcing public/private boundaries, preventing data leakage, and creating a reliable foundation for Stage 4 Auth.
+**Alternatives considered:** Generic RBAC roles table; storing role in `raw_user_meta_data`; using a security-invoker view for comments; exposing entire comments table with frontend filtering; creating separate media metadata and portfolio content tables.
+**Impact:** Authorizes the creation of the Stage-3 initial migration, synthetic development seed fixtures, and automated pgTAP security tests. Prohibits any schema changes via Supabase Dashboard Table/SQL Editor or remote seed data deployment.
+**Approved by:** project owner through the 2026-08-25 Stage-3 execution instruction.
+## ACTIVE — D023 — Authenticated comment privacy and single-admin isolation
+**Date:** 2026-08-25
+**Decision:** Restrict SELECT access on `public.comments` under the `authenticated` PostgreSQL role strictly to allowlisted administrators (`private.is_admin()`). Authenticated non-admin users are denied comment SELECT access entirely. Public comment reading is served exclusively to the `anon` role with PostgreSQL column-level SELECT privileges restricting access to safe public columns (`id`, `article_id`, `commenter_name`, `body`, `status`, `created_at`) while `commenter_email` and `moderated_at` remain completely inaccessible to `anon`.
+**Reason:** In PostgreSQL, RLS policies filter rows but cannot selectively mask columns based on row-level conditions for a single shared role (`authenticated`). Because V1 has no reader accounts or multi-user roles and only one authenticated writer/admin (Marie), authenticated non-admin users have no legitimate need to query comments. Denying comment SELECT access to authenticated non-admins entirely prevents any leakage of `commenter_email` without requiring complex dynamic column masking or separate reader role grants.
+**Alternatives considered:** Permitting authenticated non-admin reads on approved comments (leaked `commenter_email` due to table-level column grant); attempting complex conditional security-definer views or column-masking functions for readers; creating a dedicated reader role.
+**Impact:** `public.comments` authenticated SELECT RLS policy is updated to `using (private.is_admin())`. Automated pgTAP security tests explicitly verify that authenticated non-admins cannot select `commenter_email` or any comment rows, while `anon` retains safe public column reads and admins retain full moderation and email access.
+**Approved by:** project owner through the 2026-08-25 Stage-3 security correction instruction.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
+
+## ACTIVE — D024 — Hosted Stage-3 migration deployment via project-scoped Supabase MCP
+**Date:** 2026-08-25
+**Decision:** When direct/session-pooler PostgreSQL connectivity is unavailable from the development network, Stage-3 hosted database migrations may be deployed through the official Supabase MCP server using the project-scoped connection for `eoexnnhqzrkurbqgbtnx`. The version-controlled SQL migration under `supabase/migrations/` remains the authoritative executable schema source of truth. MCP write access may be enabled temporarily only to apply the exact reviewed, version-controlled migration. Arbitrary SQL, dashboard schema edits, production seed deployment, Auth changes, Edge Functions, branching operations, and Stage-4 changes remain prohibited. After deployment and verification, the MCP connection must be returned to read-only mode.
+**Reason:** The current network permits Supabase HTTPS/MCP connectivity but blocks the Supavisor session pooler on port 5432. MCP provides an authenticated, project-scoped deployment transport without weakening migration-first governance.
+**Alternatives considered:** Manual dashboard SQL execution (unversioned/unreviewed risk); local-only database with unverified remote deployment; disabling session pooler SSL.
+**Impact:** Stage-3 hosted deployment may use `apply_migration` through Supabase MCP instead of `db push` when the normal PostgreSQL session transport is unavailable. This does not change the schema design, RLS model, migration source of truth, or authorization boundary.
+**Approved by:** project owner.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
+
+## ACTIVE — D025 — MCP migration-version reconciliation
+**Date:** 2026-08-25
+**Decision:** Because the current Supabase MCP `apply_migration` operation does not accept the version from a local migration filename, an MCP-deployed Stage-3 migration must be reconciled immediately after successful deployment if the hosted migration version differs from the local version. The exact reviewed SQL from the version-controlled migration must be supplied unchanged to `apply_migration`. After deployment, retrieve the generated hosted migration version using `list_migrations`. If it differs from the local migration version, rename the local migration file so its timestamp/version exactly matches the hosted migration version while preserving the SQL contents. Update repository documentation that explicitly references the former version, rerun the full local Stage-3 database test suite and quality gates, and verify local/hosted migration-history parity. Do not modify `supabase_migrations` manually, do not use migration repair to fabricate parity, do not apply a second migration, and do not deploy seed data.
+**Reason:** Supabase MCP migration application may generate hosted migration metadata independently from the filename of the local migration. Immediate repository reconciliation preserves one-to-one migration history while keeping the version-controlled migration as the schema source of truth.
+**Impact:** MCP remains an approved Stage-3 deployment transport under D024 while hosted migration history and the repository are reconciled before Stage-3 closeout.
+**Approved by:** project owner — explicit authorization on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
+
 ---
 
 ## New decision template
