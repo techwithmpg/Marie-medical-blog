@@ -387,11 +387,29 @@ Stage 4 local implementation and verification record:
   - `@supabase/supabase-js`: `2.112.4`
   - `@supabase/ssr`: `0.12.5`
   - Unrelated dependencies added: NONE
-- **Database migration:**
-  - Migration file: `supabase/migrations/20260825071105_add_public_is_admin_rpc.sql`
+- **Database migration & D027 reconciliation:**
+  - Migration file: `supabase/migrations/20260825081012_add_public_is_admin_rpc.sql` (reconciled from `20260825071105` to match hosted version)
+  - Pre/post reconciliation SHA-256: `31BB810BAEE4355DDA25363B6A18AA9C5A124A2599DD93EF285F3AA18290B5F3` (100% match)
   - Function: `public.is_admin()` defined as `SECURITY INVOKER` with `set search_path = ''`, 0 arguments, delegating to `private.is_admin()`
   - Permissions: revoked from `public, anon`; granted to `authenticated`
   - Zero exposure of `private.admin_users`
+- **MCP deployment record:**
+  - D027 replacement authorization commit: `6049f146581ed6cc2d5c1818fcc7120c0fd8260e`
+  - First invocation: rejected by stale read-only MCP session (`Cannot apply migration in read-only mode.`); zero hosted mutations
+  - Replacement invocation: exactly 1 call via `supabase_stage4_write/apply_migration` (SUCCESS)
+  - Hosted Stage-4 migration version: `20260825081012` (`add_public_is_admin_rpc`)
+  - Migration history parity: YES (`20260825054917`, `20260825081012`)
+  - Temporary write server `supabase_stage4_write` removed immediately from `mcp_config.json`
+  - Safe read-only server `supabase` restored/retained (`read_only=true`)
+- **Hosted database verification (via read-only `supabase` MCP):**
+  - Hosted migrations: `[{"version":"20260825054917","name":"initial_database_security_foundation"},{"version":"20260825081012","name":"add_public_is_admin_rpc"}]`
+  - `public.is_admin()` verified: `SECURITY INVOKER`, 0 arguments, boolean return, `search_path locked to empty`, stable
+  - `public.is_admin()` permissions: `anon` EXECUTE denied, `authenticated` EXECUTE granted
+  - `private.is_admin()` verified: `SECURITY DEFINER`, stable, unchanged
+  - `private.admin_users`: 0 rows (empty)
+  - Application tables: 7 public tables, all RLS enabled, 0 rows
+  - Hosted security advisors: 0 security errors/warnings (1 expected INFO notice on `private.admin_users`)
+  - Seed / synthetic production data: NONE exists hosted (all tables have 0 rows)
 - **Database tests & security regression:**
   - New test file: `supabase/tests/database/08_public_is_admin_rpc.test.sql`
   - Local `supabase db reset`: PASS (2 migrations applied cleanly, seed loaded)
@@ -427,10 +445,11 @@ Stage 4 local implementation and verification record:
   - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
 - **Hosted execution boundary:**
-  - HOSTED STAGE-4 DEPLOYMENT: NOT YET PERFORMED
-  - HOSTED AUTH CONFIGURATION: NOT YET MODIFIED
-  - MARIE PRODUCTION USER: NOT YET PROVISIONED
-  - STAGE-4 GATE: NOT YET CLOSED (LOCAL IMPLEMENTATION ONLY)
+  - HOSTED STAGE-4 MIGRATION: DEPLOYED (`20260825081012_add_public_is_admin_rpc`)
+  - HOSTED AUTH CONFIGURATION: "Allow new users to sign up = OFF" STILL REQUIRES OWNER DASHBOARD VERIFICATION/ACTION (or confirmation if already completed)
+  - MARIE PRODUCTION USER: NOT YET PROVISIONED (NOT AUTHORIZED IN THIS STEP)
+  - HOSTED `private.admin_users`: 0 ROWS (EMPTY)
+  - STAGE-4 GATE: NOT YET CLOSED (PENDING OWNER AUTH CONFIGURATION & ADMIN PROVISIONING GATE)
   - STAGE 5: NOT AUTHORIZED
 
 ## Stage transition rule
