@@ -97,14 +97,13 @@ export default async function HomePage() {
               <p className="text-base leading-relaxed text-[#242321] sm:text-lg">
                 This platform serves as an independent publication and writing
                 portfolio. Its objective is to present medical communication,
-                educational writing, and scientific literature overviews with
-                clarity and disciplined source citation.
+                educational writing, and healthcare topics with clarity and
+                referenced sources.
               </p>
 
               <p className="text-base leading-relaxed text-[#5E5953]">
-                Through structured editorial frameworks, published materials
-                emphasize primary reference documentation, accessible synthesis,
-                and responsible educational presentation.
+                Published materials emphasize clear organization, accessible
+                language, and responsible educational presentation.
               </p>
             </div>
 
@@ -112,22 +111,18 @@ export default async function HomePage() {
             <div className="space-y-6 lg:col-span-4">
               <EvidenceRail
                 marker="Ref 01"
-                label="Editorial Standard"
+                label="Publication Approach"
                 className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
               >
                 <div className="space-y-3">
                   <span className="font-serif text-base font-medium text-[#242321]">
-                    The Evidence Folio Standard
+                    Clear, Referenced Communication
                   </span>
                   <p className="text-xs leading-relaxed text-[#5E5953]">
-                    A structured editorial design system emphasizing source
-                    transparency, educational integrity, and clear
-                    communication.
+                    This publication is designed to present medical writing with
+                    clear structure, readable language, and visible references
+                    where appropriate.
                   </p>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <TopicImprint variant="oxide">Evidence-First</TopicImprint>
-                    <TopicImprint variant="sage">Educational</TopicImprint>
-                  </div>
                 </div>
               </EvidenceRail>
             </div>

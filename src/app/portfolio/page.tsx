@@ -26,7 +26,7 @@ export default function PortfolioPage() {
           topicLabel="Portfolio"
           topicVariant="oxide"
           title="Selected Writing"
-          deck="A curated index of evidence-based medical writing, educational healthcare articles, and published communications."
+          deck="Selected published medical writing and educational publications will appear here as approved content becomes available."
         />
 
         {/* Main Content Grid */}
@@ -71,33 +71,17 @@ export default function PortfolioPage() {
           <div className="space-y-6 lg:col-span-4">
             <EvidenceRail
               marker="Ref 01"
-              label="Editorial Standard"
+              label="Portfolio"
               className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
             >
               <div className="space-y-4">
                 <span className="font-serif text-base font-medium text-[#242321]">
-                  Publication Standards
+                  Selected Writing
                 </span>
                 <p className="text-xs leading-relaxed text-[#5E5953]">
-                  All entries presented in this portfolio reflect commitment to:
+                  Approved published writing will be presented here as content
+                  becomes available.
                 </p>
-
-                <ul className="space-y-2 text-xs text-[#5E5953]">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
-                    <span>
-                      Evidence-based analysis and primary literature referencing
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
-                    <span>Clear and disciplined scientific communication</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
-                    <span>Objective educational presentation</span>
-                  </li>
-                </ul>
 
                 <SplitRule />
 
@@ -106,7 +90,7 @@ export default function PortfolioPage() {
                     href="/about"
                     className="inline-flex items-center text-xs font-semibold tracking-wider text-[#7B3F35] uppercase hover:underline"
                   >
-                    Read editorial approach →
+                    Read about the publication →
                   </Link>
                 </div>
               </div>
