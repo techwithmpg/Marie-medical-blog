@@ -3,15 +3,34 @@ import { cn } from "@/lib/utils";
 
 export interface ReferenceItem {
   id?: string | number;
-  text: React.ReactNode;
+  title?: string;
+  source_name?: string;
+  text?: React.ReactNode;
   citation?: string;
-  url?: string;
+  citation_details?: string | null;
+  url?: string | null;
 }
 
 interface ReferenceLedgerProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
   items?: (ReferenceItem | string)[];
   children?: React.ReactNode;
+}
+
+function getSafeExternalUrl(rawUrl?: string | null): string | null {
+  if (!rawUrl || typeof rawUrl !== "string") return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      return trimmed;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export function ReferenceLedger({
@@ -56,20 +75,25 @@ export function ReferenceLedger({
               );
             }
 
+            const itemText = item.title || item.text;
+            const citationInfo =
+              item.citation_details || item.citation || item.source_name;
+            const safeUrl = getSafeExternalUrl(item.url);
+
             return (
               <li
                 key={item.id ?? index}
                 className="pl-2 leading-relaxed text-[#242321]"
               >
-                <span>{item.text}</span>
-                {item.citation && (
+                <span className="font-medium text-[#242321]">{itemText}</span>
+                {citationInfo && (
                   <span className="ml-1 text-xs text-[#5E5953] italic">
-                    — {item.citation}
+                    — {citationInfo}
                   </span>
                 )}
-                {item.url && (
+                {safeUrl && (
                   <a
-                    href={item.url}
+                    href={safeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ml-2 text-xs font-medium text-[#704037] underline underline-offset-2 hover:text-[#582A22]"

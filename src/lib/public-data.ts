@@ -103,17 +103,21 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
   }
 }
 
-export async function getPublicCvUrl(
-  cvStoragePath: string | null,
+export async function getPublicAssetUrl(
+  path: string | null | undefined,
 ): Promise<string | null> {
-  if (!cvStoragePath) return null;
+  if (!path) return null;
   try {
     const supabase = await createClient();
-    const { data } = supabase.storage
-      .from("public-assets")
-      .getPublicUrl(cvStoragePath);
+    const { data } = supabase.storage.from("public-assets").getPublicUrl(path);
     return data.publicUrl || null;
   } catch {
     return null;
   }
+}
+
+export async function getPublicCvUrl(
+  cvStoragePath: string | null,
+): Promise<string | null> {
+  return getPublicAssetUrl(cvStoragePath);
 }

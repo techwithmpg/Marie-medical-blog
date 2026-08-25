@@ -4,7 +4,7 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 6 — Article Reading & Discovery — ACTIVE
+- **Current stage:** Stage 6 — Article Reading & Discovery — ACTIVE / IMPLEMENTATION COMPLETE / EXTERNAL REVIEW PENDING
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-5 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
@@ -23,7 +23,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Application coding authorized:** YES — STAGE 6 SCOPE ONLY
-- **Gate status:** IN PROGRESS
+- **Gate status:** IMPLEMENTATION COMPLETE / EXTERNAL REVIEW PENDING
 - **Active working branch:** `stage/06-article-discovery`
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
@@ -500,21 +500,25 @@ Stage 5 is complete, verified, and merged into `main`:
 
 Stage 6 — Article Reading & Discovery:
 
-- **Stage status:** ACTIVE
+- **Stage status:** ACTIVE / IMPLEMENTATION COMPLETE / EXTERNAL REVIEW PENDING
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Active working branch:** `stage/06-article-discovery`
 - **Implementation scope:**
-  - `/blog` (Published article listing, topic filtering, simple search, pagination)
-  - `/blog/[slug]` (Evidence Folio long-form article view, Reference Ledger, author context, medical disclaimer)
-  - `/topics/[slug]` (Topic/category article discovery, truthful empty states)
-  - Homepage & Selected Writing real published article integration
-  - Server-side public article data access layer (`src/lib/public-articles.ts`)
-  - Safe Tiptap/ProseMirror JSON read-only renderer (React elements, no `dangerouslySetInnerHTML`)
-  - Deterministic reading time calculation
-  - Local synthetic test fixtures in `supabase/seed.sql`
+  - [x] `/blog` (Published article discovery, lead story hero, topic filtering, simple search, pagination);
+  - [x] `/blog/[slug]` (Evidence Folio long-form article view, Reference Ledger, author context, medical disclaimer, category-based related writing);
+  - [x] `/topics/[slug]` (Topic/category article discovery, pagination, truthful empty states);
+  - [x] Homepage (`/`) and Selected Writing (`/portfolio`) real published article integration;
+  - [x] SiteHeader, MobileNav, and SiteFooter navigation integration with "Articles" (`/blog`);
+  - [x] Server-side public article data access layer (`src/lib/public-articles.ts`) with explicit `status = 'published'` enforcement;
+  - [x] Safe Tiptap/ProseMirror JSON read-only renderer (`src/components/public/article-typography.tsx`) with native React elements, 0 `dangerouslySetInnerHTML`, mark rendering, and URL protocol validation;
+  - [x] Deterministic multi-column ordering and reading time calculation;
+  - [x] Local synthetic test fixtures in `supabase/seed.sql` with null image paths to prevent broken images;
+  - [x] Security matrix SEC-01 through SEC-10 verified;
+  - [x] Quality gates: typecheck, lint, format check, and production build PASS;
+  - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) in `E:\stage6-visual-review\` with 0px horizontal overflow.
 - **Application coding authorized:** YES — STAGE 6 SCOPE ONLY
-- **Gate status:** IN PROGRESS
+- **Gate status:** IMPLEMENTATION COMPLETE / EXTERNAL REVIEW PENDING
 - **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 
 ## Stage transition rule

@@ -19,7 +19,7 @@ select is(
 -- 2. Admin can see all articles (published, draft, archived)
 select results_eq(
   'select count(*)::integer from public.articles',
-  array[3],
+  array[10],
   'Admin can view all articles across statuses'
 );
 
