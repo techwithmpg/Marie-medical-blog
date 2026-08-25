@@ -4,18 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / MERGED / GATE PASS
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26, MERGE AUTHORIZED 2026-08-26)
-- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
-- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
-- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
-- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
-- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
-- **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
-- **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
-- **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
-- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
-- **Stage-7 owner-approved architecture decision:** D028, D029
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / PRE-IMPLEMENTATION DESIGN & RESEARCH
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Application coding authorized:** FROZEN PENDING STAGE-8 DESIGN / ARCHITECTURE GATE
+- **Gate status:** PRE-IMPLEMENTATION DESIGN IN PROGRESS
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
 - **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
@@ -23,11 +17,8 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 merge parents:**
   - first parent (prior main): `927412a054ccf15bbb1caa23a54a48d761731a04`
   - second parent (approved Stage-7 head): `1fd848d60aa223d53589e6eea598399085ca7157`
-- **Active working branch:** `main`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS
 - **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
-- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
@@ -241,15 +232,12 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**NO NEW IMPLEMENTATION STAGE IS CURRENTLY AUTHORIZED.**
+**Stage 8 — Publishing Workflow is AUTHORIZED BY PROJECT OWNER for PRE-IMPLEMENTATION DESIGN & RESEARCH (2026-08-26).**
 
-Stage 7 — Writer Dashboard & Tiptap Editor is:
-- **COMPLETE**;
-- **MERGED** into `main` at commit `e8ab70f730bea656b421a4bbb0ea6afd30073141` (parents: prior main `927412a054ccf15bbb1caa23a54a48d761731a04` and approved Stage-7 head `1fd848d60aa223d53589e6eea598399085ca7157`);
-- **GATE PASS** across all local pgTAP/typecheck/lint/format/build/diff gates and hosted Supabase verification;
-- closed following project-owner merge approval on 2026-08-26.
-
-Stage 8 — Publishing Workflow is the next planned implementation stage but remains **NOT AUTHORIZED**. No Stage-8 implementation work or branch creation is permitted until explicit project-owner authorization.
+- Stage 8 pre-implementation design and architecture research is active on branch `stage/08-publishing-workflow`.
+- Application coding, database migrations, package installations, and hosted mutations remain **FROZEN** pending the Stage-8 architecture/design review gate.
+- Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
+- Stage 9 — Comments, Contact Inbox & Settings remains **NOT AUTHORIZED**.
 
 ## Stage-1 start record
 
