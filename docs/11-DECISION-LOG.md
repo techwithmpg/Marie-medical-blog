@@ -155,6 +155,13 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Alternatives considered:** Generic RBAC roles table; storing role in `raw_user_meta_data`; using a security-invoker view for comments; exposing entire comments table with frontend filtering; creating separate media metadata and portfolio content tables.
 **Impact:** Authorizes the creation of the Stage-3 initial migration, synthetic development seed fixtures, and automated pgTAP security tests. Prohibits any schema changes via Supabase Dashboard Table/SQL Editor or remote seed data deployment.
 **Approved by:** project owner through the 2026-08-25 Stage-3 execution instruction.
+## ACTIVE — D023 — Authenticated comment privacy and single-admin isolation
+**Date:** 2026-08-25
+**Decision:** Restrict SELECT access on `public.comments` under the `authenticated` PostgreSQL role strictly to allowlisted administrators (`private.is_admin()`). Authenticated non-admin users are denied comment SELECT access entirely. Public comment reading is served exclusively to the `anon` role with PostgreSQL column-level SELECT privileges restricting access to safe public columns (`id`, `article_id`, `commenter_name`, `body`, `status`, `created_at`) while `commenter_email` and `moderated_at` remain completely inaccessible to `anon`.
+**Reason:** In PostgreSQL, RLS policies filter rows but cannot selectively mask columns based on row-level conditions for a single shared role (`authenticated`). Because V1 has no reader accounts or multi-user roles and only one authenticated writer/admin (Marie), authenticated non-admin users have no legitimate need to query comments. Denying comment SELECT access to authenticated non-admins entirely prevents any leakage of `commenter_email` without requiring complex dynamic column masking or separate reader role grants.
+**Alternatives considered:** Permitting authenticated non-admin reads on approved comments (leaked `commenter_email` due to table-level column grant); attempting complex conditional security-definer views or column-masking functions for readers; creating a dedicated reader role.
+**Impact:** `public.comments` authenticated SELECT RLS policy is updated to `using (private.is_admin())`. Automated pgTAP security tests explicitly verify that authenticated non-admins cannot select `commenter_email` or any comment rows, while `anon` retains safe public column reads and admins retain full moderation and email access.
+**Approved by:** project owner through the 2026-08-25 Stage-3 security correction instruction.
 **Status:** ACTIVE / FROZEN FOR STAGE 3.
 ---
 

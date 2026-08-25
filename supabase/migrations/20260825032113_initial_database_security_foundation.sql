@@ -382,24 +382,14 @@ create policy "Approved comments on published articles are readable by anon"
     )
   );
 
-create policy "Comments are readable by authenticated"
+create policy "Admins can view comments"
   on public.comments for select
   to authenticated
-  using (
-    (
-      status = 'approved'
-      and exists (
-        select 1 from public.articles a
-        where a.id = comments.article_id
-        and a.status = 'published'
-      )
-    )
-    or private.is_admin()
-  );
+  using (private.is_admin());
 
 create policy "Public can submit pending comments on published articles"
   on public.comments for insert
-  to anon, authenticated
+  to anon
   with check (
     status = 'pending'
     and moderated_at is null
@@ -409,6 +399,11 @@ create policy "Public can submit pending comments on published articles"
       and a.status = 'published'
     )
   );
+
+create policy "Admins can insert comments"
+  on public.comments for insert
+  to authenticated
+  with check (private.is_admin());
 
 create policy "Admins can update comments"
   on public.comments for update

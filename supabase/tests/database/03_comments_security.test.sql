@@ -2,7 +2,7 @@
 -- Description: Verifies comment moderation, submission restrictions, and column-level privacy.
 
 begin;
-select plan(8);
+select plan(9);
 
 -- Switch to anonymous role
 set local role anon;
@@ -30,14 +30,22 @@ select throws_ok(
   'Anon is denied SELECT on commenter_email'
 );
 
--- 4. Anon can insert a valid pending comment on a published article
+-- 4. Anon cannot select moderated_at (privilege denied at Postgres level)
+select throws_ok(
+  'select moderated_at from public.comments',
+  '42501', -- permission denied
+  null,
+  'Anon is denied SELECT on moderated_at'
+);
+
+-- 5. Anon can insert a valid pending comment on a published article
 select lives_ok(
   $$insert into public.comments (article_id, commenter_name, commenter_email, body)
     values ('20000000-0000-0000-0000-000000000001', 'Reader Test', 'reader-test@example.invalid', 'Test comment text')$$,
   'Anon can insert a pending comment on a published article'
 );
 
--- 5. Anon cannot insert an approved comment (denied by column grant or RLS check)
+-- 6. Anon cannot insert an approved comment (denied by column grant or RLS check)
 select throws_ok(
   $$insert into public.comments (article_id, commenter_name, commenter_email, body, status)
     values ('20000000-0000-0000-0000-000000000001', 'Attacker', 'attacker@example.invalid', 'Sneaky comment', 'approved')$$,
@@ -46,7 +54,7 @@ select throws_ok(
   'Anon cannot insert approved comments'
 );
 
--- 6. Anon cannot insert comments on draft articles (RLS check violation)
+-- 7. Anon cannot insert comments on draft articles (RLS check violation)
 select throws_ok(
   $$insert into public.comments (article_id, commenter_name, commenter_email, body)
     values ('20000000-0000-0000-0000-000000000002', 'Draft Commenter', 'draft-commenter@example.invalid', 'Comment on draft')$$,
@@ -55,7 +63,7 @@ select throws_ok(
   'Anon cannot insert comments on draft articles'
 );
 
--- 7. Anon cannot update comments
+-- 8. Anon cannot update comments
 select throws_ok(
   'update public.comments set body = ''Changed''',
   '42501',
@@ -63,7 +71,7 @@ select throws_ok(
   'Anon cannot update comments'
 );
 
--- 8. Anon cannot delete comments
+-- 9. Anon cannot delete comments
 select throws_ok(
   'delete from public.comments',
   '42501',

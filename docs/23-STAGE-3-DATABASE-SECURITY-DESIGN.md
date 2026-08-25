@@ -160,7 +160,8 @@ $$;
     - `anon` is granted INSERT ONLY on `(article_id, commenter_name, commenter_email, body)`.
     - `authenticated` is granted full column SELECT, INSERT, UPDATE, DELETE.
   - **RLS Policies:**
-    - SELECT: `(status = 'approved' and exists (select 1 from public.articles a where a.id = comments.article_id and a.status = 'published')) or private.is_admin()`
+    - SELECT (`anon`): `using (status = 'approved' and exists (select 1 from public.articles a where a.id = comments.article_id and a.status = 'published'))`
+    - SELECT (`authenticated`): Restricted to `private.is_admin()`. (Authenticated non-admins receive zero comment rows).
     - INSERT: `with check (status = 'pending' and moderated_at is null and exists (select 1 from public.articles a where a.id = comments.article_id and a.status = 'published'))`
     - UPDATE / DELETE: Restricted to `private.is_admin()`.
 
@@ -243,7 +244,7 @@ Triggers attached to: `public.profiles`, `public.categories`, `public.articles`,
 | `public.categories` | ✅ Allowed | ❌ Denied | ❌ Denied | ✅ Allowed | ✅ Full |
 | `public.articles` | ✅ Published Only | ❌ Denied | ❌ Denied | ✅ Published Only | ✅ Full |
 | `public.article_references` | ✅ Published Only | ❌ Denied | ❌ Denied | ✅ Published Only | ✅ Full |
-| `public.comments` | ✅ Approved Only (No Email) | ✅ Insert (Pending Only) | ❌ Denied | ✅ Approved Only (No Email) | ✅ Full |
+| `public.comments` | ✅ Approved Only (No Email) | ✅ Insert (Pending Only) | ❌ Denied | ❌ Denied | ✅ Full |
 | `public.contact_messages` | ❌ Denied | ✅ Insert (New Only) | ❌ Denied | ❌ Denied | ✅ Full |
 | `public.site_settings` | ✅ Allowed | ❌ Denied | ❌ Denied | ✅ Allowed | ✅ Full |
 | Storage `public-assets` | ✅ Public Read | ❌ Denied | ❌ Denied | ❌ Denied | ✅ Full |

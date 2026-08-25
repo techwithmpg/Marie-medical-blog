@@ -2,7 +2,7 @@
 -- Description: Verifies that authenticated non-admin users cannot perform admin mutations or access private data.
 
 begin;
-select plan(9);
+select plan(12);
 
 -- Switch to authenticated non-admin role
 set local role authenticated;
@@ -64,7 +64,28 @@ select results_eq(
   'Non-admin cannot update site settings'
 );
 
--- 9. Non-admin cannot approve comments (affects 0 rows due to RLS USING)
+-- 9. Non-admin cannot select any comments (RLS denies SELECT for non-admin)
+select is_empty(
+  'select id from public.comments',
+  'Non-admin cannot select comments'
+);
+
+-- 10. Non-admin cannot select commenter_email (RLS denies SELECT for non-admin)
+select is_empty(
+  'select commenter_email from public.comments',
+  'Non-admin cannot select commenter_email'
+);
+
+-- 11. Non-admin cannot insert comments (fails WITH CHECK)
+select throws_ok(
+  $$insert into public.comments (article_id, commenter_name, commenter_email, body)
+    values ('20000000-0000-0000-0000-000000000001', 'Reader', 'reader@example.invalid', 'Comment')$$,
+  '42501',
+  null,
+  'Non-admin cannot insert comments'
+);
+
+-- 12. Non-admin cannot approve comments (affects 0 rows due to RLS USING)
 select results_eq(
   $$with updated as (update public.comments set status = 'approved' where status = 'pending' returning id) select count(*)::integer from updated$$,
   array[0],

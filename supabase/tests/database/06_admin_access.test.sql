@@ -2,7 +2,7 @@
 -- Description: Verifies full administrative access for allowlisted admin users.
 
 begin;
-select plan(10);
+select plan(12);
 
 -- Switch to authenticated admin role
 set local role authenticated;
@@ -55,20 +55,33 @@ select isnt_empty(
   'Admin can read commenter emails'
 );
 
--- 8. Admin can moderate comments
+-- 8. Admin can select moderated_at
+select isnt_empty(
+  'select moderated_at from public.comments where status = ''approved''',
+  'Admin can read moderated_at timestamp'
+);
+
+-- 9. Admin can insert comments directly
+select lives_ok(
+  $$insert into public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
+    values ('20000000-0000-0000-0000-000000000001', 'Admin Note', 'admin@example.invalid', 'Author response', 'approved', now())$$,
+  'Admin can insert comments'
+);
+
+-- 10. Admin can moderate comments
 select lives_ok(
   $$update public.comments set status = 'approved', moderated_at = now() where id = '40000000-0000-0000-0000-000000000002'$$,
   'Admin can approve pending comments'
 );
 
--- 9. Admin can see contact messages
+-- 11. Admin can see contact messages
 select results_eq(
   'select count(*)::integer from public.contact_messages',
   array[1],
   'Admin can view contact messages'
 );
 
--- 10. Admin can update contact message status
+-- 12. Admin can update contact message status
 select lives_ok(
   $$update public.contact_messages set status = 'read' where id = '50000000-0000-0000-0000-000000000001'$$,
   'Admin can update contact message status'
