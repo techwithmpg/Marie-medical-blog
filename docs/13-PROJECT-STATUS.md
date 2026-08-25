@@ -239,6 +239,53 @@ Start conditions verified:
 13. no hosted Supabase project was created or linked in this commit;
 14. Stage 4 remains NOT AUTHORIZED.
 
+## Stage-3 progress & hosted deployment record
+
+Stage 3 implementation and verification record:
+
+- **Stage status:** Stage 3 remains ACTIVE
+- **Hosted project ref:** `eoexnnhqzrkurbqgbtnx` (Marie Medical Blog)
+- **Active decisions:** D022, D023, D024, D025 ACTIVE in `docs/11-DECISION-LOG.md`
+- **MCP transport verification:**
+  - Read-only inspection tools verified: `list_migrations`, `list_tables`, `get_advisors`, `search_docs`
+  - Pre-deployment hosted state: migration history empty (`[]`), public tables absent (`[]`), `private.admin_users` absent
+  - Hosted advisors pre-deployment: 0 security lints, 0 performance lints
+  - Migration deployment attempted via MCP `apply_migration` with exact authoritative SQL
+  - Result: Remote MCP returned `Cannot apply migration in read-only mode.`
+  - MCP configuration immediately verified and restored to `read_only=true` (`https://mcp.supabase.com/mcp?project_ref=eoexnnhqzrkurbqgbtnx&read_only=true&features=database%2Cdebugging%2Cdocs`)
+  - No unauthorized MCP write tools used
+- **Migration integrity & reconciliation:**
+  - Authoritative migration: `supabase/migrations/20260825032113_initial_database_security_foundation.sql`
+  - Pre-deployment SHA-256 hash: `53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2`
+  - Post-verification SHA-256 hash: `53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2` (100% match)
+  - Local migration version: `20260825032113`
+  - Hosted migration version: `[]` (unmodified)
+  - Filename rename required: NO (hosted migration not applied)
+- **Local database regression gate:**
+  - Local `supabase db reset`: PASS
+  - pgTAP test suite: Files = 7, Tests = 85, Result = PASS (100%)
+    - `01_schema_structure.test.sql`: PASS
+    - `02_anonymous_access.test.sql`: PASS
+    - `03_comments_security.test.sql`: PASS
+    - `04_contact_messages_security.test.sql`: PASS
+    - `05_authenticated_non_admin.test.sql`: PASS
+    - `06_admin_access.test.sql`: PASS
+    - `07_storage_security.test.sql`: PASS
+  - Local database lint (`supabase db lint --level warning --local`): PASS (0 errors, 0 warnings)
+- **Project quality gates:**
+  - `npm run typecheck`: PASS
+  - `npm run lint`: PASS
+  - `npm run format:check`: PASS
+  - `npm run build`: PASS
+  - `git diff --check`: PASS
+- **Security & data boundaries:**
+  - Production seed NOT deployed (`supabase/seed.sql` remains local-only)
+  - Synthetic fixtures remain local only
+  - Hosted admin allowlist remains unprovisioned pending Stage 4
+  - Auth configuration NOT modified
+  - Edge Functions NOT modified
+  - Stage 4 remains NOT AUTHORIZED
+
 ## Stage transition rule
 
 A future stage transition requires all of the following:
