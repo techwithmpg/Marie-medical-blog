@@ -1,10 +1,10 @@
 # 27 — Stage 6 Article Reading & Discovery Design
 
-**Status:** FROZEN PRE-IMPLEMENTATION DESIGN  
-**Stage:** Stage 6 — Article Reading & Discovery  
-**Authorization:** APPROVED BY PROJECT OWNER — 2026-08-25  
-**Canonical Base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`  
-**Active Working Branch:** `stage/06-article-discovery`  
+**Status:** FROZEN PRE-IMPLEMENTATION DESIGN (HARDENED)
+**Stage:** Stage 6 — Article Reading & Discovery
+**Authorization:** APPROVED BY PROJECT OWNER — 2026-08-25
+**Canonical Base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
+**Active Working Branch:** `stage/06-article-discovery`
 
 ---
 
@@ -14,7 +14,7 @@ Stage 6 delivers the public article discovery and reading experience for the Mar
 
 ### Authorized Stage-6 Routes & Integrations
 
-- **`/blog`** — Published article listing, topic filtering, simple search, pagination, and featured article presentation.
+- **`/blog`** — Published article listing, topic filtering, simple search, deterministic pagination, and featured/latest lead article presentation.
 - **`/blog/[slug]`** — Evidence Folio long-form article view with Reference Ledger, author context, medical disclaimer, and related writing.
 - **`/topics/[slug]`** — Topic/category-filtered published article listing with authentic empty states.
 - **Homepage (`/`) Integration** — Replace static empty states with real published articles (featured and latest writing) when available.
@@ -44,7 +44,19 @@ In Postgres and Supabase:
 - **REFERENCES:** `public.article_references` must only be loaded and rendered for verified published articles.
 - **SECRETS:** No service-role key or RLS bypass is permitted in public data fetchers.
 
-### B. Server-Side Data Layer (`src/lib/public-articles.ts`)
+### B. Public Query Errors vs. False 404s
+
+The data layer strictly differentiates between missing content and infrastructure failures:
+
+1. **`/blog/[slug]`:**
+   - **Successful Query + No Published Match:** Invokes `notFound()` to trigger the standard Next.js 404 page.
+   - **Database / Network / Query Error:** Must **NOT** invoke `notFound()`. Throws a controlled server error to render the application error boundary (`error.tsx`), indicating temporary service unavailability.
+2. **Listings (`/blog`, `/topics/[slug]`, Search):**
+   - **Successful Query + 0 Matches:** Renders an authentic, truthful empty state.
+   - **Query / Network Error:** Renders a controlled unavailable message ("Unable to load articles at this time. Please try again later."), avoiding false empty states.
+3. **Public Exposure:** Raw database error objects, Postgres codes, and internal stack traces are never exposed to public visitors.
+
+### C. Server-Side Data Layer Types (`src/lib/public-articles.ts`)
 
 Public article data access is centralized in a dedicated server module using Server Components and Supabase server clients (`src/lib/supabase/server.ts`).
 
@@ -66,7 +78,8 @@ export interface PublicArticleSummary {
   featured_image_alt: string | null;
   category_id: string | null;
   category: PublicCategory | null;
-  published_at: string;
+  published_at: string | null;
+  created_at: string;
   is_featured: boolean;
   is_portfolio_featured: boolean;
   reading_time_minutes: number;
@@ -75,7 +88,7 @@ export interface PublicArticleSummary {
 export interface PublicArticleReference {
   id: string;
   title: string;
-  source_name: string | null;
+  source_name: string; // NOT NULL in database schema
   url: string | null;
   citation_details: string | null;
   sort_order: number;
@@ -96,18 +109,35 @@ export interface PublicArticleListResult {
   pageSize: number;
   totalPages: number;
 }
+
+export interface PublicBlogViewData {
+  leadArticle: PublicArticleSummary | null;
+  isLeadExplicitlyFeatured: boolean;
+  articles: PublicArticleSummary[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 ```
 
-### C. Data Access API Contract
+### D. Data Access API Contract
 
 ```typescript
-// Query Helpers in src/lib/public-articles.ts
 export async function getPublishedArticles(options?: {
   page?: number;
   pageSize?: number;
   topicSlug?: string;
   searchQuery?: string;
+  excludeArticleId?: string;
 }): Promise<PublicArticleListResult>;
+
+export async function getBlogViewData(options?: {
+  page?: number;
+  pageSize?: number;
+  topicSlug?: string;
+  searchQuery?: string;
+}): Promise<PublicBlogViewData>;
 
 export async function getPublishedArticleBySlug(
   slug: string
@@ -136,62 +166,97 @@ export async function getCategoryBySlug(
 
 ---
 
-## 3. Blog Listing & Discovery (`/blog`)
+## 3. Blog Listing, Lead Deduplication & Pagination (`/blog`)
 
-### A. URL Search Parameters (Shareable & Reload-Safe)
+### A. URL Search Parameters
 
 All filter, search, and pagination state is driven by Next.js search parameters:
-- `q`: Search keyword query string (trimmed, max 100 characters).
+- `q`: Search keyword query string (trimmed, sanitized, max 100 characters).
 - `topic`: Category/topic slug filter (e.g. `clinical-communications`).
 - `page`: 1-indexed page number (default: `1`, minimum: `1`).
 
-### B. Pagination Design
+### B. Deterministic Ordering Contract
 
-- **Page Size:** 6 articles per page (restrained editorial density fitting Evidence Folio layout).
-- **Strategy:** Server-side deterministic `.range(from, to)` querying with Postgres `count: 'exact'`.
-- **Navigation:** Accessible Previous / Next pagination controls with disabled states and URL parameter preservation.
+All published article queries enforce strict, deterministic multi-column ordering applied **BEFORE** `.range(from, to)`:
+1. `published_at DESC, NULLS LAST`
+2. `created_at DESC`
+3. `id DESC` (stable tie-break)
 
-### C. Hierarchy & Components
+In Supabase JS:
+```typescript
+query = query
+  .order('published_at', { ascending: false, nullsFirst: false })
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false });
+```
 
-1. **Page Intro:** `PageIntro` component with "Articles" H1, Topic Imprint, deck, and Split Rule.
-2. **Filter & Search Bar:** Topic filter tabs + search input form submitting GET requests to `/blog`.
-3. **Featured Article Header:** On page 1 with no active query/topic filter, the lead featured article is highlighted via `FeaturedArticle`.
-4. **Article List:** Rendered via `ArticleListItem` featuring Folio indexing (`01`, `02`...), publication date, category imprint, title, excerpt, and reading time.
-5. **Empty & No-Result States:**
-   - No articles published in blog: truthful empty state.
-   - Search returned 0 results: "No articles matched your search for '{q}'" with "Clear search" link.
+### C. Featured vs. Latest Lead Semantics & Deduplication
+
+1. **Lead Selection:**
+   - On page 1 of `/blog` when no search (`q`) and no topic filter (`topic`) are active, a dominant lead article is displayed.
+   - If an article with `is_featured = true` and `status = 'published'` exists, it is selected as the lead story with the label **"Featured Writing"**.
+   - If no article is explicitly featured, the latest published article becomes the lead story with the label **"Latest Writing"** or **"Latest Article"** (never falsely labeled as "Featured").
+2. **Deduplication:**
+   - The lead article is fetched first.
+   - Its ID (`leadArticle.id`) is excluded from the paginated supporting article query (`.neq('id', leadArticle.id)`).
+   - Total count and pagination calculations for the supporting grid are computed against this excluded set, ensuring no article appears twice on page 1.
+3. **Filtered / Search States:**
+   - When a search query or topic filter is active, the separate lead story is omitted; all matching articles render directly in the standard paginated list.
+
+### D. Pagination Parameters
+
+- **Page Size:** 6 articles per page for supporting grids / filtered listings.
+- **Controls:** Accessible Previous / Next links preserving active `q` and `topic` parameters.
 
 ---
 
-## 4. Search Architecture
+## 4. Search Architecture & Hardened Sanitization Contract
 
-Stage 6 implements simple, deterministic, and safe search without introducing external services or database migrations.
+Stage 6 implements literal substring-style search in `title` and `excerpt` without external services or database migrations.
 
-### A. Scope
+### A. Strict Normalization & Sanitization Pipeline
 
-- **Target Fields:** `title` and `excerpt`.
-- **Filter Constraint:** Strictly published articles (`status = 'published'`).
-- **No External Services:** Zero reliance on Algolia, Elasticsearch, or Meilisearch.
+PostgREST `.or()` filter expressions parse comma-separated field conditions and parentheses. To prevent filter syntax breakage or unintended query logic, user search input must pass through an explicit 7-step sanitization contract:
 
-### B. Input Normalization & PostgREST Filter Sanitization
+```typescript
+export function sanitizeSearchQuery(raw: string | undefined | null): string {
+  if (!raw) return '';
 
-PostgREST `.or()` filter syntax uses commas and parentheses to parse expressions. Raw user input must never be directly interpolated into `.or()` strings.
+  // 1. Unicode normalize using NFKC
+  let normalized = raw.normalize('NFKC');
 
-**Sanitization Algorithm:**
-1. Trim leading and trailing whitespace.
-2. Limit string length to 100 characters.
-3. Strip characters with structural meaning in PostgREST filters: `(`, `)`, `,`, `"`, `\`, `%`.
-4. If sanitized string is empty, ignore search parameter.
-5. Apply safe filter:
-   ```typescript
-   query = query.or(`title.ilike.%${safeQuery}%,excerpt.ilike.%${safeQuery}%`);
-   ```
+  // 2. Trim whitespace
+  normalized = normalized.trim();
+
+  // 3. Collapse repeated internal whitespace to a single space
+  normalized = normalized.replace(/\s+/g, ' ');
+
+  // 4. Limit length to 100 characters
+  normalized = normalized.slice(0, 100);
+
+  // 5. Remove PostgREST structural/pattern characters: ( ) , " \ % * _
+  normalized = normalized.replace(/[(),"\x5c%*_]/g, '');
+
+  // 6. Trim again after stripping characters
+  normalized = normalized.trim();
+
+  // 7. If empty after sanitization, return empty string (search filter ignored)
+  return normalized;
+}
+```
+
+### B. Safe Search Execution
+
+When `safeQuery` is non-empty:
+```typescript
+query = query
+  .eq('status', 'published')
+  .or(`title.ilike.%${safeQuery}%,excerpt.ilike.%${safeQuery}%`);
+```
 
 ---
 
 ## 5. Topic / Category Route (`/topics/[slug]`)
-
-### A. Route Flow
 
 1. Resolve category record via `getCategoryBySlug(slug)`.
 2. If category does not exist: call `notFound()` to render the 404 boundary.
@@ -211,13 +276,13 @@ Following the Evidence Folio article contract (`docs/18-UI-IMPLEMENTATION-CONTRA
 2. **Topic Imprint:** Category label above headline
 3. **Article Title:** Newsreader H1 (`text-3xl md:text-5xl font-serif`)
 4. **Excerpt / Deck:** Editorial lead deck (`text-lg md:text-xl text-muted-ink`)
-5. **Publication Metadata:** Published date, optional updated date, calculated reading time
+5. **Publication Metadata:** Published date (shown only when `published_at` is non-null), optional updated date, calculated reading time
 6. **Featured Media:** Optional image rendered with `featured_image_alt`
 7. **Article Body:** Rendered via safe Tiptap JSON read-only renderer (680–720px reading measure)
 8. **Reference Ledger:** Numbered source ledger from `public.article_references`
 9. **Author Block:** Marie Medere professional author bridge
 10. **Medical Disclaimer:** Standalone medical disclaimer banner
-11. **Related Writing:** 2–3 related published articles from the same category
+11. **Related Writing:** 1–3 strictly related published articles from the same category
 
 ### B. 404 Guarantee
 
@@ -256,20 +321,19 @@ Stage 6 implements a custom, pure React read-only renderer for `content_json` wi
 | `code` | `<code>` | `bg-subtle-field px-1.5 py-0.5 rounded text-sm font-mono` |
 | `link` | `<a>` | `text-inline-link underline underline-offset-2 hover:text-brand-oxide` |
 
-### C. Link Protocol Validation
+### C. Link & Reference URL Protocol Validation
 
-All link marks must validate the `href` attribute:
-- **Allowed Protocols:** `https:`, `http:`, `mailto:`, or root-relative paths (`/`).
-- **Rejected:** `javascript:`, `data:`, `vbscript:`, and unapproved schemes (rendered as plain text span).
-- **External Links:** Set `target="_blank"` and `rel="noopener noreferrer"`.
+All links in article bodies and reference citations validate URLs:
+- **Allowed Protocols:** `https:` and `http:` (plus `mailto:` or root-relative paths `/` for body links).
+- **Rejected:** `javascript:`, `data:`, `vbscript:`, and arbitrary schemes.
+- **Fallback:** If a reference URL fails protocol validation, the citation text is rendered safely as unlinked plain text.
+- **External Links:** Rendered with `target="_blank"` and `rel="noopener noreferrer"`.
 
 ---
 
 ## 8. Reading Time Calculation
 
 Reading time is calculated dynamically in memory from `content_json`. No database column is added.
-
-### Algorithm
 
 ```typescript
 export function calculateReadingTime(contentJson: unknown): number {
@@ -296,21 +360,23 @@ export function calculateReadingTime(contentJson: unknown): number {
 
 ---
 
-## 9. Featured, Related & Portfolio Writing
+## 9. Related Writing & Selected Writing Semantics
 
-### A. Featured Writing
-- Target: Published article where `is_featured = true`.
-- Fallback: If no article is explicitly marked `is_featured = true`, fall back to the newest published article by `published_at DESC`.
+### A. Related Writing (Strict Category Relevancy)
 
-### B. Related Writing
-- Target: Published articles sharing the same `category_id`, excluding the current article (`id != currentArticleId`).
-- Limit: 2 or 3 articles.
-- Fallback: If fewer than 2 articles exist in the category, supplement with latest published articles.
+- **Criteria:** `status = 'published'`, `category_id = currentArticle.category_id`, `id != currentArticle.id`.
+- **Order:** `published_at DESC NULLS LAST, created_at DESC, id DESC`.
+- **Limit:** Maximum 3 articles.
+- **Truthful Omission:**
+  - If 1 or 2 matching articles exist, render exactly 1 or 2.
+  - If 0 matching articles exist, or if the current article has no category (`category_id = null`), **omit the Related Writing section entirely**.
+  - **NEVER** backfill unrelated articles from other categories into Related Writing.
 
-### C. Selected Writing (`/portfolio`)
-- Target: Published articles where `is_portfolio_featured = true`.
-- Sort: `published_at DESC`.
-- Fallback: If 0 articles are portfolio-featured, retain the truthful Stage-5 empty state.
+### B. Selected Writing (`/portfolio`)
+
+- **Criteria:** `status = 'published'` AND `is_portfolio_featured = true`.
+- **Order:** `published_at DESC NULLS LAST, created_at DESC, id DESC`.
+- **Fallback:** If 0 articles are portfolio-featured, retain the truthful Stage-5 empty state.
 
 ---
 
@@ -318,26 +384,27 @@ export function calculateReadingTime(contentJson: unknown): number {
 
 - Stored in `public.article_references`.
 - Filtered to the current published article, ordered by `sort_order ASC`.
-- Fields rendered: `title`, `source_name`, `url`, `citation_details`.
-- References are displayed in the **Reference Ledger** component with numbered indexing matching academic/editorial conventions.
+- Fields rendered: `title`, `source_name` (non-null), `url`, `citation_details`.
+- Displayed in the **Reference Ledger** component with academic numbered indexing.
 
 ---
 
-## 11. Featured Images & Supabase Storage
+## 11. Storage Asset URL Architecture
 
 - Asset bucket: existing `public-assets` bucket.
-- Helper function in `src/lib/public-data.ts`:
+- Reusable helper in `src/lib/public-data.ts`:
   ```typescript
-  export function getPublicStorageUrl(path: string | null): string | null {
+  import { createClient } from '@/lib/supabase/client';
+
+  export function getPublicAssetUrl(path: string | null | undefined): string | null {
     if (!path) return null;
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!supabaseUrl) return null;
-    return `${supabaseUrl}/storage/v1/object/public/public-assets/${path}`;
+    const supabase = createClient();
+    const { data } = supabase.storage.from('public-assets').getPublicUrl(path);
+    return data.publicUrl || null;
   }
   ```
-- Informative alt text: rendered via `featured_image_alt` when image is present.
-- If image fails or path is null, media block is omitted cleanly without layout breaks.
+- **CV Helper Integration:** `getPublicCvUrl()` delegates directly to `getPublicAssetUrl()`.
+- **Synthetic Seed Fixture Rule:** If a local synthetic image file is not physically present in storage, fixtures must set `featured_image_path = null` and `featured_image_alt = null` to prevent broken image displays.
 
 ---
 
