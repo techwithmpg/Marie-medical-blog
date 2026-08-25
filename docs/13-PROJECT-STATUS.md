@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / PRE-IMPLEMENTATION DESIGN & RESEARCH
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / PRE-IMPLEMENTATION DESIGN HARDENING
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Active working branch:** `stage/08-publishing-workflow`
-- **Application coding authorized:** FROZEN PENDING STAGE-8 DESIGN / ARCHITECTURE GATE
-- **Gate status:** PRE-IMPLEMENTATION DESIGN IN PROGRESS
+- **Application coding authorized:** FROZEN PENDING FINAL STAGE-8 ARCHITECTURE APPROVAL
+- **Gate status:** EXTERNAL DESIGN REVIEW CORRECTIONS APPLIED / AWAITING FINAL REVIEW
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
 - **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
@@ -232,10 +232,10 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 8 — Publishing Workflow is AUTHORIZED BY PROJECT OWNER for PRE-IMPLEMENTATION DESIGN & RESEARCH (2026-08-26).**
+**Stage 8 — Publishing Workflow is in PRE-IMPLEMENTATION DESIGN HARDENING (2026-08-26).**
 
-- Stage 8 pre-implementation design and architecture research is active on branch `stage/08-publishing-workflow`.
-- Application coding, database migrations, package installations, and hosted mutations remain **FROZEN** pending the Stage-8 architecture/design review gate.
+- Stage 8 pre-implementation design corrections from external review have been applied on branch `stage/08-publishing-workflow`.
+- Application coding, database migrations, package installations, and hosted mutations remain **FROZEN** pending final Stage-8 architecture approval.
 - Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
 - Stage 9 — Comments, Contact Inbox & Settings remains **NOT AUTHORIZED**.
 
