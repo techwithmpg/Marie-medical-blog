@@ -4,26 +4,26 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYED / VERIFIED / AWAITING EXTERNAL FINAL REVIEW & OWNER MERGE APPROVAL
-- **Draft persistence regression:** FIXED / VERIFIED
-- **Stage-7 draft RPC compatibility:** PASS
-- **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
-- **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
-- **Hosted deployment authorization:** D031 ACTIVE (DEPLOYED & VERIFIED — 2026-08-26)
-- **Write transport:** `supabase_stage8_write` — APPLIED ONCE / VERIFIED / SAFE MODE RESTORED
-- **Replacement apply_migration:** SUCCESS (1 ATTEMPT)
-- **Hosted Stage-8 migration:** APPLIED (`20260825232024_stage8_publishing_lifecycle.sql`)
-- **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
-- **Hosted migration version:** `20260825232024` (RECONCILED TO LOCAL MIGRATION FILE)
+- **Current stage:** Stage 8 — Publishing Workflow — COMPLETE / MERGED / GATE PASS
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Hosted deployment:** DEPLOYED / VERIFIED — 2026-08-26
+- **Stage-8 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
+- **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
+- **Stage-8 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
+- **Stage-8 merge parents:**
+  - first parent: `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+  - second parent: `fa06f386d2b69f64d9762120b95408226fea6b2c`
+- **Active working branch:** `main`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Gate status:** PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS, PRODUCTION BUILD VERIFIED)
+- **Hosted Stage-8 migration:** `20260825232024_stage8_publishing_lifecycle.sql`
+- **Hosted migration version:** `20260825232024`
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
 - **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addenda)
-- **Active working branch:** `stage/08-publishing-workflow`
-- **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
-- **Gate status:** FULL LOCAL + HOSTED QUALITY GATE PASS (10/10 pgTAP FILES, 210/210 TESTS; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
-- **Hosted migration state:** APPLIED & VERIFIED
-- **Stage 8 merge:** NOT AUTHORIZED
-- **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
+- **Draft persistence regression:** FIXED / VERIFIED
+- **Stage-7 draft RPC compatibility:** PASS
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`

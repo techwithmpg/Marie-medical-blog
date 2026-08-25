@@ -124,13 +124,31 @@ Stage 8 intentionally does **NOT** add:
 
 ## 9. Next Stage Readiness
 
-* **Stage 8 Status:** **READY FOR OWNER MERGE APPROVAL**
-* **Stage 8 Merge:** **NOT YET AUTHORIZED**
+* **Stage 8 Status:** **COMPLETE / MERGED / GATE PASS**
+* **Stage 8 Merge:** **COMPLETED WITH PROJECT-OWNER APPROVAL**
 * **Stage 9 Status:** **NOT AUTHORIZED**
 
 Stage 9 may begin only after:
-1. Stage 8 receives explicit project-owner merge approval;
-2. Stage 8 is merged to `main`;
+1. Stage 8 receives explicit project-owner merge approval (Completed);
+2. Stage 8 is merged to `main` (Completed);
 3. `main` is verified and synchronized;
 4. Stage-8 branch cleanup is complete;
 5. Stage 9 receives separate explicit project-owner authorization.
+
+---
+
+## 10. Merge Closeout
+
+* **Project-Owner Merge Approval:** Explicit owner authorization on 2026-08-26.
+* **Approved Stage-8 Head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
+* **Prior Canonical Main:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+* **Stage-8 Merge Commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
+* **Merge Method:** Normal `--no-ff` merge preserving Stage-8 commit history.
+* **Merge Parents:**
+  * First parent (prior main): `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+  * Second parent (approved Stage-8 head): `fa06f386d2b69f64d9762120b95408226fea6b2c`
+* **Post-Merge Local Quality Gate:** PASS (10/10 pgTAP files, 210/210 tests; 5/5 Node test files, 28/28 tests; TypeScript 0 errors; ESLint 0 warnings/errors; Prettier 100% compliant; Next.js 12/12 static/dynamic routes compiled).
+* **Hosted Stage-8 Migration:** `20260825232024_stage8_publishing_lifecycle.sql`
+* **Hosted Database State:** Unchanged / verified (all 6 RPCs verified, RLS enforced, draft-assets private, public-assets public, Auth intact).
+* **Stage-8 Final State:** **COMPLETE / MERGED / GATE PASS**
+* **Stage 9 Status:** **NOT AUTHORIZED**
