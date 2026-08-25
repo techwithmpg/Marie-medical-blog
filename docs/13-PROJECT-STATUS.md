@@ -4,16 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / IMPLEMENTATION — PHASE 8B COMPLETE
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / IMPLEMENTATION — PHASE 8C GATE PASS
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
 - **Owner-approved architecture decision:** D030
 - **Active working branch:** `stage/08-publishing-workflow`
-- **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A & 8B COMPLETED
-- **Gate status:** PHASE 8B LOCAL GATE PASS
+- **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B & 8C COMPLETED
+- **Gate status:** PHASE 8C LOCAL GATE PASS (STAGE 8 LOCAL IMPLEMENTATION COMPLETE)
 - **Hosted Stage-8 deployment:** NOT AUTHORIZED
-- **Phase 8C (UI / Preview Workspace):** NOT AUTHORIZED
+- **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
@@ -672,7 +672,44 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run build`: PASS (Next.js production build verified)
   - `git diff --check`: PASS (clean diff)
 - **Hosted Stage-8 deployment:** NOT AUTHORIZED
-- **Phase 8C status:** NOT AUTHORIZED
+- **Phase 8C status:** COMPLETE / LOCAL GATE PASS
+
+## Stage-8 progress record — Phase 8C (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8C — Publishing UI + Preview Workspace
+- **Owner authorization:** Explicit continuation authorization for Phase 8C (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Implementation commit SHA:** `02fbd452c855a059e6455797871596e3be96871e`
+- **Phase 8C files created/modified:**
+  - `src/components/admin/editor/article-preview-modal.tsx` (Evidence Folio in-memory preview workspace, responsive desktop/tablet/mobile viewport switcher, signed draft asset previews, live reading time, secure private admin containment);
+  - `src/components/admin/editor/publish-modal.tsx` (first publication candidate slug customization with live kebab preview, republishing permanent slug freeze indicator, publication summary grid, in-flight action locks, error banner);
+  - `src/components/admin/editor/lifecycle-modals.tsx` (dedicated accessible confirmation dialogs for Unpublish, Archive, Restore, and Delete with ever-published deletion block);
+  - `src/components/admin/editor/article-editor.tsx` (state-aware lifecycle workspace supporting Draft, Published, and Archived modes, in-flight status indicators, keyboard shortcuts, clean dirty tracking, toast notifications);
+  - `src/app/admin/articles/[id]/page.tsx` (routes all valid article statuses into the complete Stage 8 `ArticleEditor`);
+  - `src/app/admin/articles/page.tsx` (articles dashboard with state-aware table/card action buttons and direct "Live Post" external links);
+  - `tests/stage8-phase8c-ui-lifecycle.test.mjs` (automated test suite covering UI state machine action availability, slug immutability rules, ever-published deletion guards, and in-flight operation locks);
+  - `tests/stage8-phase8c-e2e.test.mjs` (automated end-to-end publishing lifecycle test suite executing complete 8-step lifecycle against local database).
+- **Phase 8C deliverables completed:**
+  - [x] Evidence Folio Admin Preview Modal implemented reusing genuine public presentation components (`ArticleHeader`, `ArticleTypography`, `ReferenceLedger`, `AuthorBlock`, `MedicalDisclaimer`) while strictly remaining within authenticated admin boundary;
+  - [x] Multi-device viewport switcher implemented (Desktop 100%, Tablet 768px, Mobile 375px) with genuine aspect scaling and typography containment;
+  - [x] First publication flow allows candidate slug customization (<= 80 chars, kebab-case, no draft UUIDs); republishing permanently locks canonical slug;
+  - [x] Complete lifecycle action modals implemented with clear, unambiguous consequence copy;
+  - [x] Ever-published deletion protection enforced in UI: hard deletion disabled with descriptive tooltip for any article where `published_at` is non-null;
+  - [x] Admin article dashboard updated to display state-aware actions and live public post links;
+  - [x] Comprehensive test suites added: 21/21 automated node tests passing across 4 test suites + 199/199 database pgTAP tests passing.
+- **Local Quality Gates (Phase 8C):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all migrations)
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures; 75 tests in Stage-8 suite)
+  - `node --test tests/*.test.mjs`: PASS (4 test files, 21 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Stage 8 Implementation Status:** COMPLETE / ALL PHASES (8A, 8B, 8C) VERIFIED / READY FOR HANDOFF PROTOCOL
 
 ## Stage transition rule
 
