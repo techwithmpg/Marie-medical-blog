@@ -8,36 +8,40 @@ import { TopicImprint } from "@/components/evidence/topic-imprint";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
-import { getPublicProfile } from "@/lib/public-data";
+import { getPublicProfile, getPublicCvUrl } from "@/lib/public-data";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "About — Marie Medere",
   description:
-    "Professional profile, editorial philosophy, and medical writing approach of Marie Medere, dedicated to clear, evidence-based healthcare communication.",
+    "About Marie Medere, medical writing portfolio, and educational publication approach.",
 };
 
 export default async function AboutPage() {
   const profile = await getPublicProfile();
+  const cvUrl = await getPublicCvUrl(profile.cv_storage_path);
 
-  const writingPillars = [
+  const displayName = profile.display_name || "Marie Medere";
+  const tagline = profile.professional_tagline;
+
+  const corePrinciples = [
     {
       folio: "01",
-      title: "Evidence-First Synthesis",
+      title: "Evidence-Based Communication",
       description:
-        "Every publication begins with comprehensive appraisal of peer-reviewed literature, clinical trials data, and consensus guidelines. Conclusions reflect evidence strength without overstated claims.",
+        "Presenting healthcare and scientific topics with direct reference to underlying clinical evidence and literature sources.",
     },
     {
       folio: "02",
-      title: "Clarity Without Oversimplification",
+      title: "Clarity & Accuracy",
       description:
-        "Complex medical mechanisms and therapeutic data are articulated with linguistic precision. Technical accuracy is maintained while ensuring readability for multidisciplinary stakeholders.",
+        "Maintaining scientific precision while structuring content for clear, accessible reading across professional audiences.",
     },
     {
       folio: "03",
-      title: "Editorial Independence & Integrity",
+      title: "Educational Integrity",
       description:
-        "Writing adheres strictly to objective scientific standards, transparent bibliographic referencing, and educational integrity free from commercial bias.",
+        "Structuring publications objectively to support educational understanding, free from promotional bias.",
     },
   ];
 
@@ -47,32 +51,32 @@ export default async function AboutPage() {
         {/* Page Header */}
         <PageIntro
           folioNumber={1}
-          folioLabel="Profile & Philosophy"
-          topicLabel="About the Author"
+          folioLabel="Profile & Purpose"
+          topicLabel="About"
           topicVariant="oxide"
-          title={`About ${profile.display_name}`}
+          title={`About ${displayName}`}
           deck={
             profile.short_bio ||
-            "Evidence-led medical writer dedicated to translating complex healthcare research, clinical data, and regulatory documents into rigorous, transparent communications."
+            "Medical writing portfolio and educational publication dedicated to clear, evidence-based healthcare communication."
           }
         />
 
         {/* Main Profile Grid */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-          {/* Primary Profile Column */}
+          {/* Primary Column */}
           <div className="space-y-10 lg:col-span-8">
-            {/* Professional Background */}
+            {/* Publication Approach & Purpose */}
             <section className="space-y-4">
               <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-                Editorial Background &amp; Focus
+                Publication Purpose &amp; Approach
               </h2>
 
               <p className="text-base leading-relaxed text-[#242321] sm:text-lg">
-                Marie Medere specializes in evidence-based medical writing,
-                clinical literature synthesis, and educational healthcare
-                communication. Working at the intersection of clinical science
-                and structured documentation, the objective is always to deliver
-                clarity, accuracy, and rigorous evidence representation.
+                This website serves as a dedicated platform for medical writing
+                and educational publications authored by {displayName}. The goal
+                of the publication is to explore healthcare science, clinical
+                evidence, and medical topics with rigorous attention to clarity
+                and transparent citations.
               </p>
 
               {profile.long_bio && (
@@ -82,40 +86,38 @@ export default async function AboutPage() {
               )}
 
               <p className="text-base leading-relaxed text-[#5E5953]">
-                Through structured editorial frameworks such as The Evidence
-                Folio, every published piece incorporates transparent reference
-                ledgers, methodological context, and disciplined scientific
-                language tailored to discerning medical and professional
-                audiences.
+                By combining clear language with transparent reference
+                structures, entries are organized to make complex biomedical
+                concepts understandable without sacrificing scientific accuracy.
               </p>
             </section>
 
-            {/* Writing Pillars */}
+            {/* Core Principles */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                <FolioMarker number={2} label="Methodology" />
-                <TopicImprint variant="sage">Core Principles</TopicImprint>
+                <FolioMarker number={2} label="Editorial Foundations" />
+                <TopicImprint variant="sage">Principles</TopicImprint>
               </div>
 
               <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-                The Writing &amp; Editorial Approach
+                Editorial Principles
               </h2>
 
               <div className="space-y-4">
-                {writingPillars.map((pillar) => (
+                {corePrinciples.map((principle) => (
                   <div
-                    key={pillar.folio}
+                    key={principle.folio}
                     className="space-y-2 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-6"
                   >
                     <div className="flex items-center justify-between">
-                      <FolioMarker number={pillar.folio} />
+                      <FolioMarker number={principle.folio} />
                       <TopicImprint variant="muted">Standard</TopicImprint>
                     </div>
                     <h3 className="font-serif text-xl font-medium text-[#242321]">
-                      {pillar.title}
+                      {principle.title}
                     </h3>
                     <p className="text-sm leading-relaxed text-[#5E5953]">
-                      {pillar.description}
+                      {principle.description}
                     </p>
                   </div>
                 ))}
@@ -126,7 +128,7 @@ export default async function AboutPage() {
             {profile.education_summary && (
               <section className="space-y-4 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-6">
                 <h3 className="font-serif text-xl font-medium text-[#242321]">
-                  Verified Academic &amp; Professional Background
+                  Academic Background
                 </h3>
                 <p className="text-sm leading-relaxed text-[#5E5953]">
                   {profile.education_summary}
@@ -138,11 +140,11 @@ export default async function AboutPage() {
             <section className="space-y-6 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-8">
               <div className="space-y-2">
                 <h3 className="font-serif text-2xl font-medium text-[#242321]">
-                  Explore Portfolio &amp; Inquire
+                  Selected Writing &amp; Inquiries
                 </h3>
                 <p className="text-sm leading-relaxed text-[#5E5953]">
-                  Browse curated writing samples across clinical and educational
-                  domains, or reach out for project collaboration.
+                  Explore curated writing entries or reach out for professional
+                  inquiries.
                 </p>
               </div>
 
@@ -161,20 +163,20 @@ export default async function AboutPage() {
                     buttonVariants({ variant: "outline", size: "default" }),
                   )}
                 >
-                  Contact Marie
+                  Contact
                 </Link>
-                {profile.cv_storage_path ? (
+                {cvUrl && (
                   <a
-                    href={profile.cv_storage_path}
+                    href={cvUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
                       buttonVariants({ variant: "secondary", size: "default" }),
                     )}
                   >
-                    Download Curriculum Vitae
+                    Download CV
                   </a>
-                ) : null}
+                )}
               </div>
             </section>
           </div>
@@ -189,24 +191,23 @@ export default async function AboutPage() {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <span className="font-serif text-lg font-medium text-[#242321]">
-                    {profile.display_name}
+                    {displayName}
                   </span>
-                  <p className="text-xs text-[#5E5953]">
-                    {profile.professional_tagline}
-                  </p>
+                  {tagline && (
+                    <p className="text-xs text-[#5E5953]">{tagline}</p>
+                  )}
                 </div>
 
                 <SplitRule />
 
                 <div className="space-y-2 text-xs leading-relaxed text-[#5E5953]">
                   <strong className="block font-semibold tracking-wider text-[#242321] uppercase">
-                    Practice Scope
+                    Publication Focus
                   </strong>
                   <ul className="space-y-1.5">
-                    <li>• Clinical summaries &amp; review manuscripts</li>
-                    <li>• Regulatory documentation support</li>
-                    <li>• Healthcare educational writing</li>
-                    <li>• Evidence synthesis &amp; bibliographic auditing</li>
+                    <li>• Evidence-based medical writing</li>
+                    <li>• Educational healthcare publications</li>
+                    <li>• Literature synthesis and review</li>
                   </ul>
                 </div>
 

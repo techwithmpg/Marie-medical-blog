@@ -9,7 +9,7 @@ import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 export const metadata = {
   title: "Contact — Marie Medere",
   description:
-    "Get in touch with Marie Medere for medical writing inquiries, clinical literature synthesis, and educational publication collaborations.",
+    "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.",
 };
 
 export default function ContactPage() {
@@ -22,8 +22,8 @@ export default function ContactPage() {
           folioLabel="Communication"
           topicLabel="Inquiries"
           topicVariant="oxide"
-          title="Get in Touch"
-          deck="Inquire regarding professional medical writing engagements, regulatory documentation support, clinical literature syntheses, or educational publication consults."
+          title="Contact"
+          deck="For professional medical writing inquiries, editorial discussions, and publication communications."
         />
 
         {/* Main Content Grid */}
@@ -42,35 +42,23 @@ export default function ContactPage() {
             >
               <div className="space-y-4">
                 <span className="font-serif text-base font-medium text-[#242321]">
-                  Collaboration &amp; Engagement
+                  Professional Communications
                 </span>
                 <p className="text-xs leading-relaxed text-[#5E5953]">
-                  Marie Medere collaborates with medical directors, clinical
-                  researchers, regulatory professionals, and academic
-                  institutions on specialized writing projects.
+                  This contact channel is intended for professional inquiries
+                  regarding medical writing, publication development, and
+                  editorial collaboration.
                 </p>
 
                 <SplitRule />
 
                 <div className="space-y-2 text-xs text-[#5E5953]">
                   <strong className="block font-semibold tracking-wider text-[#242321] uppercase">
-                    Services Offered
+                    Important Notice
                   </strong>
-                  <ul className="space-y-1.5">
-                    <li>• Systematic literature reviews &amp; meta-analyses</li>
-                    <li>• Clinical evaluation &amp; regulatory dossiers</li>
-                    <li>• Peer-reviewed manuscript writing &amp; editing</li>
-                    <li>• Educational monographs &amp; medical content</li>
-                  </ul>
-                </div>
-
-                <div className="pt-2">
-                  <span className="block text-xs font-semibold tracking-wider text-[#242321] uppercase">
-                    Notice
-                  </span>
-                  <p className="pt-1 text-xs leading-relaxed text-[#5E5953]">
-                    Inquiries regarding personal medical conditions or
-                    individual patient care cannot be addressed.
+                  <p className="leading-relaxed">
+                    Personal medical inquiries, clinical diagnostic requests, or
+                    individual treatment consultations cannot be answered.
                   </p>
                 </div>
               </div>

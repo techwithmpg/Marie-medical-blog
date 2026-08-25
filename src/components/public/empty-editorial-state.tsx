@@ -14,11 +14,11 @@ interface EmptyEditorialStateProps {
 }
 
 export function EmptyEditorialState({
-  title = "Selected Writing in Preparation",
-  description = "Evidence-led clinical publications, regulatory writing samples, and educational monographs are currently in editorial curation. Published writing will appear here as entries are released.",
-  topicLabel = "Editorial Pipeline",
-  actionHref = "/contact",
-  actionLabel = "Inquire About Writing Samples",
+  title = "Selected Writing",
+  description = "Published articles and selected medical writing entries will appear here as publications are released.",
+  topicLabel = "Publication Index",
+  actionHref,
+  actionLabel,
   className,
 }: EmptyEditorialStateProps) {
   return (
@@ -29,7 +29,7 @@ export function EmptyEditorialState({
       )}
     >
       <div className="flex justify-center">
-        <TopicImprint variant="sage">{topicLabel}</TopicImprint>
+        <TopicImprint variant="muted">{topicLabel}</TopicImprint>
       </div>
 
       <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">

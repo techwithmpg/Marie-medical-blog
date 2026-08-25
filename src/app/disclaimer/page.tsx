@@ -21,37 +21,31 @@ export default function DisclaimerPage() {
       folio: "01",
       title: "Educational Purpose & Informational Scope",
       content:
-        "All articles, scientific commentaries, clinical summaries, monographs, and related publications available on this platform are provided strictly for educational and informational purposes. The materials are intended to synthesize published scientific evidence, clinical research methodologies, and medical communications for professional, academic, and general educational audiences.",
+        "All articles, commentaries, and educational writings published on this platform are provided strictly for informational and educational purposes. The content is designed to explore published healthcare literature and medical topics for general and professional educational audiences.",
     },
     {
       folio: "02",
-      title: "No Doctor-Patient or Clinical Provider Relationship",
+      title: "No Doctor-Patient Relationship",
       content:
-        "Accessing, reading, interacting with, or communicating through this publication does not establish a doctor-patient, clinician-patient, or healthcare provider relationship of any kind. None of the content provided on this website constitutes personalized clinical advice, diagnostic assessment, prognosis, or medical treatment recommendations.",
+        "Accessing or reading this website does not establish a doctor-patient, clinician-patient, or healthcare provider relationship. Nothing on this website constitutes personalized clinical advice, diagnostic assessment, or medical treatment recommendations.",
     },
     {
       folio: "03",
-      title: "Individual Medical Decisions & Professional Healthcare Guidance",
+      title: "Individual Medical Decisions",
       content:
-        "Individual healthcare decisions should always be made in direct consultation with a licensed physician or qualified healthcare provider who can evaluate individual symptoms, medical history, physical findings, and diagnostic data. Never disregard, avoid, or delay obtaining professional medical advice because of something you have read on this website.",
+        "Health-related decisions should always be made in consultation with a qualified, licensed healthcare professional who can evaluate individual medical history and clinical circumstances. Never disregard or delay seeking professional medical advice because of information read on this website.",
     },
     {
       folio: "04",
-      title: "Scientific Evidence, Source Selection & Editorial Responsibility",
+      title: "Software & Platform Boundaries",
       content:
-        "Publications on this site reflect literature appraisal and synthesis of peer-reviewed biomedical research, clinical trials, and regulatory standards available at the time of authoring. While reasonable care is taken to ensure accuracy and transparent citation of primary literature, medical science evolves continuously. The author and publisher do not warrant that all historical content reflects the most recent consensus guidelines.",
+        "This platform is a publishing and portfolio website. The software does not provide medical diagnosis, clinical decision support, or treatment recommendations. The author and editor remain responsible for source selection and editorial content.",
     },
     {
       folio: "05",
-      title: "No Endorsement of Commercial Products or Therapies",
-      content:
-        "Mention of specific pharmaceutical agents, medical devices, therapeutic regimens, clinical trial sponsors, or healthcare organizations within writing samples or educational articles does not constitute an endorsement, recommendation, or commercial promotion. All discussions are conducted strictly for scientific analysis and editorial examination.",
-    },
-    {
-      folio: "06",
       title: "Emergency Situations",
       content:
-        "If you believe you may be experiencing a medical emergency, acute clinical deterioration, or life-threatening situation, immediately contact your local emergency services or seek care at the nearest hospital or emergency facility. This website is not monitored for clinical inquiries.",
+        "If you believe you are experiencing a medical emergency, immediately contact local emergency services or seek immediate care from a hospital or qualified medical professional. This website is not monitored for urgent or clinical communications.",
     },
   ];
 
@@ -62,10 +56,10 @@ export default function DisclaimerPage() {
         <PageIntro
           folioNumber={1}
           folioLabel="Governance"
-          topicLabel="Editorial Policy"
+          topicLabel="Disclaimer"
           topicVariant="oxide"
           title="Medical &amp; Educational Disclaimer"
-          deck="Important notice regarding the educational scope, medical information limitations, and scientific editorial standards of this publication."
+          deck="Important notice regarding the educational scope, medical information limitations, and platform boundaries of this publication."
         />
 
         {/* Main Content Grid */}
@@ -108,7 +102,7 @@ export default function DisclaimerPage() {
                   buttonVariants({ variant: "outline", size: "default" }),
                 )}
               >
-                About the Publication
+                About
               </Link>
               <Link
                 href="/contact"
@@ -125,44 +119,42 @@ export default function DisclaimerPage() {
           <div className="space-y-6 lg:col-span-4">
             <EvidenceRail
               marker="Ref 01"
-              label="Summary Note"
+              label="Summary"
               className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
             >
               <div className="space-y-4">
                 <span className="font-serif text-base font-medium text-[#242321]">
-                  At a Glance
+                  Summary Principles
                 </span>
-                <p className="text-xs leading-relaxed text-[#5E5953]">
-                  Key points regarding the platform&apos;s educational standard:
-                </p>
 
                 <ul className="space-y-2 text-xs text-[#5E5953]">
                   <li className="flex items-start gap-2">
                     <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
-                    <span>Educational &amp; writing portfolio scope only</span>
+                    <span>Educational and portfolio scope only</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
                     <span>
-                      No clinical diagnosis, prescription, or treatment
+                      No medical diagnosis, treatment, or clinical provider
+                      relationship
                     </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
-                    <span>Always consult a qualified personal physician</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
                     <span>
-                      Explicit literature references provided for transparency
+                      Consult a qualified physician for healthcare decisions
                     </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#7B3F35]" />
+                    <span>Software platform does not provide medical care</span>
                   </li>
                 </ul>
 
                 <SplitRule />
 
                 <div className="text-xs text-[#5E5953]">
-                  Last reviewed: {new Date().getFullYear()} Editorial Standards
+                  Editorial Policy &amp; Platform Boundaries
                 </div>
               </div>
             </EvidenceRail>

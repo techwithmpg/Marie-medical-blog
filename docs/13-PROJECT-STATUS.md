@@ -47,7 +47,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 merge parents:**
   - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
   - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
+- **Next implementation stage:** Stage 6 — Article Reading & Discovery — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`

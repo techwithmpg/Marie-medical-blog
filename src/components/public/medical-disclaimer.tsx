@@ -26,7 +26,7 @@ export function MedicalDisclaimer({
             Educational Notice:
           </strong>{" "}
           Content on this platform is for educational purposes only and does not
-          constitute individualized medical advice, diagnosis, or treatment.{" "}
+          constitute medical advice, diagnosis, or treatment.{" "}
           <Link
             href="/disclaimer"
             className="text-[#704037] underline underline-offset-2 hover:text-[#582A22]"
@@ -55,12 +55,10 @@ export function MedicalDisclaimer({
       </div>
 
       <p className="text-sm leading-relaxed text-[#5E5953] sm:text-base">
-        The articles, clinical analyses, and educational resources published on
-        this platform are curated strictly for professional informational and
-        educational purposes. They do not constitute personalized medical
-        advice, clinical diagnosis, or therapeutic recommendations, and must
-        never replace consultation with a qualified physician or healthcare
-        provider.
+        Content published on this platform is provided strictly for educational
+        and informational purposes. It does not constitute personalized medical
+        advice, clinical diagnosis, or treatment recommendations, and does not
+        replace consultation with a qualified healthcare professional.
       </p>
 
       <div className="pt-1">
