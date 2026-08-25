@@ -4,12 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / PRE-IMPLEMENTATION DESIGN HARDENING
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / IMPLEMENTATION — PHASE 8A
+- **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
+- **Owner-approved architecture decision:** D030
 - **Active working branch:** `stage/08-publishing-workflow`
-- **Application coding authorized:** FROZEN PENDING FINAL STAGE-8 ARCHITECTURE APPROVAL
-- **Gate status:** EXTERNAL DESIGN REVIEW CORRECTIONS APPLIED / AWAITING FINAL REVIEW
+- **Application coding authorized:** YES — STAGE 8 ONLY / PHASE 8A ACTIVE
+- **Gate status:** PHASE 8A IMPLEMENTATION IN PROGRESS
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
 - **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
@@ -232,12 +236,13 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 8 — Publishing Workflow is in PRE-IMPLEMENTATION DESIGN HARDENING (2026-08-26).**
+**Stage 8 — Publishing Workflow is AUTHORIZED FOR IMPLEMENTATION (2026-08-26).**
 
-- Stage 8 pre-implementation design corrections from external review have been applied on branch `stage/08-publishing-workflow`.
-- Application coding, database migrations, package installations, and hosted mutations remain **FROZEN** pending final Stage-8 architecture approval.
+- The project owner approved D030 and explicitly authorized Stage-8 implementation.
+- Phase 8A (Database Publishing Lifecycle Foundation) is active on branch `stage/08-publishing-workflow`.
+- Application coding within Stage 8 is authorized for Phase 8A migration and database test development.
+- Phase 8B, Phase 8C, hosted deployment, and Stage 9 remain separately gated and **NOT AUTHORIZED**.
 - Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
-- Stage 9 — Comments, Contact Inbox & Settings remains **NOT AUTHORIZED**.
 
 ## Stage-1 start record
 

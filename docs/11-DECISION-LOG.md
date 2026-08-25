@@ -265,6 +265,33 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 
 ---
 
+## ACTIVE — D030 — Stage-8 publishing lifecycle architecture
+
+**Date:** 2026-08-26
+
+**Decision:**
+Implement the Stage-8 publishing lifecycle for Marie Medical Blog under the Evidence Folio design system according to the following architecture:
+1. **Admin-Local Preview:** Stage 8 implements an interactive full-fidelity reading preview inside the private `ArticleEditor` workspace using unsaved client state and existing presentational components (`ArticleTypography`, `ReferenceLedger`). No public preview route, Next.js Draft Mode, preview tokens, or cookie bypass mechanisms are introduced. Public article queries remain unchanged and leak-proof.
+2. **Canonical Slug Contract:** Canonical slugs are generated from the article title upon first publication (with manual candidate refinement permitted in the confirmation modal before first publish), normalized to lowercase kebab-case, limited to <= 80 characters, and validated to reject internal provisional UUID patterns (`^draft-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`). The database `UNIQUE` constraint on `public.articles.slug` is the ultimate collision authority; collisions are resolved deterministically inside the publication RPC with bounded retry suffixes (`-2`, `-3`, etc.) while dynamically truncating the base to preserve the <= 80 character limit. Once published, the canonical slug is permanently frozen for the lifetime of the article row across updates, unpublishing, archiving, restoring, and republishing.
+3. **Publication Timestamps:** `published_at` records the truthful original first-publication timestamp. It is set upon first publication (`published_at = coalesce(published_at, now())`) and strictly preserved forever across subsequent content updates, unpublishing, archiving, restoring, and republishing. `updated_at` tracks all subsequent mutation and republishing activity.
+4. **Lifecycle RPCs:** Implement six focused `SECURITY INVOKER` functions with locked `search_path = ''` enforcing `private.is_admin() = true`: `public.publish_article`, `public.update_published_article`, `public.unpublish_article`, `public.archive_article`, `public.restore_article`, and `public.delete_article`. `publish_article` accepts source status `draft` ONLY (archived content must restore to `draft` before republishing). Permissions are revoked from `public, anon` and granted to `authenticated`. Table RLS remains active.
+5. **Delete Safety:** Hard deletion is permitted strictly for never-published articles (`status IN ('draft', 'archived') AND published_at IS NULL`). Articles that have ever been published cannot be hard-deleted from the database; retiring previously public content is accomplished via `Archive` to preserve canonical URL ownership, prevent slug reuse, and avoid breaking historical citations.
+6. **Storage Invariant & Native Cross-Bucket Copy:** Enforce that featured images for `published` articles reside in `public-assets` while images for `draft` and `archived` articles reside in `draft-assets`. Promotion (`draft-assets` -> `public-assets`) and demotion (`public-assets` -> `draft-assets`) use authenticated native Supabase cross-bucket `copy()` (`destinationBucket`) with newly generated unique destination paths (`upsert: false`). Storage coordination executes copy-first -> database transaction -> source cleanup. Compensating deletion on database failure removes only the newly created destination object without deleting prior valid assets. `move()` is not used as the primary lifecycle operation.
+7. **Targeted Revalidation:** Apply surgical Next.js `revalidatePath` calls during Phase 8B on affected public routes (`/`, `/blog`, `/blog/[slug]`, `/topics/[slug]`, `/portfolio`) and administrative indices (`/admin/articles`, `/admin/articles/[id]`), including both old and new category paths on category changes.
+8. **Public Data Defense:** Every public article query reading `public.articles` for article content in `src/lib/public-articles.ts` continues strictly enforcing `status = 'published'`. Category-only queries do not query `public.articles`.
+
+**Reason:** Provides a secure, robust, and simple single-author publishing workflow for Marie Medical Blog without introducing revision/versioning complexity, token-preview risks, service-role client access, or enterprise CMS overhead.
+
+**Alternatives considered:** Next.js Draft Mode with preview tokens, direct table lifecycle mutations from client, monolithic `SECURITY DEFINER` RPC, mutable public slugs with redirect tables, hard-deleting ever-published records, Storage `move()` before database confirmation, server byte download/re-upload as primary promotion, and full revision/version-control subsystem.
+
+**Impact:** Authorizes Stage-8 publishing implementation under the frozen design, including Phase 8A lifecycle migration/tests and later approved within-stage phases. Does NOT authorize hosted deployment automatically and does NOT authorize Stage 9.
+
+**Approved by:** project owner — explicit approval on 2026-08-26.
+
+**Status:** ACTIVE / FROZEN FOR STAGE 8 IMPLEMENTATION.
+
+---
+
 ## New decision template
 
 ### ACTIVE/REPLACED — DXXX — Title
