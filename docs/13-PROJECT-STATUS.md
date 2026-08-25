@@ -4,25 +4,24 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYMENT / REPLACEMENT ATTEMPT AUTHORIZED
+- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYED / VERIFIED / AWAITING EXTERNAL FINAL REVIEW & OWNER MERGE APPROVAL
 - **Draft persistence regression:** FIXED / VERIFIED
 - **Stage-7 draft RPC compatibility:** PASS
 - **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
-- **Hosted deployment authorization:** D031 ACTIVE (REPLACEMENT ATTEMPT AUTHORIZED BY PROJECT OWNER — 2026-08-26)
-- **Write transport:** `supabase_stage8_write` — VERIFIED
-- **Replacement apply_migration:** AUTHORIZED — EXACTLY ONE ATTEMPT
-- **Hosted Stage-8 migration:** NOT YET APPLIED
+- **Hosted deployment authorization:** D031 ACTIVE (DEPLOYED & VERIFIED — 2026-08-26)
+- **Write transport:** `supabase_stage8_write` — APPLIED ONCE / VERIFIED / SAFE MODE RESTORED
+- **Replacement apply_migration:** SUCCESS (1 ATTEMPT)
+- **Hosted Stage-8 migration:** APPLIED (`20260825232024_stage8_publishing_lifecycle.sql`)
 - **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
-- **Stage-8 pending migration:** `20260825212334_stage8_publishing_lifecycle.sql`
-- **Authorized migration:** `20260825212334_stage8_publishing_lifecycle.sql`
+- **Hosted migration version:** `20260825232024` (RECONCILED TO LOCAL MIGRATION FILE)
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
 - **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addenda)
 - **Active working branch:** `stage/08-publishing-workflow`
 - **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
-- **Gate status:** FINAL PRE-HOSTED REGRESSION GATE PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS)
-- **Hosted migration state:** NOT APPLIED (Stage-8 migration absent on hosted project `eoexnnhqzrkurbqgbtnx`)
+- **Gate status:** FULL LOCAL + HOSTED QUALITY GATE PASS (10/10 pgTAP FILES, 210/210 TESTS; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
+- **Hosted migration state:** APPLIED & VERIFIED
 - **Stage 8 merge:** NOT AUTHORIZED
 - **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
@@ -628,7 +627,7 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Active working branch:** `stage/08-publishing-workflow`
 - **Design specification:** `docs/31-STAGE-8-PUBLISHING-WORKFLOW-DESIGN.md`
-- **Phase 8A migration:** `supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`
+- **Phase 8A migration:** `supabase/migrations/20260825232024_stage8_publishing_lifecycle.sql`
 - **Phase 8A test suite:** `supabase/tests/database/10_stage8_publishing_workflow.test.sql`
 - **Phase 8A deliverables completed:**
   - [x] Lifecycle RPC `public.publish_article` implemented (single-path from `draft`, canonical kebab slug validation, provisional draft slug pattern rejection, dynamic base truncation with unique collision suffix loop <=80 chars, first-time timestamp assignment `published_at = now()`, atomic reference replacement);
@@ -729,7 +728,7 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Objective:** Apply pre-hosted review hardening corrections to the pending Stage-8 migration, server actions, and UI prior to owner deployment authorization.
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Active working branch:** `stage/08-publishing-workflow`
-- **Pending migration modified in place:** `supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`
+- **Pending migration modified in place:** `supabase/migrations/20260825232024_stage8_publishing_lifecycle.sql`
 - **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
 - **Pre-hosted review corrections completed:**
   - [x] **Meaningful Content Validation (PostgreSQL & TypeScript):** Native `jsonb_path_exists(p_content_json, '$.** ? (@.type == "text" && @.text like_regex "\\S")')` added to both `public.publish_article` and `public.update_published_article`; shared helper `hasMeaningfulArticleContent(content)` added to `src/lib/admin/publishing.ts` and enforced in `publishArticleAction` and `updatePublishedArticleAction`. Empty ProseMirror docs, empty paragraphs, and whitespace-only text nodes are strictly rejected upon publication/update.

@@ -356,6 +356,26 @@ ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
 6. If this replacement attempt fails, **NO automatic retry is authorized**.
 7. Stage-8 merge remains unauthorized; Stage 9 remains unauthorized.
 
+### D031 Execution Addendum 3 — Hosted Migration Deployment & Verification Pass
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. Exactly one replacement `apply_migration` invocation was executed via `supabase_stage8_write` on project `eoexnnhqzrkurbqgbtnx` using the reviewed SQL (`0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`).
+2. The migration succeeded with `{"success": true}` and was recorded on hosted Supabase as version `20260825232024`.
+3. Local migration filename was reconciled from `20260825212334_stage8_publishing_lifecycle.sql` to `20260825232024_stage8_publishing_lifecycle.sql` with byte-for-byte SHA-256 integrity preserved (`0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`).
+4. All 6 Stage-8 publishing lifecycle RPCs (`publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, `delete_article`) are confirmed present on hosted Supabase with:
+   - `SECURITY INVOKER` (`prosecdef = false`)
+   - `search_path = ''`
+   - Execution revoked from `public` and `anon`, granted to `authenticated`
+   - Explicit `private.is_admin()` administrative protection
+5. RLS remains active and enforced on `public.articles` and `public.article_references`.
+6. `public.save_article_draft` remains intact, unaltered, and admin-protected.
+7. Storage buckets (`draft-assets` private, `public-assets` public) and Auth configuration remain unchanged with zero drift.
+8. Synthetic hosted lifecycle verification passed across all lifecycle operations (draft -> publish -> update published -> unpublish -> republish -> archive -> restore -> delete rejection) with zero persistent synthetic rows.
+9. All local quality gates passed (210/210 pgTAP tests, 28/28 Node tests, TypeScript, ESLint, Prettier, production build).
+10. Stage 8 merge remains separately owner-gated; Stage 9 remains unauthorized.
+
 ---
 
 ## New decision template
