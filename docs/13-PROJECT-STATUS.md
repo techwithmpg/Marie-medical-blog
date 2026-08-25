@@ -4,8 +4,13 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / MERGED / GATE PASS
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / PRE-IMPLEMENTATION DESIGN
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Active working branch:** `stage/07-writer-dashboard-editor`
+- **Application coding authorized:** FROZEN PENDING STAGE-7 DESIGN REVIEW
+- **Gate status:** IN PROGRESS — PRE-IMPLEMENTATION DESIGN
+- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
@@ -29,9 +34,6 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS
-- **Active working branch:** `main`
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **Stage-6 first review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
@@ -223,27 +225,31 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**No new implementation stage is currently authorized.**
+**Stage 7 — Writer Dashboard & Tiptap Editor is AUTHORIZED BY PROJECT OWNER (2026-08-25).**
 
-Stage 6 — Article Reading & Discovery is:
+Application implementation for Stage 7 remains temporarily frozen pending external review and approval of the Stage-7 pre-implementation design (`docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`).
 
-- COMPLETE;
-- MERGED into `main`;
-- GATE PASS;
-- closed following project-owner merge approval on **2026-08-25**.
+Stage 7 owns:
+- `/admin/articles` (article list and draft filtering);
+- `/admin/articles/new` (new article draft creation);
+- `/admin/articles/[id]` (existing draft editing and reopening);
+- Tiptap rich-text editor integration (Client Component, StarterKit, JSON persistence);
+- structured article metadata form (title, category, excerpt, featured image, SEO title, SEO description);
+- structured article references management (title, source name, URL, citation details, deterministic sort order);
+- explicit Save Draft contract with dirty state and error feedback.
 
-The Stage-6 merge commit is:
+Stage 7 may read published and archived articles for listing purposes, but must NOT mutate published or archived content.
 
-`e28665e550dbc9150829351d9e06cafa26c5a577`
+Stage 7 must NOT implement:
+- public preview or preview token routes;
+- publish, unpublish, delete, or archive workflows;
+- canonical publishing slug assignment or publishing timestamps;
+- scheduled publishing;
+- review/approval workflows;
+- comments or contact inbox features;
+- Stage-8 or later functionality.
 
-The current canonical `main` includes the completed Stage-6 public article
-reading and discovery implementation.
-
-**Stage 7 — Writer Dashboard & Tiptap Editor is the next planned
-implementation stage but remains NOT AUTHORIZED.**
-
-Do not create a Stage-7 branch or begin Stage-7 implementation until explicit
-project-owner authorization is recorded.
+**Stage 8 — Publishing Workflow remains NOT AUTHORIZED.**
 
 ## Stage-1 start record
 
@@ -541,7 +547,19 @@ Stage 6 — Article Reading & Discovery:
   - [x] Stage 6 merged into `main` at merge commit `e28665e550dbc9150829351d9e06cafa26c5a577`.
 - **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
-- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
+
+## Stage-7 start & pre-implementation design record
+
+Stage 7 — Writer Dashboard & Tiptap Editor:
+
+- **Stage status:** ACTIVE / PRE-IMPLEMENTATION DESIGN
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Active working branch:** `stage/07-writer-dashboard-editor`
+- **Application coding authorized:** FROZEN PENDING STAGE-7 DESIGN REVIEW
+- **Gate status:** IN PROGRESS — PRE-IMPLEMENTATION DESIGN
+- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
+- **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 
 ## Stage transition rule
 
