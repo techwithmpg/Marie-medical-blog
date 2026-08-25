@@ -4,10 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 3 — Supabase Database & Security Foundation — ACTIVE
+- **Current stage:** Stage 3 — Supabase Database & Security Foundation — COMPLETE (GATE PASS)
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
-- **Application coding authorized:** YES — STAGE 3 SCOPE ONLY
-- **Gate status:** IN PROGRESS
+- **Stage-3 implementation status:** COMPLETE
+- **Stage-3 gate status:** PASS
+- **Stage-3 merge status:** READY FOR OWNER-APPROVED MERGE
+- **Application coding authorized:** YES — STAGE 3 SCOPE ONLY (STAGE 3 IMPLEMENTATION COMPLETE)
 - **Active working branch:** `stage/03-supabase-security`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
@@ -26,6 +28,9 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-2 merge parents:**
   - first parent (prior main): `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
   - second parent (approved Stage-2 head): `e33875485ab5f37fe813081479e40fabf39bc4bb`
+- **Stage-3 implementation commit:** `ebc5618b7ae2fdfef9375ff6007ec18b8770d10b`
+- **Stage-3 correction commit:** `a2de6c05ef1a355cb9d5a711413a286dc01804d9`
+- **Stage-3 deployment & reconciliation commit:** `652f483637e24778ae5437b8e561f5b41231def1`
 - **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
@@ -123,6 +128,42 @@ Final Stage-2 post-merge gate record (on `21c74c6c4025e63f8ae396678f1dfc95b892f9
 - `npm run format:check`: PASS
 - `npm run build`: PASS (`/` and `/_not-found` generated statically via Next.js 16.3.2 / Turbopack)
 - `git diff --check`: PASS
+
+## Stage 3 outcome
+
+Stage 3 is complete and verified on `stage/03-supabase-security`. Gate status is PASS; merge status is READY FOR OWNER-APPROVED MERGE:
+
+- [x] Schema migration foundation established in `supabase/migrations/20260825054917_initial_database_security_foundation.sql`;
+- [x] Single-admin authorization model implemented in dedicated `private` schema via `private.admin_users` and `private.is_admin()` (`security definer`, `search_path = ''`);
+- [x] All 7 public domain tables created: `profiles`, `categories`, `articles`, `article_references`, `comments`, `contact_messages`, `site_settings`;
+- [x] Row Level Security (RLS) enabled and verified across all public, private, and storage tables;
+- [x] Granular table and column-level PostgreSQL grants/revokes established (defense in depth);
+- [x] Commenter email privacy strictly protected under D023 (SELECT revoked from `anon`; authenticated SELECT restricted strictly to `private.is_admin()`);
+- [x] Narrow public insert access configured for comments (status forced to `pending`) and contact messages (status forced to `new`);
+- [x] Storage bucket `public-assets` configured (public read, 10MB limit, strict MIME allowlist: JPEG/PNG/WebP/AVIF/PDF, admin-only mutations);
+- [x] Timestamp trigger utility `public.set_updated_at()` established with search_path safety;
+- [x] Synthetic local seed fixtures established in `supabase/seed.sql` (excluded from hosted deployment);
+- [x] Automated pgTAP test suite created across 7 test files (85 subtests, 100% passing);
+- [x] Project-scoped hosted migration deployed to `eoexnnhqzrkurbqgbtnx` via temporary MCP write transport under D024;
+- [x] Hosted migration version `20260825054917` captured and reconciled with local migration filename under D025;
+- [x] Migration SQL SHA-256 hash verified identical pre- and post-deployment (`53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2`);
+- [x] Temporary MCP write server completely removed; original read-only protection verified (`read_only=true`);
+- [x] Hosted database state verified: 0 security errors, 0 seed rows, 0 admin allowlist rows (pending Stage 4);
+- [x] Complete local regression suite passed 100% (`supabase db reset`, `supabase test db`, `supabase db lint`, `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build`, `git diff --check`);
+- [x] No Marie sign-in UI, login forms, or dashboard routes implemented;
+- [x] No Tiptap editor, draft persistence, or publishing workflows implemented;
+- [x] Stage 4 remains NOT AUTHORIZED.
+
+Final Stage-3 gate record (on `stage/03-supabase-security` @ `652f483637e24778ae5437b8e561f5b41231def1`):
+- `supabase db reset`: PASS
+- `supabase test db` (pgTAP): PASS (7 files, 85 tests, 0 failures)
+- `supabase db lint --level warning --local`: PASS (0 errors, 0 warnings)
+- `npm run typecheck`: PASS
+- `npm run lint`: PASS
+- `npm run format:check`: PASS
+- `npm run build`: PASS
+- `git diff --check`: PASS
+- `git diff --cached --check`: PASS
 
 ## Accepted UI governance
 
