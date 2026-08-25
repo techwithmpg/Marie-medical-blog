@@ -173,6 +173,14 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner.
 **Status:** ACTIVE / FROZEN FOR STAGE 3.
 
+## ACTIVE — D025 — MCP migration-version reconciliation
+**Date:** 2026-08-25
+**Decision:** Because the current Supabase MCP `apply_migration` operation does not accept the version from a local migration filename, an MCP-deployed Stage-3 migration must be reconciled immediately after successful deployment if the hosted migration version differs from the local version. The exact reviewed SQL from the version-controlled migration must be supplied unchanged to `apply_migration`. After deployment, retrieve the generated hosted migration version using `list_migrations`. If it differs from the local migration version, rename the local migration file so its timestamp/version exactly matches the hosted migration version while preserving the SQL contents. Update repository documentation that explicitly references the former version, rerun the full local Stage-3 database test suite and quality gates, and verify local/hosted migration-history parity. Do not modify `supabase_migrations` manually, do not use migration repair to fabricate parity, do not apply a second migration, and do not deploy seed data.
+**Reason:** Supabase MCP migration application may generate hosted migration metadata independently from the filename of the local migration. Immediate repository reconciliation preserves one-to-one migration history while keeping the version-controlled migration as the schema source of truth.
+**Impact:** MCP remains an approved Stage-3 deployment transport under D024 while hosted migration history and the repository are reconciled before Stage-3 closeout.
+**Approved by:** project owner — explicit authorization on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
+
 ---
 
 ## New decision template
