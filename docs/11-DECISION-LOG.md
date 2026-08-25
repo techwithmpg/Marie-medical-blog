@@ -163,6 +163,16 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Impact:** `public.comments` authenticated SELECT RLS policy is updated to `using (private.is_admin())`. Automated pgTAP security tests explicitly verify that authenticated non-admins cannot select `commenter_email` or any comment rows, while `anon` retains safe public column reads and admins retain full moderation and email access.
 **Approved by:** project owner through the 2026-08-25 Stage-3 security correction instruction.
 **Status:** ACTIVE / FROZEN FOR STAGE 3.
+
+## ACTIVE — D024 — Hosted Stage-3 migration deployment via project-scoped Supabase MCP
+**Date:** 2026-08-25
+**Decision:** When direct/session-pooler PostgreSQL connectivity is unavailable from the development network, Stage-3 hosted database migrations may be deployed through the official Supabase MCP server using the project-scoped connection for `eoexnnhqzrkurbqgbtnx`. The version-controlled SQL migration under `supabase/migrations/` remains the authoritative executable schema source of truth. MCP write access may be enabled temporarily only to apply the exact reviewed, version-controlled migration. Arbitrary SQL, dashboard schema edits, production seed deployment, Auth changes, Edge Functions, branching operations, and Stage-4 changes remain prohibited. After deployment and verification, the MCP connection must be returned to read-only mode.
+**Reason:** The current network permits Supabase HTTPS/MCP connectivity but blocks the Supavisor session pooler on port 5432. MCP provides an authenticated, project-scoped deployment transport without weakening migration-first governance.
+**Alternatives considered:** Manual dashboard SQL execution (unversioned/unreviewed risk); local-only database with unverified remote deployment; disabling session pooler SSL.
+**Impact:** Stage-3 hosted deployment may use `apply_migration` through Supabase MCP instead of `db push` when the normal PostgreSQL session transport is unavailable. This does not change the schema design, RLS model, migration source of truth, or authorization boundary.
+**Approved by:** project owner.
+**Status:** ACTIVE / FROZEN FOR STAGE 3.
+
 ---
 
 ## New decision template
