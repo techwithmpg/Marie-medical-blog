@@ -446,10 +446,16 @@ Stage 4 local implementation and verification record:
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
 - **Hosted execution boundary:**
   - HOSTED STAGE-4 MIGRATION: DEPLOYED (`20260825081012_add_public_is_admin_rpc`)
-  - HOSTED AUTH CONFIGURATION: "Allow new users to sign up = OFF" STILL REQUIRES OWNER DASHBOARD VERIFICATION/ACTION (or confirmation if already completed)
-  - MARIE PRODUCTION USER: NOT YET PROVISIONED (NOT AUTHORIZED IN THIS STEP)
-  - HOSTED `private.admin_users`: 0 ROWS (EMPTY)
-  - STAGE-4 GATE: NOT YET CLOSED (PENDING OWNER AUTH CONFIGURATION & ADMIN PROVISIONING GATE)
+  - HOSTED AUTH CONFIGURATION: COMPLETED / OWNER VERIFIED — 2026-08-25
+    - Allow new users to sign up: OFF
+    - Anonymous sign-ins: OFF
+    - Email/password authentication: ENABLED
+    - Phone authentication/provider for V1: DISABLED
+    - OAuth/social providers for V1: DISABLED
+    - Auth Hooks added: NO
+  - MARIE PRODUCTION USER: NOT YET PROVISIONED — NOT AUTHORIZED
+  - HOSTED `private.admin_users`: 0 ROWS
+  - STAGE-4 GATE: NOT YET CLOSED (Remaining gate: single production-admin provisioning and real admin login/logout/access verification)
   - STAGE 5: NOT AUTHORIZED
 
 ## Stage transition rule
