@@ -29,6 +29,8 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **Stage-6 first review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
 - **Stage-6 final review micro-correction commit:** `e6fdad81f738b3eedacd0b1eb098584bd5fe614f`
+- **Stage-6 governance alignment commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
+- **Stage-6 visual-control correction commit:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
 - **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
@@ -512,6 +514,8 @@ Stage 6 — Article Reading & Discovery:
 - **Initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **First review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
 - **Final review micro-correction commit:** `e6fdad81f738b3eedacd0b1eb098584bd5fe614f`
+- **Governance alignment commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
+- **Visual-control correction commit:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
 - **Implementation scope & review corrections:**
   - [x] `/blog` (Published article discovery, lead story hero, topic filtering, sanitized search, strict positive-integer pagination, lead deduplication across all pages);
   - [x] `/blog/[slug]` (Evidence Folio long-form article view, Reference Ledger with data preservation, author context, medical disclaimer, category-based related writing);
