@@ -68,9 +68,9 @@ begin
     raise exception 'Invalid content_json: must be a JSON object with type "doc"' using errcode = '22023';
   end if;
 
-  -- Meaningful non-empty content validation for publishing
-  if not (p_content_json ? 'content') or jsonb_array_length(p_content_json->'content') = 0 then
-    raise exception 'Cannot publish article with empty document content' using errcode = '23514';
+  -- Meaningful non-empty content validation for publishing (requires at least one non-whitespace text node)
+  if not jsonb_path_exists(p_content_json, '$.** ? (@.type == "text" && @.text like_regex "\\S")') then
+    raise exception 'Cannot publish article without meaningful textual content' using errcode = '23514';
   end if;
 
   if p_references is null or jsonb_typeof(p_references) <> 'array' then
@@ -180,6 +180,10 @@ begin
   else
     -- REPUBLISH (Ever-Published Article Returning from Draft)
     -- Slug and original publication date are permanently frozen
+    if v_existing_slug ~ '^draft-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+      raise exception 'Cannot republish article with provisional draft slug' using errcode = '22023';
+    end if;
+
     if p_slug is not null and trim(p_slug) <> '' and trim(p_slug) <> v_existing_slug then
       raise exception 'Cannot change canonical slug on republish (canonical slug: %)', v_existing_slug using errcode = '22023';
     end if;
@@ -316,8 +320,9 @@ begin
     raise exception 'Invalid content_json: must be a JSON object with type "doc"' using errcode = '22023';
   end if;
 
-  if not (p_content_json ? 'content') or jsonb_array_length(p_content_json->'content') = 0 then
-    raise exception 'Cannot update published article with empty document content' using errcode = '23514';
+  -- Meaningful non-empty content validation for published update (requires at least one non-whitespace text node)
+  if not jsonb_path_exists(p_content_json, '$.** ? (@.type == "text" && @.text like_regex "\\S")') then
+    raise exception 'Cannot update published article without meaningful textual content' using errcode = '23514';
   end if;
 
   if p_references is null or jsonb_typeof(p_references) <> 'array' then
@@ -583,10 +588,18 @@ begin
 
       v_final_image_path := trim(p_private_image_path);
     else
+      if p_private_image_path is not null and char_length(trim(p_private_image_path)) > 0 then
+        raise exception 'Cannot supply private image path when archiving a published article with no featured image' using errcode = '22023';
+      end if;
+
       v_final_image_path := null;
     end if;
   else
-    -- Draft archive: preserve existing draft image path
+    -- Draft archive: preserve existing draft image path and reject attempts to supply private destination path
+    if p_private_image_path is not null and char_length(trim(p_private_image_path)) > 0 then
+      raise exception 'Cannot supply private image destination path when archiving a draft article' using errcode = '22023';
+    end if;
+
     v_final_image_path := v_existing_image_path;
   end if;
 

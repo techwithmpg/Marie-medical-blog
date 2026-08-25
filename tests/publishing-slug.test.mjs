@@ -5,6 +5,7 @@ import {
   isValidCanonicalSlug,
   isProvisionalSlug,
   normalizeSlugCandidate,
+  hasMeaningfulArticleContent,
 } from "../src/lib/admin/publishing.ts";
 
 test("generateCanonicalSlug creates clean kebab-case from standard titles", () => {
@@ -40,12 +41,27 @@ test("generateCanonicalSlug enforces 80 character maximum length", () => {
   assert.match(slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 });
 
-test("generateCanonicalSlug handles empty or non-string inputs safely with fallback", () => {
-  const fallbackEmpty = generateCanonicalSlug("");
-  assert.match(fallbackEmpty, /^article-[a-z0-9]{8}$/);
+test("generateCanonicalSlug produces deterministic fallback based on articleId", () => {
+  const id1 = "80000000-0000-0000-0000-000000000001";
+  const id2 = "90000000-0000-0000-0000-000000000002";
 
-  const fallbackSpecial = generateCanonicalSlug("!@#$%^&*()");
-  assert.match(fallbackSpecial, /^article-[a-z0-9]{8}$/);
+  // Same article ID produces same fallback repeatedly
+  const fallback1a = generateCanonicalSlug("", id1);
+  const fallback1b = generateCanonicalSlug("   ", id1);
+  const fallback1c = generateCanonicalSlug("!@#$%", id1);
+
+  assert.equal(fallback1a, "article-80000000");
+  assert.equal(fallback1b, "article-80000000");
+  assert.equal(fallback1c, "article-80000000");
+
+  // Different article ID produces different fallback
+  const fallback2 = generateCanonicalSlug("", id2);
+  assert.equal(fallback2, "article-90000000");
+  assert.notEqual(fallback1a, fallback2);
+
+  // Fallback is valid kebab-case and <= 80 chars
+  assert.ok(isValidCanonicalSlug(fallback1a));
+  assert.ok(isValidCanonicalSlug(fallback2));
 });
 
 test("isValidCanonicalSlug validates format and length correctly", () => {
@@ -92,5 +108,103 @@ test("normalizeSlugCandidate trims, lowercases, and sanitizes user input", () =>
   assert.equal(
     normalizeSlugCandidate("custom--slug---test"),
     "custom-slug-test",
+  );
+});
+
+test("hasMeaningfulArticleContent rejects empty and whitespace-only documents", () => {
+  assert.equal(hasMeaningfulArticleContent(null), false);
+  assert.equal(hasMeaningfulArticleContent(undefined), false);
+  assert.equal(hasMeaningfulArticleContent(""), false);
+  assert.equal(hasMeaningfulArticleContent({}), false);
+  assert.equal(hasMeaningfulArticleContent({ type: "doc" }), false);
+  assert.equal(
+    hasMeaningfulArticleContent({ type: "doc", content: [] }),
+    false,
+  );
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [{ type: "paragraph" }],
+    }),
+    false,
+  );
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "" }],
+        },
+      ],
+    }),
+    false,
+  );
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "   \n\t  " }],
+        },
+      ],
+    }),
+    false,
+  );
+});
+
+test("hasMeaningfulArticleContent accepts genuine text across node hierarchies", () => {
+  // Simple paragraph with text
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Clinical finding notes." }],
+        },
+      ],
+    }),
+    true,
+  );
+
+  // Heading with text
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [
+        {
+          type: "heading",
+          attrs: { level: 2 },
+          content: [{ type: "text", text: "Methodology" }],
+        },
+      ],
+    }),
+    true,
+  );
+
+  // Nested bulletList -> listItem -> paragraph -> text
+  assert.equal(
+    hasMeaningfulArticleContent({
+      type: "doc",
+      content: [
+        {
+          type: "bulletList",
+          content: [
+            {
+              type: "listItem",
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "Item 1" }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }),
+    true,
   );
 });

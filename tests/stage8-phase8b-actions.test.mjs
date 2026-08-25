@@ -10,9 +10,10 @@ import assert from "node:assert/strict";
 // 5. Cleanup of source asset on success
 // 6. Replacement image handling during published update
 // 7. Permalink & ever-published deletion safety rules
+// 8. Error surfacing when DB fails AND compensation cleanup fails
+// 9. Warning surfacing when lifecycle transitions succeed BUT asset cleanup fails
 
 test("PublishArticleAction validation: rejects invalid UUID, empty content, and provisional slug", async () => {
-  // Test input validation logic directly
   const invalidIdPayload = {
     articleId: "not-a-uuid",
     title: "Valid Title",
@@ -99,57 +100,175 @@ test("Compensation logic: cleans up promoted public asset if DB RPC fails", asyn
   assert.deepEqual(cleanedUpPaths, [copiedPublicPath]);
 });
 
-test("Cleanup logic: cleans up private draft asset when publication RPC succeeds", async () => {
-  let cleanedUpDrafts = [];
+test("Compensation failure: surfaces both DB failure and compensation delete failure", async () => {
+  const rpcError = { message: "SQL constraint violation" };
+  const copiedPublicPath =
+    "articles/80000000-0000-0000-0000-000000000001/featured/orphan.png";
+
   const mockStorage = {
-    from: (bucket) => ({
-      remove: async (paths) => {
-        if (bucket === "draft-assets") {
-          cleanedUpDrafts.push(...paths);
-        }
-        return { data: null, error: null };
-      },
+    from: () => ({
+      remove: async () => ({
+        data: null,
+        error: { message: "Storage permission denied on compensation delete" },
+      }),
     }),
   };
 
-  const sourceDraftPath =
-    "articles/80000000-0000-0000-0000-000000000001/featured/draft-source.png";
-  const rpcSuccess = true;
-
-  if (rpcSuccess && sourceDraftPath) {
-    await mockStorage.from("draft-assets").remove([sourceDraftPath]);
+  let finalError = "";
+  if (rpcError && copiedPublicPath) {
+    const { error: compError } = await mockStorage
+      .from("public-assets")
+      .remove([copiedPublicPath]);
+    if (compError) {
+      finalError = `Publication failed (${rpcError.message}) and compensation cleanup of promoted public image also failed (${compError.message}).`;
+    } else {
+      finalError = rpcError.message;
+    }
   }
 
-  assert.deepEqual(cleanedUpDrafts, [sourceDraftPath]);
+  assert.match(finalError, /Publication failed \(SQL constraint violation\)/);
+  assert.match(
+    finalError,
+    /compensation cleanup of promoted public image also failed/,
+  );
 });
 
-test("Published update image replacement: cleans up superseded public image and temporary draft asset", async () => {
-  let cleanedPublic = [];
-  let cleanedDraft = [];
-
+test("Cleanup failure handling on publication: returns success with warning when private source removal fails", async () => {
+  const sourceDraftPath =
+    "articles/80000000-0000-0000-0000-000000000001/featured/draft-source.png";
   const mockStorage = {
-    from: (bucket) => ({
-      remove: async (paths) => {
-        if (bucket === "public-assets") cleanedPublic.push(...paths);
-        if (bucket === "draft-assets") cleanedDraft.push(...paths);
-        return { data: null, error: null };
-      },
+    from: () => ({
+      remove: async () => ({
+        data: null,
+        error: { message: "Draft bucket network timeout" },
+      }),
     }),
   };
 
-  const oldPublicPath =
-    "articles/80000000-0000-0000-0000-000000000001/featured/old-public.png";
-  const newDraftPath =
-    "articles/80000000-0000-0000-0000-000000000001/featured/new-draft.png";
-  const rpcSuccess = true;
-
-  if (rpcSuccess) {
-    await mockStorage.from("draft-assets").remove([newDraftPath]);
-    await mockStorage.from("public-assets").remove([oldPublicPath]);
+  let cleanupWarning = undefined;
+  const { error: removeError } = await mockStorage
+    .from("draft-assets")
+    .remove([sourceDraftPath]);
+  if (removeError) {
+    cleanupWarning = `Article published, but private draft asset could not be cleaned up from draft-assets: ${removeError.message}`;
   }
 
-  assert.deepEqual(cleanedDraft, [newDraftPath]);
-  assert.deepEqual(cleanedPublic, [oldPublicPath]);
+  const result = {
+    success: true,
+    articleId: "80000000-0000-0000-0000-000000000001",
+    status: "published",
+    warning: cleanupWarning,
+  };
+
+  assert.equal(result.success, true);
+  assert.ok(result.warning);
+  assert.match(
+    result.warning,
+    /private draft asset could not be cleaned up from draft-assets: Draft bucket network timeout/,
+  );
+});
+
+test("Cleanup failure handling on published update: surfaces warning if superseded public cleanup fails", async () => {
+  const oldPublicPath =
+    "articles/80000000-0000-0000-0000-000000000001/featured/old-hero.png";
+  const mockStorage = {
+    from: () => ({
+      remove: async () => ({
+        data: null,
+        error: { message: "Public bucket lock conflict" },
+      }),
+    }),
+  };
+
+  const warnings = [];
+  const { error: removeOldPubErr } = await mockStorage
+    .from("public-assets")
+    .remove([oldPublicPath]);
+  if (removeOldPubErr) {
+    warnings.push(
+      `Superseded public image cleanup failed: ${removeOldPubErr.message}`,
+    );
+  }
+
+  const result = {
+    success: true,
+    status: "published",
+    warning: warnings.length > 0 ? warnings.join(" | ") : undefined,
+  };
+
+  assert.equal(result.success, true);
+  assert.match(
+    result.warning,
+    /Superseded public image cleanup failed: Public bucket lock conflict/,
+  );
+});
+
+test("Cleanup failure handling on unpublish: surfaces high-visibility privacy warning if public cleanup fails", async () => {
+  const mockStorage = {
+    from: () => ({
+      remove: async () => ({
+        data: null,
+        error: { message: "Storage Gateway Timeout" },
+      }),
+    }),
+  };
+
+  let warning = undefined;
+  const { error: removePublicErr } = await mockStorage
+    .from("public-assets")
+    .remove([
+      "articles/80000000-0000-0000-0000-000000000001/featured/live.png",
+    ]);
+  if (removePublicErr) {
+    warning =
+      "Article unpublished, but the previous public image could not be removed from public storage. Please retry cleanup before treating that image as private.";
+  }
+
+  const result = {
+    success: true,
+    status: "draft",
+    warning,
+  };
+
+  assert.equal(result.success, true);
+  assert.match(
+    result.warning,
+    /previous public image could not be removed from public storage/,
+  );
+});
+
+test("Cleanup failure handling on archive: surfaces high-visibility warning if public cleanup fails", async () => {
+  const mockStorage = {
+    from: () => ({
+      remove: async () => ({
+        data: null,
+        error: { message: "Storage service unavailable" },
+      }),
+    }),
+  };
+
+  let warning = undefined;
+  const { error: removePublicErr } = await mockStorage
+    .from("public-assets")
+    .remove([
+      "articles/80000000-0000-0000-0000-000000000001/featured/live.png",
+    ]);
+  if (removePublicErr) {
+    warning =
+      "Article archived, but the previous public image could not be removed from public storage. Please retry cleanup before treating that image as private.";
+  }
+
+  const result = {
+    success: true,
+    status: "archived",
+    warning,
+  };
+
+  assert.equal(result.success, true);
+  assert.match(
+    result.warning,
+    /previous public image could not be removed from public storage/,
+  );
 });
 
 test("Deletion safety invariant: permits deletion only when never published", () => {

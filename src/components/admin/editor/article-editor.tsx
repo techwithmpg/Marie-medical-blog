@@ -129,6 +129,9 @@ export function ArticleEditor({
 
   // Messages & Modals
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [warningMessage, setWarningMessage] = React.useState<string | null>(
+    null,
+  );
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
   const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -142,14 +145,16 @@ export function ArticleEditor({
     changeRevisionRef.current += 1;
     setIsDirty(true);
     setErrorMessage(null);
+    setWarningMessage(null);
     setToastMessage(null);
   };
 
-  const showToast = (msg: string) => {
+  const showToast = (msg: string, warn?: string) => {
     setToastMessage(msg);
+    setWarningMessage(warn || null);
     setTimeout(() => {
       setToastMessage((curr) => (curr === msg ? null : curr));
-    }, 5000);
+    }, 6000);
   };
 
   // Find category object for preview
@@ -314,7 +319,10 @@ export function ArticleEditor({
       if (result.updatedAt) setLastSavedAt(result.updatedAt);
       setIsDirty(false);
       setPublishModalOpen(false);
-      showToast("Article published successfully! It is now live.");
+      showToast(
+        "Article published successfully! It is now live.",
+        result.warning,
+      );
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to publish article.";
@@ -383,7 +391,7 @@ export function ArticleEditor({
         setIsDirty(false);
       }
       setLastSavedAt(result.updatedAt || new Date().toISOString());
-      showToast("Published article updated successfully.");
+      showToast("Published article updated successfully.", result.warning);
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to update article.";
@@ -413,7 +421,10 @@ export function ArticleEditor({
       setStatus("draft");
       if (result.updatedAt) setLastSavedAt(result.updatedAt);
       setUnpublishModalOpen(false);
-      showToast("Article unpublished. It has returned to draft status.");
+      showToast(
+        "Article unpublished. It has returned to draft status.",
+        result.warning,
+      );
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to unpublish article.";
@@ -443,7 +454,7 @@ export function ArticleEditor({
       setStatus("archived");
       if (result.updatedAt) setLastSavedAt(result.updatedAt);
       setArchiveModalOpen(false);
-      showToast("Article moved to archived status.");
+      showToast("Article moved to archived status.", result.warning);
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to archive article.";
@@ -473,7 +484,7 @@ export function ArticleEditor({
       setStatus("draft");
       if (result.updatedAt) setLastSavedAt(result.updatedAt);
       setRestoreModalOpen(false);
-      showToast("Article restored to draft status.");
+      showToast("Article restored to draft status.", result.warning);
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to restore article.";
@@ -819,6 +830,17 @@ export function ArticleEditor({
         </div>
       )}
 
+      {/* Controlled Warning Banner */}
+      {warningMessage && (
+        <div className="flex animate-in items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/10 p-3.5 text-xs text-warning duration-200 fade-in">
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+          <div>
+            <strong className="block font-semibold">Storage Notice:</strong>
+            <p className="font-medium">{warningMessage}</p>
+          </div>
+        </div>
+      )}
+
       {/* Controlled Error Banner */}
       {errorMessage && (
         <div className="flex animate-in items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive duration-200 fade-in">
@@ -1123,6 +1145,7 @@ export function ArticleEditor({
       <PublishModal
         open={publishModalOpen}
         onOpenChange={setPublishModalOpen}
+        articleId={persistedArticleId}
         title={title}
         excerpt={excerpt}
         categoryId={categoryId}

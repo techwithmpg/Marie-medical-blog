@@ -7,6 +7,7 @@ import {
   generateCanonicalSlug,
   isValidCanonicalSlug,
   normalizeSlugCandidate,
+  hasMeaningfulArticleContent,
 } from "@/lib/admin/publishing";
 
 const UUID_REGEX =
@@ -38,6 +39,7 @@ export interface SaveDraftResult {
   slug?: string;
   updatedAt?: string;
   error?: string;
+  warning?: string;
 }
 
 export interface PublishArticlePayload {
@@ -62,6 +64,7 @@ export interface PublishArticleResult {
   publishedAt?: string;
   updatedAt?: string;
   error?: string;
+  warning?: string;
 }
 
 export interface UpdatePublishedArticlePayload {
@@ -85,6 +88,7 @@ export interface UpdatePublishedArticleResult {
   publishedAt?: string;
   updatedAt?: string;
   error?: string;
+  warning?: string;
 }
 
 export interface LifecycleActionResult {
@@ -96,6 +100,7 @@ export interface LifecycleActionResult {
   updatedAt?: string;
   deleted?: boolean;
   error?: string;
+  warning?: string;
 }
 
 /**
@@ -214,7 +219,7 @@ export async function saveDraftAction(
       if (!trimmedImagePath.startsWith(expectedPrefix)) {
         return {
           success: false,
-          error: "Featured image path does not belong to this article.",
+          error: "Featured image path must belong to this article.",
         };
       }
     }
@@ -226,25 +231,27 @@ export async function saveDraftAction(
 
     const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc("save_article_draft", {
-      p_article_id: articleId,
-      p_provisional_slug: provisionalSlug,
-      p_title: trimmedTitle,
-      p_excerpt: payload.excerpt?.trim() || null,
-      p_content_json: payload.content_json,
-      p_category_id: payload.category_id || null,
-      p_featured_image_path: trimmedImagePath,
-      p_featured_image_alt: trimmedImageAlt,
-      p_seo_title: payload.seo_title?.trim() || null,
-      p_seo_description: payload.seo_description?.trim() || null,
-      p_references: refResult.data,
-    });
+    const { data: savedData, error: rpcError } = await supabase.rpc(
+      "save_draft_article",
+      {
+        p_article_id: articleId,
+        p_title: trimmedTitle,
+        p_excerpt: payload.excerpt?.trim() || null,
+        p_content_json: payload.content_json,
+        p_category_id: payload.category_id || null,
+        p_featured_image_path: trimmedImagePath,
+        p_featured_image_alt: trimmedImageAlt,
+        p_seo_title: payload.seo_title?.trim() || null,
+        p_seo_description: payload.seo_description?.trim() || null,
+        p_references: refResult.data,
+      },
+    );
 
-    if (error) {
-      return { success: false, error: error.message };
+    if (rpcError) {
+      return { success: false, error: rpcError.message };
     }
 
-    const savedRow = Array.isArray(data) ? data[0] : data;
+    const savedRow = Array.isArray(savedData) ? savedData[0] : savedData;
     if (!savedRow) {
       return {
         success: false,
@@ -301,11 +308,10 @@ export async function publishArticleAction(
       };
     }
 
-    const docContent = payload.content_json.content;
-    if (!Array.isArray(docContent) || docContent.length === 0) {
+    if (!hasMeaningfulArticleContent(payload.content_json)) {
       return {
         success: false,
-        error: "Cannot publish an article with empty document content.",
+        error: "Cannot publish an article without meaningful textual content.",
       };
     }
 
@@ -369,12 +375,12 @@ export async function publishArticleAction(
       // Ever-published article: slug is permanently frozen
       candidateSlug = existingArticle.slug;
     } else {
-      // First publication: derive or sanitize candidate slug
+      // First publication: derive or sanitize candidate slug with deterministic fallback
       const rawSlugCandidate = payload.slug?.trim() || "";
       if (rawSlugCandidate) {
         candidateSlug = normalizeSlugCandidate(rawSlugCandidate);
       } else {
-        candidateSlug = generateCanonicalSlug(trimmedTitle);
+        candidateSlug = generateCanonicalSlug(trimmedTitle, articleId);
       }
 
       if (!isValidCanonicalSlug(candidateSlug)) {
@@ -386,49 +392,33 @@ export async function publishArticleAction(
       }
     }
 
-    // Storage Asset Promotion: Promote draft asset to public-assets if needed
+    // Storage Asset Promotion: Draft image strictly resides in draft-assets
     let targetPublicImagePath: string | null = null;
     let copiedPublicPath: string | null = null;
     let sourceDraftPathToClean: string | null = null;
 
     if (trimmedImagePath) {
-      // Check if the image is in private draft-assets
-      const { data: draftObject } = await supabase.storage
+      const destinationPath = generateUniqueAssetPath(
+        articleId,
+        trimmedImagePath,
+      );
+
+      const { error: copyError } = await supabase.storage
         .from("draft-assets")
-        .list(`articles/${articleId}/featured`);
+        .copy(trimmedImagePath, destinationPath, {
+          destinationBucket: "public-assets",
+        });
 
-      const filename = trimmedImagePath.split("/").pop();
-      const existsInDraft =
-        Array.isArray(draftObject) &&
-        draftObject.some((obj) => obj.name === filename);
-
-      if (existsInDraft) {
-        // Private draft asset requires cross-bucket promotion
-        const destinationPath = generateUniqueAssetPath(
-          articleId,
-          trimmedImagePath,
-        );
-
-        const { error: copyError } = await supabase.storage
-          .from("draft-assets")
-          .copy(trimmedImagePath, destinationPath, {
-            destinationBucket: "public-assets",
-          });
-
-        if (copyError) {
-          return {
-            success: false,
-            error: `Failed to promote featured image to public storage: ${copyError.message}`,
-          };
-        }
-
-        targetPublicImagePath = destinationPath;
-        copiedPublicPath = destinationPath;
-        sourceDraftPathToClean = trimmedImagePath;
-      } else {
-        // Image already in public-assets (e.g. republishing with existing public image)
-        targetPublicImagePath = trimmedImagePath;
+      if (copyError) {
+        return {
+          success: false,
+          error: `Failed to promote featured image to public storage: ${copyError.message}`,
+        };
       }
+
+      targetPublicImagePath = destinationPath;
+      copiedPublicPath = destinationPath;
+      sourceDraftPathToClean = trimmedImagePath;
     }
 
     // Invoke public.publish_article RPC
@@ -452,16 +442,28 @@ export async function publishArticleAction(
     if (rpcError) {
       // Rollback promoted public asset if DB RPC failed
       if (copiedPublicPath) {
-        await supabase.storage.from("public-assets").remove([copiedPublicPath]);
+        const { error: compError } = await supabase.storage
+          .from("public-assets")
+          .remove([copiedPublicPath]);
+        if (compError) {
+          return {
+            success: false,
+            error: `Publication failed (${rpcError.message}) and compensation cleanup of promoted public image also failed (${compError.message}).`,
+          };
+        }
       }
       return { success: false, error: rpcError.message };
     }
 
     // RPC succeeded: clean up private source asset in draft-assets
+    let cleanupWarning: string | undefined;
     if (sourceDraftPathToClean) {
-      await supabase.storage
+      const { error: removeError } = await supabase.storage
         .from("draft-assets")
         .remove([sourceDraftPathToClean]);
+      if (removeError) {
+        cleanupWarning = `Article published, but private draft asset could not be cleaned up from draft-assets: ${removeError.message}`;
+      }
     }
 
     const publishedRow = Array.isArray(publishData)
@@ -500,6 +502,7 @@ export async function publishArticleAction(
       status: publishedRow?.status || "published",
       publishedAt: publishedRow?.published_at || new Date().toISOString(),
       updatedAt: publishedRow?.updated_at || new Date().toISOString(),
+      warning: cleanupWarning,
     };
   } catch (err: unknown) {
     const message =
@@ -541,11 +544,11 @@ export async function updatePublishedArticleAction(
       };
     }
 
-    const docContent = payload.content_json.content;
-    if (!Array.isArray(docContent) || docContent.length === 0) {
+    if (!hasMeaningfulArticleContent(payload.content_json)) {
       return {
         success: false,
-        error: "Cannot update published article with empty document content.",
+        error:
+          "Cannot update published article without meaningful textual content.",
       };
     }
 
@@ -605,48 +608,35 @@ export async function updatePublishedArticleAction(
 
     const oldPublicImagePath = existingArticle.featured_image_path;
     let targetPublicImagePath: string | null = oldPublicImagePath;
-    let copiedPublicPath: string | null = null;
+    let newlyCopiedPublicPath: string | null = null;
     let sourceDraftPathToClean: string | null = null;
     let supersededPublicPathToClean: string | null = null;
 
     if (trimmedImagePath !== oldPublicImagePath) {
       if (trimmedImagePath) {
-        // Check if the new image is in draft-assets
-        const { data: draftObject } = await supabase.storage
+        // Replacement image is sourced from draft-assets
+        const destinationPath = generateUniqueAssetPath(
+          articleId,
+          trimmedImagePath,
+        );
+
+        const { error: copyError } = await supabase.storage
           .from("draft-assets")
-          .list(`articles/${articleId}/featured`);
+          .copy(trimmedImagePath, destinationPath, {
+            destinationBucket: "public-assets",
+          });
 
-        const filename = trimmedImagePath.split("/").pop();
-        const existsInDraft =
-          Array.isArray(draftObject) &&
-          draftObject.some((obj) => obj.name === filename);
-
-        if (existsInDraft) {
-          const destinationPath = generateUniqueAssetPath(
-            articleId,
-            trimmedImagePath,
-          );
-
-          const { error: copyError } = await supabase.storage
-            .from("draft-assets")
-            .copy(trimmedImagePath, destinationPath, {
-              destinationBucket: "public-assets",
-            });
-
-          if (copyError) {
-            return {
-              success: false,
-              error: `Failed to promote replacement image: ${copyError.message}`,
-            };
-          }
-
-          targetPublicImagePath = destinationPath;
-          copiedPublicPath = destinationPath;
-          sourceDraftPathToClean = trimmedImagePath;
-          supersededPublicPathToClean = oldPublicImagePath;
-        } else {
-          targetPublicImagePath = trimmedImagePath;
+        if (copyError) {
+          return {
+            success: false,
+            error: `Failed to promote replacement image: ${copyError.message}`,
+          };
         }
+
+        targetPublicImagePath = destinationPath;
+        newlyCopiedPublicPath = destinationPath;
+        sourceDraftPathToClean = trimmedImagePath;
+        supersededPublicPathToClean = oldPublicImagePath;
       } else {
         // Image was removed
         targetPublicImagePath = null;
@@ -672,22 +662,41 @@ export async function updatePublishedArticleAction(
     );
 
     if (rpcError) {
-      if (copiedPublicPath) {
-        await supabase.storage.from("public-assets").remove([copiedPublicPath]);
+      if (newlyCopiedPublicPath) {
+        const { error: compError } = await supabase.storage
+          .from("public-assets")
+          .remove([newlyCopiedPublicPath]);
+        if (compError) {
+          return {
+            success: false,
+            error: `Update failed (${rpcError.message}) and compensation cleanup of replacement public image also failed (${compError.message}).`,
+          };
+        }
       }
       return { success: false, error: rpcError.message };
     }
 
-    // Cleanup storage assets post-success
+    // Cleanup storage assets post-success and check all results
+    const warnings: string[] = [];
     if (sourceDraftPathToClean) {
-      await supabase.storage
+      const { error: removeDraftErr } = await supabase.storage
         .from("draft-assets")
         .remove([sourceDraftPathToClean]);
+      if (removeDraftErr) {
+        warnings.push(
+          `Draft source image cleanup failed: ${removeDraftErr.message}`,
+        );
+      }
     }
     if (supersededPublicPathToClean) {
-      await supabase.storage
+      const { error: removeOldPubErr } = await supabase.storage
         .from("public-assets")
         .remove([supersededPublicPathToClean]);
+      if (removeOldPubErr) {
+        warnings.push(
+          `Superseded public image cleanup failed: ${removeOldPubErr.message}`,
+        );
+      }
     }
 
     const updatedRow = Array.isArray(updateData) ? updateData[0] : updateData;
@@ -736,6 +745,7 @@ export async function updatePublishedArticleAction(
       status: "published",
       publishedAt: updatedRow?.published_at || existingArticle.published_at,
       updatedAt: updatedRow?.updated_at || new Date().toISOString(),
+      warning: warnings.length > 0 ? warnings.join(" | ") : undefined,
     };
   } catch (err: unknown) {
     const message =
@@ -785,7 +795,6 @@ export async function unpublishArticleAction(
 
     const currentPublicImagePath = existingArticle.featured_image_path;
     let privateDestinationPath: string | null = null;
-    let copiedPrivatePath: string | null = null;
 
     if (currentPublicImagePath) {
       privateDestinationPath = generateUniqueAssetPath(
@@ -805,8 +814,6 @@ export async function unpublishArticleAction(
           error: `Failed to demote featured image to private storage: ${copyError.message}`,
         };
       }
-
-      copiedPrivatePath = privateDestinationPath;
     }
 
     const { data: unpublishData, error: rpcError } = await supabase.rpc(
@@ -818,17 +825,30 @@ export async function unpublishArticleAction(
     );
 
     if (rpcError) {
-      if (copiedPrivatePath) {
-        await supabase.storage.from("draft-assets").remove([copiedPrivatePath]);
+      if (privateDestinationPath) {
+        const { error: compError } = await supabase.storage
+          .from("draft-assets")
+          .remove([privateDestinationPath]);
+        if (compError) {
+          return {
+            success: false,
+            error: `Unpublish failed (${rpcError.message}) and compensation cleanup of demoted private image also failed (${compError.message}).`,
+          };
+        }
       }
       return { success: false, error: rpcError.message };
     }
 
-    // Clean up public image
+    // Clean up public image and check result
+    let cleanupWarning: string | undefined;
     if (currentPublicImagePath) {
-      await supabase.storage
+      const { error: removePublicErr } = await supabase.storage
         .from("public-assets")
         .remove([currentPublicImagePath]);
+      if (removePublicErr) {
+        cleanupWarning =
+          "Article unpublished, but the previous public image could not be removed from public storage. Please retry cleanup before treating that image as private.";
+      }
     }
 
     const unpublishRow = Array.isArray(unpublishData)
@@ -858,6 +878,7 @@ export async function unpublishArticleAction(
       status: "draft",
       publishedAt: unpublishRow?.published_at || existingArticle.published_at,
       updatedAt: unpublishRow?.updated_at || new Date().toISOString(),
+      warning: cleanupWarning,
     };
   } catch (err: unknown) {
     const message =
@@ -910,7 +931,6 @@ export async function archiveArticleAction(
     const wasPublished = existingArticle.status === "published";
     const currentImagePath = existingArticle.featured_image_path;
     let privateDestinationPath: string | null = null;
-    let copiedPrivatePath: string | null = null;
 
     if (wasPublished && currentImagePath) {
       privateDestinationPath = generateUniqueAssetPath(
@@ -930,8 +950,6 @@ export async function archiveArticleAction(
           error: `Failed to demote featured image to private storage: ${copyError.message}`,
         };
       }
-
-      copiedPrivatePath = privateDestinationPath;
     }
 
     const { data: archiveData, error: rpcError } = await supabase.rpc(
@@ -943,14 +961,29 @@ export async function archiveArticleAction(
     );
 
     if (rpcError) {
-      if (copiedPrivatePath) {
-        await supabase.storage.from("draft-assets").remove([copiedPrivatePath]);
+      if (privateDestinationPath) {
+        const { error: compError } = await supabase.storage
+          .from("draft-assets")
+          .remove([privateDestinationPath]);
+        if (compError) {
+          return {
+            success: false,
+            error: `Archive failed (${rpcError.message}) and compensation cleanup of demoted private image also failed (${compError.message}).`,
+          };
+        }
       }
       return { success: false, error: rpcError.message };
     }
 
+    let cleanupWarning: string | undefined;
     if (wasPublished && currentImagePath) {
-      await supabase.storage.from("public-assets").remove([currentImagePath]);
+      const { error: removePublicErr } = await supabase.storage
+        .from("public-assets")
+        .remove([currentImagePath]);
+      if (removePublicErr) {
+        cleanupWarning =
+          "Article archived, but the previous public image could not be removed from public storage. Please retry cleanup before treating that image as private.";
+      }
     }
 
     const archiveRow = Array.isArray(archiveData)
@@ -982,6 +1015,7 @@ export async function archiveArticleAction(
       status: "archived",
       publishedAt: archiveRow?.published_at || existingArticle.published_at,
       updatedAt: archiveRow?.updated_at || new Date().toISOString(),
+      warning: cleanupWarning,
     };
   } catch (err: unknown) {
     const message =
@@ -1116,10 +1150,14 @@ export async function deleteArticleAction(
     }
 
     // Clean up draft storage assets if present
+    let cleanupWarning: string | undefined;
     if (existingArticle.featured_image_path) {
-      await supabase.storage
+      const { error: removeDraftErr } = await supabase.storage
         .from("draft-assets")
         .remove([existingArticle.featured_image_path]);
+      if (removeDraftErr) {
+        cleanupWarning = `Article deleted, but draft storage asset could not be cleaned up from draft-assets: ${removeDraftErr.message}`;
+      }
     }
 
     revalidatePath("/admin/articles");
@@ -1129,6 +1167,7 @@ export async function deleteArticleAction(
       articleId,
       slug: existingArticle.slug,
       deleted: true,
+      warning: cleanupWarning,
     };
   } catch (err: unknown) {
     const message =

@@ -24,6 +24,7 @@ import type { AdminCategoryOption } from "@/lib/admin/articles";
 export interface PublishModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  articleId?: string | null;
   title: string;
   excerpt?: string | null;
   categoryId?: string | null;
@@ -43,6 +44,7 @@ export interface PublishModalProps {
 export function PublishModal({
   open,
   onOpenChange,
+  articleId,
   title,
   categoryId,
   categories,
@@ -69,7 +71,7 @@ export function PublishModal({
     ? existingSlug || ""
     : userCustomSlug !== null
       ? normalizeSlugCandidate(userCustomSlug)
-      : generateCanonicalSlug(title);
+      : generateCanonicalSlug(title, articleId || undefined);
 
   const isSlugValid = isEverPublished || isValidCanonicalSlug(candidateSlug);
 
