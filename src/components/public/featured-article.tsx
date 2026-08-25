@@ -5,7 +5,8 @@ import type { PublicArticleSummary } from "@/lib/public-articles";
 
 interface FeaturedArticleProps {
   article: PublicArticleSummary;
-  isExplicitlyFeatured: boolean;
+  isExplicitlyFeatured?: boolean;
+  headingLevel?: "h2" | "h3";
   className?: string;
 }
 
@@ -14,7 +15,7 @@ function formatDate(dateStr: string | null): string | null {
   try {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-US", {
-      month: "long",
+      month: "short",
       day: "numeric",
       year: "numeric",
     });
@@ -25,22 +26,26 @@ function formatDate(dateStr: string | null): string | null {
 
 export function FeaturedArticle({
   article,
-  isExplicitlyFeatured,
+  isExplicitlyFeatured = false,
+  headingLevel = "h2",
   className = "",
 }: FeaturedArticleProps) {
+  const formattedDate = formatDate(article.published_at);
   const badgeLabel = isExplicitlyFeatured
     ? "Featured Writing"
     : "Latest Writing";
-  const formattedDate = formatDate(article.published_at);
+
+  const HeadingTag = headingLevel;
 
   return (
     <article
-      className={`group bg-reading-surface hover:border-brand-oxide relative rounded-md border border-subtle-divider p-6 transition-all sm:p-8 md:p-10 ${className}`}
+      className={`group border-brand-oxide/30 bg-reading-surface hover:border-brand-oxide relative rounded-md border p-6 shadow-xs transition-all sm:p-8 ${className}`}
+      aria-label={`${badgeLabel}: ${article.title}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <FolioMarker number="01" />
-          <span className="text-brand-oxide font-sans text-xs font-semibold tracking-wider uppercase">
+          <span className="bg-brand-oxide/10 text-brand-oxide rounded px-2.5 py-1 text-xs font-semibold tracking-wider uppercase">
             {badgeLabel}
           </span>
         </div>
@@ -49,21 +54,21 @@ export function FeaturedArticle({
         )}
       </div>
 
-      <h2 className="group-hover:text-brand-oxide mt-5 font-serif text-2xl font-medium tracking-tight text-ink transition-colors sm:text-3xl md:text-4xl">
+      <HeadingTag className="group-hover:text-brand-oxide mt-4 font-serif text-2xl font-medium tracking-tight text-ink transition-colors sm:text-3xl lg:text-4xl">
         <Link href={`/blog/${article.slug}`}>
           <span className="absolute inset-0" aria-hidden="true" />
           {article.title}
         </Link>
-      </h2>
+      </HeadingTag>
 
       {article.excerpt && (
-        <p className="text-muted-ink mt-4 text-base leading-relaxed sm:text-lg">
+        <p className="text-muted-ink mt-3 max-w-3xl text-base leading-relaxed sm:text-lg">
           {article.excerpt}
         </p>
       )}
 
-      <div className="text-muted-ink mt-6 flex items-center justify-between border-t border-subtle-divider pt-4 font-sans text-xs">
-        <div className="flex items-center gap-3">
+      <div className="text-muted-ink mt-6 flex items-center justify-between border-t border-subtle-divider pt-4 text-xs">
+        <div className="flex items-center gap-2">
           {formattedDate && <span>{formattedDate}</span>}
           {formattedDate && (
             <span aria-hidden="true" className="text-subtle-divider">

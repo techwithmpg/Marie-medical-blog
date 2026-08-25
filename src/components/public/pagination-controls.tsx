@@ -54,14 +54,14 @@ export function PaginationControls({
         {hasPrev && prevUrl ? (
           <Link
             href={prevUrl}
-            className="border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide inline-flex items-center gap-1.5 rounded border px-4 py-2 text-ink transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
+            className="border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide inline-flex min-h-[44px] items-center gap-1.5 rounded border px-4 py-2.5 text-ink transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
             aria-label={`Go to page ${currentPage - 1}`}
           >
             ← Previous
           </Link>
         ) : (
           <span
-            className="text-muted-ink/40 inline-flex cursor-not-allowed items-center gap-1.5 rounded border border-subtle-divider bg-transparent px-4 py-2"
+            className="text-muted-ink/40 inline-flex min-h-[44px] cursor-not-allowed items-center gap-1.5 rounded border border-subtle-divider bg-transparent px-4 py-2.5"
             aria-disabled="true"
           >
             ← Previous
@@ -78,14 +78,14 @@ export function PaginationControls({
         {hasNext && nextUrl ? (
           <Link
             href={nextUrl}
-            className="border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide inline-flex items-center gap-1.5 rounded border px-4 py-2 text-ink transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
+            className="border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide inline-flex min-h-[44px] items-center gap-1.5 rounded border px-4 py-2.5 text-ink transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
             aria-label={`Go to page ${currentPage + 1}`}
           >
             Next →
           </Link>
         ) : (
           <span
-            className="text-muted-ink/40 inline-flex cursor-not-allowed items-center gap-1.5 rounded border border-subtle-divider bg-transparent px-4 py-2"
+            className="text-muted-ink/40 inline-flex min-h-[44px] cursor-not-allowed items-center gap-1.5 rounded border border-subtle-divider bg-transparent px-4 py-2.5"
             aria-disabled="true"
           >
             Next →

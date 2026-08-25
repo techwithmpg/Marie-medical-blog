@@ -273,8 +273,8 @@ export async function getBlogViewData(options?: {
   const safeQuery = sanitizeSearchQuery(options?.searchQuery);
   const isFiltered = Boolean(safeQuery || options?.topicSlug);
 
-  // If filtered or page > 1, no separate lead story is rendered
-  if (isFiltered || page > 1) {
+  // Filtered / Search: no separate lead story is extracted or excluded
+  if (isFiltered) {
     const listResult = await getPublishedArticles({
       page,
       pageSize,
@@ -293,7 +293,7 @@ export async function getBlogViewData(options?: {
     };
   }
 
-  // Unfiltered page 1: resolve lead story first
+  // Unfiltered archive: resolve the deterministic published lead article
   const supabase = await createClient();
 
   // 1. Try to find explicitly featured published article
@@ -313,11 +313,11 @@ export async function getBlogViewData(options?: {
     throw new Error("Unable to load featured article.");
   }
 
-  let leadArticle: PublicArticleSummary | null = null;
+  let leadArticleSummary: PublicArticleSummary | null = null;
   let isLeadExplicitlyFeatured = false;
 
   if (featuredData && featuredData.length > 0) {
-    leadArticle = mapArticleSummary(
+    leadArticleSummary = mapArticleSummary(
       featuredData[0] as unknown as RawArticleRow,
     );
     isLeadExplicitlyFeatured = true;
@@ -339,23 +339,24 @@ export async function getBlogViewData(options?: {
     }
 
     if (latestData && latestData.length > 0) {
-      leadArticle = mapArticleSummary(
+      leadArticleSummary = mapArticleSummary(
         latestData[0] as unknown as RawArticleRow,
       );
       isLeadExplicitlyFeatured = false;
     }
   }
 
-  // Fetch paginated supporting articles excluding the lead article ID
+  // Fetch paginated supporting articles excluding the deterministic lead article ID on ALL pages
   const listResult = await getPublishedArticles({
-    page: 1,
+    page,
     pageSize,
-    excludeArticleId: leadArticle?.id,
+    excludeArticleId: leadArticleSummary?.id,
   });
 
   return {
-    leadArticle,
-    isLeadExplicitlyFeatured,
+    // Only return leadArticle on page 1 for the hero visual
+    leadArticle: page === 1 ? leadArticleSummary : null,
+    isLeadExplicitlyFeatured: page === 1 ? isLeadExplicitlyFeatured : false,
     articles: listResult.articles,
     totalCount: listResult.totalCount,
     page: listResult.page,

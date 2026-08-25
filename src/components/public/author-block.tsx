@@ -21,11 +21,11 @@ export function AuthorBlock({ profile, className = "" }: AuthorBlockProps) {
         <FolioMarker number="AU" />
         <div>
           <span className="text-deep-sage font-sans text-xs font-semibold tracking-wider uppercase">
-            Author & Medical Writer
+            Author
           </span>
-          <h3 className="font-serif text-lg font-medium text-ink">
+          <h2 className="font-serif text-lg font-medium text-ink">
             {displayName}
-          </h3>
+          </h2>
         </div>
       </div>
 
@@ -42,7 +42,7 @@ export function AuthorBlock({ profile, className = "" }: AuthorBlockProps) {
           href="/about"
           className="text-brand-oxide underline underline-offset-2 transition-colors hover:text-ink"
         >
-          View Profile & Philosophy →
+          View Profile →
         </Link>
         <Link
           href="/portfolio"

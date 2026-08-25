@@ -14,6 +14,7 @@ import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
 import {
   getFeaturedPublishedArticle,
   getLatestPublishedArticles,
+  type PublicArticleSummary,
 } from "@/lib/public-articles";
 import { cn } from "@/lib/utils";
 
@@ -28,21 +29,30 @@ export default async function HomePage() {
     getPublicSiteSettings(),
   ]);
 
-  let featuredArticle = null;
-  let latestArticles: Awaited<ReturnType<typeof getLatestPublishedArticles>> =
-    [];
+  let leadArticle: PublicArticleSummary | null = null;
+  let isLeadExplicitlyFeatured = false;
+  let supportingArticles: PublicArticleSummary[] = [];
+  let fetchError = false;
 
   try {
     const [fetchedFeatured, fetchedLatest] = await Promise.all([
       getFeaturedPublishedArticle(),
-      getLatestPublishedArticles(3),
+      getLatestPublishedArticles(4),
     ]);
-    featuredArticle = fetchedFeatured;
-    latestArticles = fetchedLatest;
+
+    if (fetchedFeatured) {
+      leadArticle = fetchedFeatured;
+      isLeadExplicitlyFeatured = true;
+      supportingArticles = fetchedLatest
+        .filter((a) => a.id !== fetchedFeatured.id)
+        .slice(0, 3);
+    } else if (fetchedLatest.length > 0) {
+      leadArticle = fetchedLatest[0];
+      isLeadExplicitlyFeatured = false;
+      supportingArticles = fetchedLatest.slice(1, 4);
+    }
   } catch {
-    // Graceful fallback if database read fails
-    featuredArticle = null;
-    latestArticles = [];
+    fetchError = true;
   }
 
   const siteTitle =
@@ -56,7 +66,7 @@ export default async function HomePage() {
     profile.short_bio ||
     "A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication.";
 
-  const hasPublishedArticles = latestArticles.length > 0;
+  const hasPublishedContent = Boolean(leadArticle);
 
   return (
     <PublicShell>
@@ -186,26 +196,29 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {hasPublishedArticles ? (
+          {fetchError ? (
+            <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+              Unable to load published writing at this time. Please try again
+              later.
+            </div>
+          ) : hasPublishedContent && leadArticle ? (
             <div className="space-y-6">
-              {featuredArticle && (
-                <FeaturedArticle
-                  article={featuredArticle}
-                  isExplicitlyFeatured={featuredArticle.is_featured}
-                />
-              )}
-              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {latestArticles
-                  .filter((a) => a.id !== featuredArticle?.id)
-                  .slice(0, 3)
-                  .map((article, index) => (
+              <FeaturedArticle
+                article={leadArticle}
+                isExplicitlyFeatured={isLeadExplicitlyFeatured}
+                headingLevel="h3"
+              />
+              {supportingArticles.length > 0 && (
+                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {supportingArticles.map((article, index) => (
                     <ArticleListItem
                       key={article.id}
                       article={article}
-                      index={index + (featuredArticle ? 1 : 0)}
+                      index={index + 1}
                     />
                   ))}
-              </div>
+                </div>
+              )}
             </div>
           ) : (
             <EmptyEditorialState

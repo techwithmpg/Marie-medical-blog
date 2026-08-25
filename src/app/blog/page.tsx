@@ -5,12 +5,17 @@ import { FeaturedArticle } from "@/components/public/featured-article";
 import { ArticleListItem } from "@/components/public/article-list-item";
 import { PaginationControls } from "@/components/public/pagination-controls";
 import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
-import { getBlogViewData, getPublishedCategories } from "@/lib/public-articles";
+import {
+  getBlogViewData,
+  getPublishedCategories,
+  type PublicCategory,
+  type PublicBlogViewData,
+} from "@/lib/public-articles";
 
 export const metadata: Metadata = {
   title: "Articles | Marie Medere",
   description:
-    "Explore peer-referenced medical communications, clinical writing samples, and educational healthcare analyses by Marie Medere.",
+    "Browse published writing and educational articles from the Marie Medere Medical Writing Portfolio & Educational Blog.",
 };
 
 interface BlogPageProps {
@@ -26,8 +31,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const parsedPage = parseInt(rawPage || "1", 10);
   const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
 
-  let blogData;
-  let categories = [];
+  let blogData: PublicBlogViewData | null = null;
+  let categories: PublicCategory[] = [];
+  let fetchError = false;
 
   try {
     const [fetchedData, fetchedCategories] = await Promise.all([
@@ -42,17 +48,21 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     blogData = fetchedData;
     categories = fetchedCategories;
   } catch {
+    fetchError = true;
+  }
+
+  if (fetchError || !blogData) {
     return (
-      <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="space-y-12 sm:space-y-16">
         <PageIntro
           title="Articles"
           topicLabel="Editorial Archive"
-          deck="Explore peer-referenced medical communications, clinical writing samples, and educational healthcare analyses."
+          deck="Browse published writing and educational articles by topic or search."
         />
-        <div className="bg-reading-surface text-muted-ink mt-12 rounded-lg border border-subtle-divider p-8 text-center text-sm">
-          Unable to load articles at this time. Please try again later.
+        <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+          Unable to load published writing at this time. Please try again later.
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -66,16 +76,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   const isFiltered = Boolean(q || topic);
 
+  const sectionHeading = q
+    ? "Search Results"
+    : topic
+      ? "Topic Entries"
+      : "Archive Entries";
+
   return (
-    <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="space-y-12 sm:space-y-16">
       <PageIntro
         title="Articles"
         topicLabel="Editorial Archive"
-        deck="Explore peer-referenced medical communications, clinical writing samples, and educational healthcare analyses."
+        deck="Browse published writing and educational articles by topic or search."
       />
 
       {/* Filter and Search Bar */}
-      <div className="mt-10 mb-12">
+      <div>
         <TopicFilterBar
           categories={categories}
           activeTopicSlug={topic}
@@ -83,12 +99,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         />
       </div>
 
-      {/* Lead Story (Unfiltered Page 1 only) */}
+      {/* Lead Story Hero (Unfiltered Page 1 only) */}
       {leadArticle && (
-        <div className="mb-12">
+        <div>
           <FeaturedArticle
             article={leadArticle}
             isExplicitlyFeatured={isLeadExplicitlyFeatured}
+            headingLevel="h2"
           />
         </div>
       )}
@@ -96,29 +113,31 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       {/* Main / Supporting Articles Grid */}
       {articles.length > 0 ? (
         <div className="space-y-6">
-          {leadArticle && (
-            <div className="flex items-center justify-between border-b border-subtle-divider pb-3">
-              <span className="font-serif text-lg font-medium text-ink">
-                Archive Entries
-              </span>
-              <span className="text-muted-ink text-xs">
-                Showing {articles.length} of {totalCount}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center justify-between border-b border-subtle-divider pb-3">
+            <h2 className="font-serif text-lg font-medium text-ink">
+              {sectionHeading}
+            </h2>
+            <span className="text-muted-ink text-xs">
+              Showing {articles.length} of {totalCount}
+            </span>
+          </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
             {articles.map((article, index) => (
               <ArticleListItem
                 key={article.id}
                 article={article}
-                index={(currentPage - 1) * 6 + index + (leadArticle ? 1 : 0)}
+                index={
+                  !isFiltered
+                    ? (currentPage - 1) * 6 + index + 1
+                    : (currentPage - 1) * 6 + index
+                }
               />
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="mt-12">
+          <div className="pt-6">
             <PaginationControls
               currentPage={currentPage}
               totalPages={totalPages}
@@ -130,7 +149,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
       ) : (
         !leadArticle && (
-          <div className="mt-8">
+          <div className="pt-4">
             {isFiltered ? (
               <EmptyEditorialState
                 title="No matching articles found"
@@ -145,12 +164,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             ) : (
               <EmptyEditorialState
                 title="No published articles yet"
-                description="Educational articles, clinical writing samples, and health literacy resources will appear here as they are published."
+                description="Published writing and educational articles will appear here as content becomes available."
               />
             )}
           </div>
         )
       )}
-    </main>
+    </div>
   );
 }

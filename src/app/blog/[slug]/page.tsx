@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ArticleHeader } from "@/components/public/article-header";
 import { ArticleTypography } from "@/components/public/article-typography";
@@ -9,8 +10,13 @@ import { ArticleListItem } from "@/components/public/article-list-item";
 import {
   getPublishedArticleBySlug,
   getRelatedPublishedArticles,
+  type PublicArticleSummary,
 } from "@/lib/public-articles";
-import { getPublicProfile, getPublicAssetUrl } from "@/lib/public-data";
+import {
+  getPublicProfile,
+  getPublicAssetUrl,
+  type PublicProfile,
+} from "@/lib/public-data";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -35,11 +41,13 @@ export async function generateMetadata({
       description:
         article.seo_description ||
         article.excerpt ||
-        "Evidence-based medical writing and educational publication by Marie Medere.",
+        "Medical Writing Portfolio & Educational Blog by Marie Medere.",
     };
   } catch {
     return {
       title: "Articles | Marie Medere",
+      description:
+        "Medical Writing Portfolio & Educational Blog by Marie Medere.",
     };
   }
 }
@@ -48,16 +56,21 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const { slug } = await params;
 
   let article;
-  let profile;
-  let relatedArticles = [];
+  try {
+    article = await getPublishedArticleBySlug(slug);
+  } catch {
+    throw new Error("Unable to load article at this time.");
+  }
+
+  if (!article) {
+    notFound();
+  }
+
+  let profile: PublicProfile;
+  let relatedArticles: PublicArticleSummary[] = [];
   let featuredImageUrl: string | null = null;
 
   try {
-    article = await getPublishedArticleBySlug(slug);
-    if (!article) {
-      notFound();
-    }
-
     const [fetchedProfile, fetchedRelated, fetchedImageUrl] = await Promise.all(
       [
         getPublicProfile(),
@@ -69,24 +82,29 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     profile = fetchedProfile;
     relatedArticles = fetchedRelated;
     featuredImageUrl = fetchedImageUrl;
-  } catch (error) {
-    // If notFound was thrown, let Next.js handle the 404
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "digest" in error &&
-      typeof (error as { digest: string }).digest === "string" &&
-      (error as { digest: string }).digest.includes("NEXT_NOT_FOUND")
-    ) {
-      throw error;
-    }
-
-    // Otherwise, real query/network error => rethrow to trigger error boundary
-    throw error;
+  } catch {
+    profile = {
+      display_name: "Marie Medere",
+      professional_tagline: "Medical Writing Portfolio & Educational Blog",
+      short_bio: null,
+      long_bio: null,
+      education_summary: null,
+      interests: null,
+      social_links: null,
+      cv_storage_path: null,
+    };
+    relatedArticles = [];
+    featuredImageUrl = null;
   }
 
+  const hasValidImage = Boolean(
+    featuredImageUrl &&
+    article.featured_image_alt &&
+    article.featured_image_alt.trim().length > 0,
+  );
+
   return (
-    <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+    <article className="mx-auto max-w-4xl space-y-12 sm:space-y-16">
       {/* Article Header */}
       <ArticleHeader
         title={article.title}
@@ -97,37 +115,44 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
         readingTimeMinutes={article.reading_time_minutes}
       />
 
-      {/* Featured Media (Optional) */}
-      {featuredImageUrl && (
-        <div className="mb-10 overflow-hidden rounded-md border border-subtle-divider">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+      {/* Featured Media (Only rendered when URL and alt text both exist) */}
+      {hasValidImage && featuredImageUrl && article.featured_image_alt && (
+        <div className="overflow-hidden rounded-md border border-subtle-divider">
+          <Image
             src={featuredImageUrl}
-            alt={article.featured_image_alt || article.title}
-            className="max-h-[480px] w-full object-cover"
+            alt={article.featured_image_alt}
+            width={1200}
+            height={630}
+            className="h-auto max-h-[480px] w-full object-cover"
+            sizes="(max-width: 896px) 100vw, 896px"
+            priority={false}
           />
         </div>
       )}
 
       {/* Long-form Article Body */}
-      <section className="mb-14">
+      <section aria-label="Article content">
         <ArticleTypography contentJson={article.content_json} />
       </section>
 
       {/* Reference Ledger */}
       {article.references.length > 0 && (
-        <section className="mb-14">
-          <ReferenceLedger items={article.references} />
+        <section>
+          <ReferenceLedger
+            title="References & Evidence Sources"
+            headingLevel="h2"
+            items={article.references}
+          />
         </section>
       )}
 
       {/* Author Block */}
-      <div className="mb-10">
+      <div>
         <AuthorBlock profile={profile} />
       </div>
 
       {/* Medical Disclaimer Banner */}
-      <div className="mb-14">
+      <div>
         <MedicalDisclaimer />
       </div>
 
@@ -139,7 +164,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
               Related Writing
             </h2>
             {article.category && (
-              <span className="text-deep-sage text-xs font-semibold tracking-wider uppercase">
+              <span className="text-deep-sage font-sans text-xs font-semibold tracking-wider uppercase">
                 {article.category.name}
               </span>
             )}

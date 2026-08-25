@@ -31,7 +31,7 @@ export async function generateMetadata({
       title: `${category.name} | Topics | Marie Medere`,
       description:
         category.description ||
-        `Published medical writing and educational articles in ${category.name} by Marie Medere.`,
+        `Published writing and educational articles in ${category.name} by Marie Medere.`,
     };
   } catch {
     return {
@@ -50,53 +50,67 @@ export default async function TopicDetailPage({
   const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
 
   let category;
-  let listResult;
-
   try {
     category = await getCategoryBySlug(slug);
-    if (!category) {
-      notFound();
-    }
+  } catch {
+    throw new Error("Unable to load topic category.");
+  }
 
+  if (!category) {
+    notFound();
+  }
+
+  let listResult;
+  let fetchError = false;
+
+  try {
     listResult = await getPublishedArticles({
       topicSlug: slug,
       page: currentPage,
       pageSize: 6,
     });
-  } catch (error) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "digest" in error &&
-      typeof (error as { digest: string }).digest === "string" &&
-      (error as { digest: string }).digest.includes("NEXT_NOT_FOUND")
-    ) {
-      throw error;
-    }
+  } catch {
+    fetchError = true;
+  }
 
-    throw error;
+  if (fetchError || !listResult) {
+    return (
+      <div className="space-y-12 sm:space-y-16">
+        <PageIntro
+          title={category.name}
+          topicLabel="Topic Archive"
+          deck={
+            category.description ||
+            `Published writing and educational articles in ${category.name}.`
+          }
+        />
+        <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+          Unable to load published writing at this time. Please try again later.
+        </div>
+      </div>
+    );
   }
 
   const { articles, totalCount, totalPages } = listResult;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="space-y-12 sm:space-y-16">
       <PageIntro
         title={category.name}
         topicLabel="Topic Archive"
         deck={
           category.description ||
-          `Published medical writing, clinical samples, and educational resources in ${category.name}.`
+          `Published writing and educational articles in ${category.name}.`
         }
       />
 
-      <div className="mt-12 space-y-6">
+      <div className="space-y-6">
         {articles.length > 0 ? (
           <>
             <div className="flex items-center justify-between border-b border-subtle-divider pb-3">
-              <span className="font-serif text-lg font-medium text-ink">
+              <h2 className="font-serif text-lg font-medium text-ink">
                 Published Articles
-              </span>
+              </h2>
               <span className="text-muted-ink text-xs">
                 Showing {articles.length} of {totalCount}
               </span>
@@ -112,7 +126,7 @@ export default async function TopicDetailPage({
               ))}
             </div>
 
-            <div className="mt-12">
+            <div className="pt-6">
               <PaginationControls
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -123,12 +137,12 @@ export default async function TopicDetailPage({
         ) : (
           <EmptyEditorialState
             title="No published articles in this topic yet"
-            description={`Articles under ${category.name} will appear here as they are published.`}
+            description={`Published writing and educational articles in ${category.name} will appear here as content becomes available.`}
             actionLabel="View all articles"
             actionHref="/blog"
           />
         )}
       </div>
-    </main>
+    </div>
   );
 }

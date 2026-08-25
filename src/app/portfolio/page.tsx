@@ -21,11 +21,12 @@ export default async function PortfolioPage() {
   let portfolioArticles: Awaited<
     ReturnType<typeof getPortfolioPublishedArticles>
   > = [];
+  let fetchError = false;
 
   try {
     portfolioArticles = await getPortfolioPublishedArticles();
   } catch {
-    portfolioArticles = [];
+    fetchError = true;
   }
 
   return (
@@ -47,12 +48,17 @@ export default async function PortfolioPage() {
           <div className="space-y-12 lg:col-span-8">
             {/* Selected Articles / Curated Writing Shell */}
             <section className="space-y-6">
-              {portfolioArticles.length > 0 ? (
+              {fetchError ? (
+                <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+                  Unable to load published writing at this time. Please try
+                  again later.
+                </div>
+              ) : portfolioArticles.length > 0 ? (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-[#D2C9BC] pb-3">
-                    <span className="font-serif text-lg font-medium text-[#242321]">
+                    <h2 className="font-serif text-lg font-medium text-[#242321]">
                       Curated Publications
-                    </span>
+                    </h2>
                     <span className="text-xs text-[#5E5953]">
                       {portfolioArticles.length} Selected{" "}
                       {portfolioArticles.length === 1 ? "Work" : "Works"}

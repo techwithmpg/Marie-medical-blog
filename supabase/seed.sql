@@ -99,14 +99,14 @@ insert into public.profiles (
   updated_at
 ) values (
   '00000000-0000-0000-0000-000000000001',
-  'Marie Medere',
-  'Medical Writing Portfolio & Educational Blog',
-  'Author and medical writer presenting clear, referenced clinical communications and healthcare educational analyses.',
-  'Marie Medere focuses on evidence-based medical communications, clinical writing, and healthcare literacy. This portfolio highlights selected writing samples and referenced educational articles.',
-  'M.Sc. Biomedical Communications (Synthetic Example)',
-  array['Medical Writing', 'Clinical Communications', 'Health Literacy', 'Educational Publications'],
-  '[{"platform": "LinkedIn", "url": "https://example.invalid/profile"}, {"platform": "ORCID", "url": "https://orcid.example.invalid/0000-0000-0000-0000"}]'::jsonb,
-  'sample-cv.pdf',
+  'Synthetic Stage 6 Author',
+  'Synthetic local development profile',
+  'Synthetic profile text used only for local Stage 6 layout testing.',
+  'Synthetic extended profile text used exclusively for local Stage 6 development verification and typography rendering without making real medical or professional claims.',
+  null,
+  array['Synthetic Testing', 'Editorial Typography', 'Layout Verification'],
+  '[]'::jsonb,
+  null,
   now(),
   now()
 ) on conflict (id) do update set
@@ -114,7 +114,10 @@ insert into public.profiles (
   professional_tagline = excluded.professional_tagline,
   short_bio = excluded.short_bio,
   long_bio = excluded.long_bio,
-  interests = excluded.interests;
+  education_summary = excluded.education_summary,
+  interests = excluded.interests,
+  social_links = excluded.social_links,
+  cv_storage_path = excluded.cv_storage_path;
 
 -- ============================================================================
 -- 4. Synthetic Categories (public.categories)
@@ -129,16 +132,16 @@ insert into public.categories (
   updated_at
 ) values (
   '10000000-0000-0000-0000-000000000001',
-  'Clinical Communications',
+  'Synthetic — Clinical Communications',
   'clinical-communications',
-  'Articles and analyses covering clinical study documentation, medical protocols, and structured healthcare reporting standards.',
+  'Synthetic local category fixture for testing clinical communications layouts and article filtering.',
   now(),
   now()
 ), (
   '10000000-0000-0000-0000-000000000002',
-  'Health Literacy & Education',
+  'Synthetic — Health Literacy & Education',
   'health-literacy-education',
-  'Plain-language medical writing, patient educational materials, and health communication accessibility analyses.',
+  'Synthetic local category fixture for testing health literacy layouts and article filtering.',
   now(),
   now()
 ) on conflict (id) do update set
@@ -168,9 +171,9 @@ insert into public.articles (
   updated_at
 ) values (
   '20000000-0000-0000-0000-000000000001',
-  'Evaluating Plain Language Standards in Clinical Protocol Summaries',
+  'Synthetic — Evaluating Plain Language Standards in Protocol Summaries',
   'plain-language-clinical-protocol-summaries',
-  'A synthetic sample analyzing structured methodologies for drafting accessible clinical study summaries for multidisciplinary audiences.',
+  'Synthetic local test excerpt examining layout structures and formatting for protocol summary documents.',
   '{
     "type": "doc",
     "content": [
@@ -179,21 +182,21 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Clear medical writing bridges complex clinical methodologies and stakeholder comprehension. When clinical study protocols are synthesized into summaries, authors must balance precision with readability."
+            "text": "This synthetic development paragraph exists only to test long-form article typography, spacing, lists, and reference rendering without making clinical claims."
           }
         ]
       },
       {
         "type": "heading",
         "attrs": { "level": 2 },
-        "content": [{ "type": "text", "text": "Core Principles of Plain-Language Synthesis" }]
+        "content": [{ "type": "text", "text": "Synthetic Structural Typography Test Heading" }]
       },
       {
         "type": "paragraph",
         "content": [
           {
             "type": "text",
-            "text": "Plain language in medical documentation does not simplify scientific meaning; rather, it structures information to reduce cognitive burden. Key objectives include:"
+            "text": "The following list verifies unordered list rendering inside the Evidence Folio reading environment:"
           }
         ]
       },
@@ -202,15 +205,15 @@ insert into public.articles (
         "content": [
           {
             "type": "listItem",
-            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Standardized terminology definitions presented alongside first usage." }] }]
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 01: testing bullet point alignment." }] }]
           },
           {
             "type": "listItem",
-            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Consistent active-voice construction for procedural descriptions." }] }]
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 02: testing typography line-height." }] }]
           },
           {
             "type": "listItem",
-            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Visual separation of primary and secondary study endpoints." }] }]
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 03: testing nested paragraph wrapping." }] }]
           }
         ]
       },
@@ -222,7 +225,7 @@ insert into public.articles (
             "content": [
               {
                 "type": "text",
-                "text": "Effective clinical summaries ensure that all readers—from regulatory reviewers to patient advocates—reach an aligned understanding of study intent."
+                "text": "This synthetic blockquote verifies callout styling, border-left accent color, and muted typography measures."
               }
             ]
           }
@@ -231,14 +234,14 @@ insert into public.articles (
       {
         "type": "heading",
         "attrs": { "level": 3 },
-        "content": [{ "type": "text", "text": "Structured Section Organization" }]
+        "content": [{ "type": "text", "text": "Synthetic Subheading for Hierarchical Verification" }]
       },
       {
         "type": "paragraph",
         "content": [
           {
             "type": "text",
-            "text": "A disciplined layout organizes trial rationale, eligibility criteria, and statistical endpoints into sequential, scannable units."
+            "text": "Concluding synthetic paragraph ensuring proper baseline spacing before the Reference Ledger section."
           }
         ]
       }
@@ -250,16 +253,16 @@ insert into public.articles (
   'published',
   true,
   true,
-  'Plain Language Standards in Clinical Summaries | Marie Medere',
-  'A synthetic sample examining plain language methodologies for clinical protocol summaries.',
+  'Plain Language Standards in Protocol Summaries (Synthetic Fixture)',
+  'Synthetic sample examining layout structures for clinical protocol summaries.',
   now() - interval '8 days',
   now() - interval '8 days',
   now() - interval '8 days'
 ), (
   '20000000-0000-0000-0000-000000000002',
-  'Draft: Best Practices for Regulatory Document Structuring',
+  'Synthetic Draft — Best Practices for Regulatory Document Structuring',
   'draft-regulatory-document-structuring',
-  'A synthetic draft article testing private access restrictions and author draft persistence workflows.',
+  'Synthetic draft article testing private access restrictions and author draft persistence workflows.',
   '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Draft content that must remain hidden from anonymous visitors and non-admin authenticated users."}]}]}'::jsonb,
   null,
   null,
@@ -267,16 +270,16 @@ insert into public.articles (
   'draft',
   false,
   false,
-  'Draft Regulatory Structuring',
+  'Draft Regulatory Structuring (Synthetic Fixture)',
   'Synthetic draft meta description.',
   null,
   now() - interval '1 day',
   now() - interval '1 day'
 ), (
   '20000000-0000-0000-0000-000000000003',
-  'Archived: Historical Overview of 2024 Editorial Guidelines',
+  'Synthetic Archived — Historical Overview of 2024 Editorial Guidelines',
   'archived-historical-editorial-guidelines',
-  'A synthetic archived article verifying that archived content is inaccessible to the public and accessible to admins.',
+  'Synthetic archived article verifying that archived content is inaccessible to the public and accessible to admins.',
   '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Archived content preserved for administrative records."}]}]}'::jsonb,
   null,
   null,
@@ -284,16 +287,16 @@ insert into public.articles (
   'archived',
   false,
   false,
-  'Archived Guidelines',
+  'Archived Guidelines (Synthetic Fixture)',
   'Synthetic archived meta description.',
   now() - interval '30 days',
   now() - interval '30 days',
   now() - interval '10 days'
 ), (
   '20000000-0000-0000-0000-000000000004',
-  'Structured Methods for Patient Education Materials in Chronic Care',
+  'Synthetic — Structured Methods for Patient Education Materials',
   'patient-education-materials-chronic-care',
-  'An editorial overview of formatting and linguistic strategies for patient-facing disease management guides.',
+  'Synthetic test article evaluating formatting and layout strategies for patient education guides.',
   '{
     "type": "doc",
     "content": [
@@ -302,21 +305,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Patient education materials require careful structural design to support adherence and self-management. Readability scores alone cannot measure comprehension."
-          }
-        ]
-      },
-      {
-        "type": "heading",
-        "attrs": { "level": 2 },
-        "content": [{ "type": "text", "text": "Design Considerations for Accessibility" }]
-      },
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "Chunking information into short sections with descriptive subheadings enhances comprehension and recall across varied literacy levels."
+            "text": "This synthetic fixture tests layout rendering for health literacy articles without making substantive clinical claims."
           }
         ]
       }
@@ -328,16 +317,16 @@ insert into public.articles (
   'published',
   false,
   true,
-  'Patient Education in Chronic Care | Marie Medere',
-  'Strategies for drafting accessible patient education materials.',
+  'Patient Education Materials (Synthetic Fixture)',
+  'Synthetic fixture examining patient education layout.',
   now() - interval '7 days',
   now() - interval '7 days',
   now() - interval '7 days'
 ), (
   '20000000-0000-0000-0000-000000000005',
-  'Comparative Analysis of Editorial Consistency in Multi-Center Reports',
+  'Synthetic — Comparative Analysis of Editorial Consistency in Trial Reports',
   'editorial-consistency-multi-center-reports',
-  'Examining style guides and editorial concordance across distributed clinical investigation summaries.',
+  'Synthetic test fixture examining multi-center editorial formatting guidelines.',
   '{
     "type": "doc",
     "content": [
@@ -346,7 +335,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Multi-center clinical reports frequently suffer from fragmented tone and disparate formatting when multiple authors contribute sections independently."
+            "text": "Synthetic test content for multi-center documentation consistency."
           }
         ]
       }
@@ -358,16 +347,16 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Editorial Consistency in Trial Reports | Marie Medere',
-  'Analysis of style guides for distributed medical reporting.',
+  'Editorial Consistency (Synthetic Fixture)',
+  'Synthetic test fixture for trial reporting consistency.',
   now() - interval '6 days',
   now() - interval '6 days',
   now() - interval '6 days'
 ), (
   '20000000-0000-0000-0000-000000000006',
-  'Visual Hierarchy and Readability Metrics in Public Health Communications',
+  'Synthetic — Visual Hierarchy and Readability in Public Health Notices',
   'visual-hierarchy-readability-public-health',
-  'How typographic hierarchy, white space, and plain language synergize to improve health notice clarity.',
+  'Synthetic test fixture analyzing typographic hierarchy in public notices.',
   '{
     "type": "doc",
     "content": [
@@ -376,7 +365,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Information hierarchy dictates whether critical health alerts are noticed or overlooked. Typographic scale and disciplined contrast guide user attention."
+            "text": "Synthetic fixture paragraph evaluating visual hierarchy in public communication."
           }
         ]
       }
@@ -388,16 +377,16 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Visual Hierarchy in Health Communications | Marie Medere',
-  'Analysis of typography and readability in public health publications.',
+  'Visual Hierarchy (Synthetic Fixture)',
+  'Synthetic fixture on visual hierarchy.',
   now() - interval '5 days',
   now() - interval '5 days',
   now() - interval '5 days'
 ), (
   '20000000-0000-0000-0000-000000000007',
-  'Syntax and Terminology Standardization in Investigator Documents',
+  'Synthetic — Syntax and Terminology Standardization in Documentation',
   'syntax-standardization-investigator-documents',
-  'Methodological approaches to maintaining uniform nomenclature across clinical documentation packages.',
+  'Synthetic fixture evaluating terminology control methodologies in documentation packages.',
   '{
     "type": "doc",
     "content": [
@@ -406,7 +395,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Standardized nomenclature prevents ambiguity across multidisciplinary review teams during document preparation."
+            "text": "Synthetic content evaluating terminology standardization."
           }
         ]
       }
@@ -418,16 +407,16 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Syntax Standardization in Clinical Documents | Marie Medere',
-  'Approaches to terminology control in medical documentation.',
+  'Syntax Standardization (Synthetic Fixture)',
+  'Synthetic fixture on syntax standardization.',
   now() - interval '4 days',
   now() - interval '4 days',
   now() - interval '4 days'
 ), (
   '20000000-0000-0000-0000-000000000008',
-  'Designing Accessible Informed Consent Glossaries for Diverse Audiences',
+  'Synthetic — Designing Contextual Glossaries in Clinical Documentation',
   'accessible-informed-consent-glossaries',
-  'Best practices for developing contextual glossaries in clinical trial consent packages.',
+  'Synthetic fixture analyzing glossary structuring in clinical trial documentation.',
   '{
     "type": "doc",
     "content": [
@@ -436,7 +425,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Informed consent documents rely on plain-language glossaries to explain scientific concepts clearly to prospective participants."
+            "text": "Synthetic fixture testing glossary formatting."
           }
         ]
       }
@@ -448,16 +437,16 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Accessible Informed Consent Glossaries | Marie Medere',
-  'Guidelines for designing patient-centered consent glossaries.',
+  'Consent Glossaries (Synthetic Fixture)',
+  'Synthetic fixture on consent glossaries.',
   now() - interval '3 days',
   now() - interval '3 days',
   now() - interval '3 days'
 ), (
   '20000000-0000-0000-0000-000000000009',
-  'Structuring Executive Summaries for Healthcare Technical Writing',
+  'Synthetic — Structuring Executive Summaries in Technical Healthcare Writing',
   'executive-summaries-healthcare-technical-writing',
-  'Frameworks for distilling extensive medical literature into concise executive-level briefing documents.',
+  'Synthetic fixture exploring summary structures for technical healthcare writing.',
   '{
     "type": "doc",
     "content": [
@@ -466,7 +455,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Executive summaries must distill complex findings into high-level insights without sacrificing scientific rigor."
+            "text": "Synthetic fixture text for executive summary structure."
           }
         ]
       }
@@ -478,16 +467,16 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Executive Summaries in Medical Writing | Marie Medere',
-  'Methods for drafting high-level healthcare briefing summaries.',
+  'Executive Summaries (Synthetic Fixture)',
+  'Synthetic fixture on executive summaries.',
   now() - interval '2 days',
   now() - interval '2 days',
   now() - interval '2 days'
 ), (
   '20000000-0000-0000-0000-000000000010',
-  'Methodologies for Scientific Typography in Medical Publication Layouts',
+  'Synthetic — Methodologies for Scientific Typography in Editorial Layouts',
   'scientific-typography-medical-publication-layouts',
-  'Examining typographic principles that enhance reading speed and source citation scannability.',
+  'Synthetic fixture exploring typographic measures and citation scannability.',
   '{
     "type": "doc",
     "content": [
@@ -496,7 +485,7 @@ insert into public.articles (
         "content": [
           {
             "type": "text",
-            "text": "Publication typography should support deep, distraction-free reading through optimal line lengths, proportional headings, and legible body measures."
+            "text": "Synthetic fixture text evaluating scientific typography in editorial layouts."
           }
         ]
       }
@@ -508,8 +497,8 @@ insert into public.articles (
   'published',
   false,
   false,
-  'Scientific Typography in Medical Layouts | Marie Medere',
-  'Principles of publication typography for medical communication.',
+  'Scientific Typography (Synthetic Fixture)',
+  'Synthetic fixture on typography in editorial layouts.',
   now() - interval '1 day',
   now() - interval '1 day',
   now() - interval '1 day'
@@ -524,6 +513,8 @@ insert into public.articles (
   status = excluded.status,
   is_featured = excluded.is_featured,
   is_portfolio_featured = excluded.is_portfolio_featured,
+  seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description,
   published_at = excluded.published_at;
 
 -- ============================================================================
@@ -542,36 +533,36 @@ insert into public.article_references (
 ) values (
   '30000000-0000-0000-0000-000000000001',
   '20000000-0000-0000-0000-000000000001',
-  'Guidelines for Clear and Concise Medical Writing in Scientific Publications',
+  'Synthetic Reference: Guidelines for Clear Protocol Summaries',
   'Synthetic Journal of Medical Communications',
-  'https://example.invalid/citations/guidelines-2025',
+  'https://example.invalid/citations/synthetic-guidelines-2025',
   'Vol. 14, No. 2, pp. 112–128 (Synthetic Citation)',
   0,
   now() - interval '8 days'
 ), (
   '30000000-0000-0000-0000-000000000002',
   '20000000-0000-0000-0000-000000000001',
-  'Standards for Plain Language Communication in Healthcare Documentation',
-  'Health Communication Working Group (Synthetic)',
-  'https://example.invalid/citations/standards-health-comms',
-  'Section 4.1: Readability Metrics and Terminology Glossaries',
+  'Synthetic Reference: Standards for Plain Language Formatting',
+  'Synthetic Health Communication Working Group',
+  'https://example.invalid/citations/synthetic-standards-health-comms',
+  'Section 4.1: Readability Metrics and Terminology (Synthetic)',
   1,
   now() - interval '8 days'
 ), (
   '30000000-0000-0000-0000-000000000003',
   '20000000-0000-0000-0000-000000000002',
-  'Draft Reference for Regulatory Guidelines',
-  'Regulatory Science Review (Synthetic)',
-  'https://example.invalid/citations/regulatory-draft-ref',
-  'Unpublished Reference for Draft Article',
+  'Synthetic Draft Reference for Regulatory Guidelines',
+  'Synthetic Regulatory Science Review',
+  'https://example.invalid/citations/synthetic-regulatory-draft-ref',
+  'Unpublished Reference for Draft Article (Synthetic)',
   0,
   now() - interval '1 day'
 ), (
   '30000000-0000-0000-0000-000000000004',
   '20000000-0000-0000-0000-000000000004',
-  'Patient Health Literacy and Chronic Disease Management Guidelines',
-  'Educational Health Communications Review (Synthetic)',
-  'https://example.invalid/citations/patient-health-literacy',
+  'Synthetic Reference: Patient Education Formatting Framework',
+  'Synthetic Educational Communications Review',
+  'https://example.invalid/citations/synthetic-patient-health-literacy',
   'Vol. 9, Issue 3, pp. 45–59 (Synthetic Citation)',
   0,
   now() - interval '7 days'
@@ -598,18 +589,18 @@ insert into public.comments (
 ) values (
   '40000000-0000-0000-0000-000000000001',
   '20000000-0000-0000-0000-000000000001',
-  'Dr. Alex Morgan (Synthetic Reader)',
+  'Synthetic Reviewer',
   'reader-alex@example.invalid',
-  'Thank you for this clear breakdown of summary methodology. The section on glossary formatting was especially helpful.',
+  'Synthetic approved comment for local typography testing.',
   'approved',
   now() - interval '1 day',
   now() - interval '12 hours'
 ), (
   '40000000-0000-0000-0000-000000000002',
   '20000000-0000-0000-0000-000000000001',
-  'Jordan Lee (Synthetic Reader)',
+  'Synthetic Pending Commenter',
   'reader-jordan@example.invalid',
-  'This is a pending comment submitted for moderation review testing.',
+  'Synthetic pending comment submitted for moderation review testing.',
   'pending',
   now() - interval '3 hours',
   null
@@ -629,10 +620,10 @@ insert into public.contact_messages (
   created_at
 ) values (
   '50000000-0000-0000-0000-000000000001',
-  'Sam Taylor (Synthetic Inquirer)',
+  'Synthetic Inquirer',
   'inquirer-sam@example.invalid',
-  'Inquiry Regarding Medical Writing Collaboration',
-  'Hello, I am reaching out to discuss potential medical writing and editorial support for an upcoming continuing education publication series. This is a synthetic message for local inbox testing.',
+  'Synthetic Inquiry Regarding Medical Writing Collaboration',
+  'Synthetic contact message for local inbox testing.',
   'new',
   now() - interval '4 hours'
 ) on conflict (id) do nothing;
@@ -656,7 +647,7 @@ insert into public.site_settings (
   'Marie Medere',
   'Medical Writing Portfolio & Educational Blog',
   'Professional medical writing portfolio and educational blog featuring clear, evidence-based medical communications and clinical writing samples.',
-  '[{"platform": "LinkedIn", "url": "https://example.invalid/profile"}, {"platform": "ORCID", "url": "https://orcid.example.invalid/0000-0000-0000-0000"}]'::jsonb,
+  '[]'::jsonb,
   'The content published on this website is for educational and informational purposes only and does not constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding medical conditions.',
   'Welcome to my medical writing portfolio and educational blog. Here you will find peer-referenced articles, clinical writing samples, and resources on medical communications.',
   now(),

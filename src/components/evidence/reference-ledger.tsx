@@ -13,6 +13,7 @@ export interface ReferenceItem {
 
 interface ReferenceLedgerProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
+  headingLevel?: "h2" | "h3";
   items?: (ReferenceItem | string)[];
   children?: React.ReactNode;
 }
@@ -35,6 +36,7 @@ function getSafeExternalUrl(rawUrl?: string | null): string | null {
 
 export function ReferenceLedger({
   title = "References & Evidence Sources",
+  headingLevel = "h2",
   items,
   children,
   className,
@@ -42,6 +44,8 @@ export function ReferenceLedger({
 }: ReferenceLedgerProps) {
   const generatedId = React.useId();
   const titleId = `${generatedId}-title`;
+
+  const HeadingTag = headingLevel;
 
   return (
     <section
@@ -53,12 +57,12 @@ export function ReferenceLedger({
       {...props}
     >
       <div className="mb-4 flex items-center justify-between border-b border-[#D2C9BC] pb-3">
-        <h3
+        <HeadingTag
           id={titleId}
           className="font-serif text-base font-medium tracking-tight text-[#242321]"
         >
           {title}
-        </h3>
+        </HeadingTag>
         <span className="font-sans text-xs font-semibold tracking-wider text-[#7B3F35] uppercase">
           Ledger
         </span>
@@ -75,9 +79,9 @@ export function ReferenceLedger({
               );
             }
 
-            const itemText = item.title || item.text;
-            const citationInfo =
-              item.citation_details || item.citation || item.source_name;
+            const itemTitle = item.title || item.text;
+            const sourceName = item.source_name;
+            const citation = item.citation_details || item.citation;
             const safeUrl = getSafeExternalUrl(item.url);
 
             return (
@@ -85,10 +89,15 @@ export function ReferenceLedger({
                 key={item.id ?? index}
                 className="pl-2 leading-relaxed text-[#242321]"
               >
-                <span className="font-medium text-[#242321]">{itemText}</span>
-                {citationInfo && (
+                <span className="font-medium text-[#242321]">{itemTitle}</span>
+                {sourceName && (
                   <span className="ml-1 text-xs text-[#5E5953] italic">
-                    — {citationInfo}
+                    — {sourceName}
+                  </span>
+                )}
+                {citation && (
+                  <span className="text-xs text-[#5E5953]">
+                    {sourceName ? `, ${citation}` : ` — ${citation}`}
                   </span>
                 )}
                 {safeUrl && (
