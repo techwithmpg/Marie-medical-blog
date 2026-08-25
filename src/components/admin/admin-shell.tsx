@@ -11,8 +11,10 @@ import {
   Mail,
   Settings,
   ArrowUpRight,
+  LogOut,
 } from "lucide-react";
 import { AdminMobileNav } from "@/components/admin/admin-mobile-nav";
+import { logoutAction } from "@/app/admin/login/actions";
 import { cn } from "@/lib/utils";
 
 interface AdminShellProps {
@@ -149,7 +151,7 @@ export function AdminShell({
         </nav>
 
         {/* User profile footer */}
-        <div className="border-t border-[#D2C9BC] p-4">
+        <div className="flex items-center justify-between border-t border-[#D2C9BC] p-4">
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-full border border-[#D2C9BC] bg-[#E8E2D7] font-serif text-sm font-medium text-[#7B3F35]">
               M
@@ -163,6 +165,16 @@ export function AdminShell({
               </span>
             </div>
           </div>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              title="Sign out"
+              aria-label="Sign out"
+              className="cursor-pointer rounded-xs p-1.5 text-[#5E5953] transition-colors hover:text-[#7B3F35] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </form>
         </div>
       </aside>
 

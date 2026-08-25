@@ -13,6 +13,7 @@ import {
   Mail,
   Settings,
   Menu,
+  LogOut,
 } from "lucide-react";
 import {
   Sheet,
@@ -21,6 +22,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { logoutAction } from "@/app/admin/login/actions";
 import { cn } from "@/lib/utils";
 
 interface AdminNavItem {
@@ -134,9 +136,21 @@ export function AdminMobileNav({ activeModule }: AdminMobileNavProps) {
           </nav>
         </div>
 
-        <div className="border-t border-[#D2C9BC] pt-4 text-xs text-[#5E5953]">
-          <p className="font-semibold text-[#242321]">Marie Medere</p>
-          <p>Writer / Admin</p>
+        <div className="flex items-center justify-between border-t border-[#D2C9BC] pt-4 text-xs text-[#5E5953]">
+          <div>
+            <p className="font-semibold text-[#242321]">Marie Medere</p>
+            <p>Writer / Admin</p>
+          </div>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              title="Sign out"
+              aria-label="Sign out"
+              className="cursor-pointer rounded-xs p-1.5 text-[#5E5953] transition-colors hover:text-[#7B3F35] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </form>
         </div>
       </SheetContent>
     </Sheet>

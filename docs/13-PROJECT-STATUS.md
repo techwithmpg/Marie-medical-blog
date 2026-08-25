@@ -4,17 +4,15 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 3 — Supabase Database & Security Foundation — COMPLETE / MERGED
+- **Current stage:** Stage 4 — Authentication & Admin Access — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
-- **Stage-3 implementation status:** COMPLETE
-- **Stage-3 gate status:** PASS
-- **Stage-3 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
-- **Stage-3 merge commit:** `12ac9f446969179355871de3ce99fcf2f1bce162`
-- **Stage-3 merge parents:**
-  - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
-  - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Active working branch:** `main`
+- **Stage-3 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+- **Application coding authorized:** COMPLETE — STAGE 4 SCOPE ONLY
+- **Gate status:** PASS / READY FOR OWNER MERGE REVIEW
+- **Stage-4 merge status:** NOT YET AUTHORIZED
+- **Active working branch:** `stage/04-auth-admin`
+- **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
@@ -37,7 +35,12 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 deployment & reconciliation commit:** `652f483637e24778ae5437b8e561f5b41231def1`
 - **Stage-3 gate closeout commit:** `026f1685e770344b65532b693f4374f208d902cf`
 - **Stage-3 reference correction commit:** `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
+- **Stage-3 merge commit:** `12ac9f446969179355871de3ce99fcf2f1bce162`
+- **Stage-3 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-3 merge parents:**
+  - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
+  - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
+- **Next implementation stage:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -192,13 +195,35 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 3 — Supabase Database & Security Foundation is COMPLETE and MERGED into main.**
+**Stage 4 — Authentication & Admin Access is AUTHORIZED and ACTIVE.**
 
-Stage 3 implementation, automated pgTAP verification, database linting, project regression gates, hosted deployment, version reconciliation, and owner-approved merge are fully finished.
+Owner authorization was given on **2026-08-25** in ChatGPT after Stage 3 was fully merged, synchronized, and verified on `main`.
 
-No new development stage is currently active.
+Stage 4 may implement only:
 
-Stage 4 (Authentication & Admin Access) and all subsequent development stages remain strictly **NOT AUTHORIZED** until explicitly approved by the project owner.
+- Marie sign-in UI at `/admin/login`;
+- Next.js cookie-based Supabase SSR client architecture;
+- Next.js session refresh proxy/middleware;
+- server-side single-admin authorization helper `requireAdmin()`;
+- authenticated boolean RPC `public.is_admin()` for allowlist evaluation against `private.admin_users`;
+- protected admin routing for `/admin` and sub-routes;
+- logout / session termination handling;
+- unauthorized redirection and non-admin access denial;
+- automated and integration tests for authentication and route protection boundaries;
+- documentation and decision records for Stage-4 architecture.
+
+Stage 4 must NOT implement:
+
+- public signup forms or workflows;
+- reader accounts or authentication;
+- multi-author roles, permissions, or enterprise RBAC;
+- Stage 5 public static/identity pages (Homepage, About, Contact page UI, Disclaimer page UI, Portfolio page UI);
+- Tiptap rich-text editor or article creation/editing UI;
+- publishing, preview, or draft persistence workflows;
+- comments or contact inbox management UI;
+- later-stage product features.
+
+Stage 5 remains NOT AUTHORIZED.
 
 ## Stage-1 start record
 
@@ -315,7 +340,113 @@ Stage 3 implementation and verification record:
   - Hosted admin allowlist remains unprovisioned pending Stage 4
   - Auth configuration NOT modified
   - Edge Functions NOT modified
-  - Stage 4 remains NOT AUTHORIZED
+  - Stage 4 authorized separately
+
+## Stage-4 start record
+
+Stage 4 began from verified canonical base:
+
+`main @ bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+
+Start conditions verified:
+
+1. Stage 3 was fully completed, verified, merged into `main` (`12ac9f446969179355871de3ce99fcf2f1bce162`), and synchronized on `main` at `bd35efcbb3541579b63fc50e6797ab551a7a05b9`;
+2. working tree was clean;
+3. Node.js `v24.19.0` was active;
+4. npm `11.17.0` was available;
+5. Git `2.53.0.windows.2` was available;
+6. canonical GitHub/local `main` was verified at `bd35efcbb3541579b63fc50e6797ab551a7a05b9`;
+7. project owner explicitly authorized Stage 4 in ChatGPT on 2026-08-25;
+8. `stage/04-auth-admin` was created from that exact canonical `main`;
+9. this authorization commit contains governance only;
+10. no application code or package installation occurred in this commit;
+11. Stage 5 remains NOT AUTHORIZED.
+
+## Stage-4 final gate
+
+STAGE 4 — AUTHENTICATION & ADMIN ACCESS
+
+- **IMPLEMENTATION:** COMPLETE
+- **D026:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 single-admin authentication & route protection architecture)
+- **D027:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 controlled MCP migration deployment and version reconciliation)
+- **LOCAL DATABASE / SECURITY GATE:** PASS
+- **HOSTED DATABASE GATE:** PASS
+- **HOSTED AUTH CONFIGURATION:** PASS / OWNER VERIFIED — 2026-08-25
+  - Allow new users to sign up: OFF
+  - Anonymous sign-ins: OFF
+  - Email/password authentication: ENABLED
+  - Phone authentication/provider for V1: DISABLED
+  - OAuth/social providers for V1: DISABLED
+  - Auth Hooks added: NO
+- **PRODUCTION ADMIN PROVISIONING:** PASS
+- **AUTH USERS:** 1
+- **ADMIN ALLOWLIST ROWS:** 1
+- **VALID AUTH/ADMIN ASSOCIATIONS:** 1 (0 orphan allowlist rows)
+- **REAL ADMIN LOGIN:** PASS / OWNER VERIFIED
+- **PROTECTED /admin ACCESS:** PASS
+- **SESSION REFRESH / PERSISTENCE:** PASS
+- **LOGOUT:** PASS
+- **POST-LOGOUT /admin DENIAL:** PASS
+- **PGTAP:** 8 files / 95 tests / PASS (100%)
+- **DATABASE LINT:** PASS — 0 errors / 0 warnings
+- **TYPECHECK:** PASS (0 errors)
+- **LINT:** PASS (0 errors, 0 warnings)
+- **FORMAT:** PASS (All files match Prettier style)
+- **BUILD:** PASS (Production build successful)
+- **STAGE-4 GATE:** PASS / READY FOR OWNER MERGE REVIEW
+- **STAGE-4 MERGE:** NOT YET AUTHORIZED
+- **ACTIVE WORKING BRANCH:** `stage/04-auth-admin`
+- **NEXT STAGE:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
+
+### Stage 4 detailed technical and provenance record
+
+- **D026 activation commit:** `f72aad0b995c08a7978b689a67c7d3b6ebaeb9d4` (`docs: activate stage 4 auth architecture`)
+- **Stage-4 implementation commit:** `1fb556382be70f0ec3f073a46279bd777fd68e55` (`feat: implement stage 4 authentication foundation`)
+- **D027 authorization commit:** `c521a5b6ae867a16e347f6e3ecd4464373a34893` (`docs: authorize stage 4 hosted deployment`)
+- **D027 replacement authorization commit:** `6049f146581ed6cc2d5c1818fcc7120c0fd8260e` (`docs: authorize stage 4 migration replacement attempt`)
+- **Stage-4 hosted deployment & reconciliation commit:** `d8c359421bec9b98a321a32a9f3473952d86f4b7` (`feat: deploy stage 4 auth migration and reconcile version`)
+- **Hosted Auth hardening confirmation commit:** `67d86a4fbe138a2ffe2b0dd85017e150dc35233b` (`docs: record hosted auth hardening`)
+- **Final provisioning authorization commit:** `f7f0c27e39582a3fab24131eb47ad9aff1ca4a66` (`docs: authorize final stage 4 admin provisioning`)
+- **Local Supabase Auth hardening (`supabase/config.toml`):**
+  - `auth.enable_signup = false`
+  - `auth.email.enable_signup = false`
+  - `auth.enable_anonymous_sign_ins = false` (anonymous sign-ins disabled)
+  - Local public email signup rejection verified: REJECTED — PASS (`signup_disabled`)
+  - Local anonymous sign-in rejection verified: DISABLED — PASS (`anonymous_provider_disabled`)
+- **Selected package versions:**
+  - `@supabase/supabase-js`: `2.112.4`
+  - `@supabase/ssr`: `0.12.5`
+  - Unrelated dependencies added: NONE
+- **Database migration & D027 reconciliation:**
+  - Migration file: `supabase/migrations/20260825081012_add_public_is_admin_rpc.sql` (reconciled from `20260825071105` to match hosted version)
+  - Pre/post reconciliation SHA-256: `31BB810BAEE4355DDA25363B6A18AA9C5A124A2599DD93EF285F3AA18290B5F3` (100% match)
+  - Function: `public.is_admin()` defined as `SECURITY INVOKER` with `set search_path = ''`, 0 arguments, delegating to `private.is_admin()`
+  - Permissions: revoked from `public, anon`; granted to `authenticated`
+  - Zero exposure of `private.admin_users`
+- **Hosted database state (via read-only `supabase` MCP):**
+  - Hosted migrations: `[{"version":"20260825054917","name":"initial_database_security_foundation"},{"version":"20260825081012","name":"add_public_is_admin_rpc"}]`
+  - `public.is_admin()` verified: `SECURITY INVOKER`, 0 arguments, boolean return, `search_path locked to empty`, stable
+  - `public.is_admin()` permissions: `anon` EXECUTE denied, `authenticated` EXECUTE granted
+  - `private.is_admin()` verified: `SECURITY DEFINER`, stable, unchanged
+  - `private.admin_users`: 1 row (matches the single authorized Marie Auth user)
+  - Application tables: 7 public tables, all RLS enabled, 0 rows
+  - Hosted security advisors: 0 security errors/warnings (1 expected INFO notice on `private.admin_users`)
+  - Seed / synthetic production data: NONE exists hosted (all application tables have 0 rows)
+- **Application auth & client helpers:**
+  - `src/lib/supabase/client.ts`: browser client using `createBrowserClient` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  - `src/lib/supabase/server.ts`: request-scoped server client using `createServerClient` and `cookies()`
+  - `src/lib/supabase/proxy.ts`: session refresh and anonymous redirect helper using `getClaims()` and cookie propagation
+  - `src/proxy.ts`: Next.js 16 proxy interceptor (`export async function proxy(...)`, legacy middleware export removed)
+  - `src/lib/auth/admin.ts`: `requireAdmin()` server authorization gate verifying `getClaims()` and `public.is_admin()`
+  - `src/app/admin/login/actions.ts`: `loginAction` (signInWithPassword + allowlist verification + generic error) and `logoutAction` (signOut Server Action)
+  - `src/app/admin/login/page.tsx` & `login-form.tsx`: Evidence Folio admin login interface (clean inputs, no placeholder credentials)
+  - `src/app/admin/layout.tsx`: protected layout invoking `requireAdmin()` before rendering `AdminShell`
+  - `src/app/admin/page.tsx`: authenticated editorial workspace overview (restrained Data Access / Protected by RLS status)
+  - `src/components/admin/admin-shell.tsx` & `admin-mobile-nav.tsx`: logout action wired to Server Action form
+- **Route & auth HTTP verification:**
+  - Anonymous `GET /admin`: 307 redirect to `/admin/login` (PASS)
+  - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
+  - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
 
 ## Stage transition rule
 

@@ -181,6 +181,33 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner — explicit authorization on 2026-08-25.
 **Status:** ACTIVE / FROZEN FOR STAGE 3.
 
+## ACTIVE — D026 — Stage-4 single-admin authentication & route protection architecture
+**Date:** 2026-08-25
+**Decision:** Implement the V1 single-admin authentication architecture for Marie using `@supabase/supabase-js` and `@supabase/ssr` with cookie-based SSR. House the dedicated admin login at `/admin/login` utilizing Supabase email/password authentication (`signInWithPassword`). Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `NEXT_PUBLIC_SUPABASE_URL` as the application environment contract. Refresh session tokens in Next.js 16 via `proxy.ts` utilizing `supabase.auth.getClaims()`. Restrict Proxy responsibilities to token refresh and baseline anonymous redirection without equating authentication with administrative privilege or replacing server authorization. Enforce server-side route protection across all `/admin` routes using a dedicated `requireAdmin()` helper that cryptographically verifies identity via `getClaims()` and evaluates allowlist membership via a new authenticated SQL proxy function `public.is_admin()` defined as `SECURITY INVOKER` delegating to `private.is_admin()`, acting strictly as an access gate without attempting cookie mutations from Server Components. Execute session revocation for failed non-admin attempts inside `loginAction()` and execute explicit logout through a cookie-writing Server Action. Apply a strict generic error policy ("Unable to sign in with those credentials.") for all authentication and allowlist failures. Disable arbitrary public signup at the Supabase Auth service level via "Allow new users to sign up = OFF" and provision Marie's single administrator account out-of-band via Supabase Dashboard directly into `private.admin_users (user_id)`. Public signup, reader authentication, OAuth, phone/magic-link auth, client-stored roles in `user_metadata`, and browser exposure of service-role keys remain strictly prohibited.
+**Reason:** The publication requires a calm, secure, single-admin workspace for Marie. Utilizing modern `@supabase/ssr` cookies and Next.js 16 proxy with `getClaims()` ensures trustworthy session validation without stale or unverified JWTs. The two-step `requireAdmin()` gate backed by `private.admin_users` ensures authenticated non-admin accounts cannot access administrative capabilities or private data. Disabling public signups at the service level prevents unauthorized account creation via the public publishable key, while restricting session cookie mutation to valid server mutation contexts prevents Server Component runtime errors.
+**Alternatives considered:** Using deprecated `@supabase/auth-helpers-nextjs`; relying on `getSession()` on the server; attempting `signOut()` inside Server Components; storing admin roles in JWT user metadata; relying solely on proxy redirects for admin security; exposing `private.admin_users` directly to PostgREST; defining `public.is_admin()` as `SECURITY DEFINER`; adding multi-role RBAC libraries.
+**Impact:** Introduces `@supabase/supabase-js` and `@supabase/ssr`; creates Supabase client helpers in `src/lib/supabase/`; adds Next.js proxy in `src/proxy.ts`; adds `src/lib/auth/admin.ts`; creates `/admin/login` and `/admin` routes; adds a focused migration for `public.is_admin()` as `SECURITY INVOKER` with pgTAP security tests; enforces out-of-band provisioning of Marie's `user_id`.
+**Approved by:** project owner — explicit approval on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 4.
+
+## ACTIVE — D027 — Stage-4 controlled MCP migration deployment and version reconciliation
+**Date:** 2026-08-25
+**Decision:** When the standard Supabase CLI PostgreSQL deployment transport is unavailable from the development network, the single reviewed Stage-4 migration may be deployed to project `eoexnnhqzrkurbqgbtnx` through a temporary, project-scoped Supabase MCP connection with database write capability. The version-controlled Stage-4 migration is the authoritative SQL source. MCP `apply_migration` may be invoked exactly once with the exact reviewed SQL. After deployment, capture the hosted migration version. If MCP assigns a different migration version, rename the local migration file so its timestamp/version exactly matches hosted migration history without changing its SQL content, rerun the complete local database/security and application quality gates, and verify local/hosted migration-history parity. Temporary MCP write access must then be completely removed and the existing project-scoped MCP connection restored/retained in read-only mode.
+**Boundaries:** No arbitrary hosted write SQL, no production seed deployment, no Auth-user creation, no insertion into `private.admin_users`, no Edge Functions, no Dashboard schema changes, no second migration application, and no Stage-5 work. Hosted Auth configuration already frozen by D026 may be changed only within the separately owner-authorized Stage-4 configuration step.
+**Reason:** The reviewed Stage-4 migration has passed local database/security testing, but the normal Supabase CLI deployment transport remains unavailable because the development network cannot reach the PostgreSQL/session-pooler transport. The controlled MCP procedure preserves migration-first governance without introducing permanent elevated application credentials.
+**Approved by:** project owner — explicit approval on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 4.
+
+### D027 execution addendum — one replacement migration attempt
+- **Date:** 2026-08-25
+- The original `apply_migration` invocation was rejected by the stale read-only MCP session with: "Cannot apply migration in read-only mode."
+- Hosted inspection confirmed zero mutation occurred.
+- Project owner explicitly authorizes exactly ONE replacement `apply_migration` invocation through a freshly bound `supabase_stage4_write` connection.
+- No additional retry is authorized.
+- All other D027 restrictions remain unchanged.
+- Marie provisioning remains unauthorized.
+- Stage 5 remains unauthorized.
+
 ---
 
 ## New decision template
