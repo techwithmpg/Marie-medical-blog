@@ -6,7 +6,7 @@
 - **Final Status:** COMPLETE / GATE PASS / AWAITING PROJECT-OWNER MERGE APPROVAL
 - **Canonical Base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Approved Active Branch:** `stage/06-article-discovery`
-- **Current Approved Branch Head:** `2bc64e5ef8739401feb8013dda5da94f813986c8`
+- **Current Approved Branch Head:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
 
 ### Implementation and Governance Commit Provenance
 
@@ -18,6 +18,7 @@
 6. **Governance Alignment Commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
 7. **Final Visual-Control Correction:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
 8. **Governance Record After Visual Correction:** `2bc64e5ef8739401feb8013dda5da94f813986c8`
+9. **Stage-6 Gate Closeout & Handoff:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
 
 ---
 
@@ -35,9 +36,9 @@ Delivered the complete public-facing article reading, discovery, topic categoriz
 
 ## 2. Architecture & Implementation
 
-- **Server-Side Data Access Layer (`src/lib/public-articles.ts`):** High-performance server-side data fetching functions using `@supabase/ssr` with anonymous public credentials. Every public query explicitly enforces `status = 'published'`.
+- **Server-Side Data Access Layer (`src/lib/public-articles.ts`):** Centralized server-side public article data fetching functions using the existing Supabase SSR server client with the publishable key and request cookie/session context. Every public query explicitly enforces `status = 'published'`. Public article safety does not rely on the request being anonymous. Every Stage-6 public article query explicitly applies `status = 'published'`, so an authenticated admin visiting public routes still cannot retrieve draft or archived content through those public queries.
 - **Indexable Server Components:** All article reading and discovery routes execute as React Server Components, delivering fully formed semantic HTML to search engines and visitors without unnecessary client-side data waterfalls or hydration dependencies.
-- **Safe JSON Rich-Text Renderer (`src/components/public/article-typography.tsx`):** Custom read-only ProseMirror/Tiptap document tree walker that produces native React JSX elements. Strictly operates with zero `dangerouslySetInnerHTML` usage and validates URL protocols (`http:`, `https:`, `mailto:`) on all links.
+- **Safe JSON Rich-Text Renderer (`src/components/public/article-typography.tsx`):** Custom read-only ProseMirror/Tiptap document tree walker that produces native React JSX elements. Strictly operates with zero `dangerouslySetInnerHTML` usage.
 - **Reading Time Calculation:** Deterministic calculation based on standard 200 WPM text traversal across all text nodes in the article body JSON.
 - **No Unapproved Packages:** Implemented purely within the frozen tech stack (Next.js 16 App Router, Tailwind CSS v4, TypeScript, Supabase SSR) without introducing editor packages or third-party UI libraries into Stage 6.
 
@@ -50,7 +51,7 @@ Every public query in `src/lib/public-articles.ts` and all route handlers strict
 - **Anonymous Public Access:** Published articles return `200 OK`. Draft articles return `404 Not Found`. Archived articles return `404 Not Found`.
 - **Authenticated Admin on Public Routes:** Accessing `/blog/[slug]` for a draft or archived article while logged in as an admin continues to return `404 Not Found` (admin drafting/preview is deferred to Stage 7 & 8 and will not leak through public endpoints).
 - **Search & Filter Boundaries:** Keyword searches, topic archives, related writing queries, homepage feeds, and portfolio listings strictly return `published` records only.
-- **RLS & Credentials:** No Row Level Security policies were weakened. Service-role credentials remain strictly server-only and are never exposed or consumed in public routes.
+- **RLS & Credentials:** No Row Level Security policies were weakened. Stage-6 public routes do not use a Supabase service-role/secret credential. No service-role/secret credential is exposed to the browser.
 
 ---
 
@@ -75,10 +76,11 @@ Every public query in `src/lib/public-articles.ts` and all route handlers strict
 
 ## 6. Content Rendering & Reference Ledger
 
-- **Supported Document Nodes:** `doc`, `paragraph`, `heading` (levels 2 and 3, rendered with single page H1 hierarchy preserved), `bulletList`, `orderedList`, `listItem`, `blockquote`, `horizontalRule`, `text`.
+- **Supported Document Nodes:** `doc`, `paragraph`, `heading` (levels 2 and 3, rendered with single page H1 hierarchy preserved), `bulletList`, `orderedList`, `listItem`, `blockquote`, `codeBlock`, `horizontalRule`, `hardBreak`, `text`.
 - **Supported Text Marks:** `bold`, `italic`, `strike`, `code`, `link`.
+- **Link Validation & Attributes:** Links allow root-relative paths beginning with `/`, anchors beginning with `#`, `http:`, `https:`, and `mailto:`. External HTTP/HTTPS links automatically receive `target="_blank"` and `rel="noopener noreferrer"`.
 - **Reference Ledger (`src/components/evidence/reference-ledger.tsx`):** Structured reference citation component displaying index numbers, source names, citation details, and external links with verified security attributes (`rel="noopener noreferrer"`). Gracefully renders when reference entries contain partial data.
-- **Author & Disclaimer Context:** Fixed author biography and prominent medical disclaimer banner attached to every article detail view.
+- **Author & Disclaimer Context:** Profile-backed author context using stored public profile fields when available, with `Marie Medere` as the safe display-name fallback. Tagline and biography are optional and omitted when absent. Prominent medical disclaimer banner attached to every article detail view.
 
 ---
 
@@ -146,5 +148,5 @@ Verified via true Playwright viewport emulation on the Next.js production build 
 - **Stage 6 Status:** COMPLETE / GATE PASS
 - **Stage 6 Merge Status:** AWAITING PROJECT-OWNER MERGE APPROVAL
 - **Active Working Branch:** `stage/06-article-discovery`
-- **Approved Branch Head:** `2bc64e5ef8739401feb8013dda5da94f813986c8`
+- **Approved Branch Head:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
 - **Stage 7 Status:** NOT AUTHORIZED (DO NOT START STAGE 7)
