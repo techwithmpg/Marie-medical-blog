@@ -20,10 +20,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "Articles", href: "/blog" },
-  { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
+  { label: "Selected Writing", href: "/portfolio" },
   { label: "Contact", href: "/contact" },
+  { label: "Medical Disclaimer", href: "/disclaimer" },
 ];
 
 export function MobileNav() {

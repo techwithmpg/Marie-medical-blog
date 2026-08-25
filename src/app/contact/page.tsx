@@ -1,0 +1,88 @@
+import * as React from "react";
+import { PublicShell } from "@/components/site/public-shell";
+import { PageIntro } from "@/components/public/page-intro";
+import { ContactFormShell } from "@/components/public/contact-form-shell";
+import { EvidenceRail } from "@/components/evidence/evidence-rail";
+import { SplitRule } from "@/components/evidence/split-rule";
+import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
+
+export const metadata = {
+  title: "Contact — Marie Medere",
+  description:
+    "Get in touch with Marie Medere for medical writing inquiries, clinical literature synthesis, and educational publication collaborations.",
+};
+
+export default function ContactPage() {
+  return (
+    <PublicShell>
+      <div className="space-y-16 sm:space-y-20">
+        {/* Page Header */}
+        <PageIntro
+          folioNumber={1}
+          folioLabel="Communication"
+          topicLabel="Inquiries"
+          topicVariant="oxide"
+          title="Get in Touch"
+          deck="Inquire regarding professional medical writing engagements, regulatory documentation support, clinical literature syntheses, or educational publication consults."
+        />
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
+          {/* Primary Form Shell Column */}
+          <div className="space-y-8 lg:col-span-8">
+            <ContactFormShell />
+          </div>
+
+          {/* Desktop Evidence Rail / Sidebar */}
+          <div className="space-y-6 lg:col-span-4">
+            <EvidenceRail
+              marker="Ref 01"
+              label="Inquiry Scope"
+              className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
+            >
+              <div className="space-y-4">
+                <span className="font-serif text-base font-medium text-[#242321]">
+                  Collaboration &amp; Engagement
+                </span>
+                <p className="text-xs leading-relaxed text-[#5E5953]">
+                  Marie Medere collaborates with medical directors, clinical
+                  researchers, regulatory professionals, and academic
+                  institutions on specialized writing projects.
+                </p>
+
+                <SplitRule />
+
+                <div className="space-y-2 text-xs text-[#5E5953]">
+                  <strong className="block font-semibold tracking-wider text-[#242321] uppercase">
+                    Services Offered
+                  </strong>
+                  <ul className="space-y-1.5">
+                    <li>• Systematic literature reviews &amp; meta-analyses</li>
+                    <li>• Clinical evaluation &amp; regulatory dossiers</li>
+                    <li>• Peer-reviewed manuscript writing &amp; editing</li>
+                    <li>• Educational monographs &amp; medical content</li>
+                  </ul>
+                </div>
+
+                <div className="pt-2">
+                  <span className="block text-xs font-semibold tracking-wider text-[#242321] uppercase">
+                    Notice
+                  </span>
+                  <p className="pt-1 text-xs leading-relaxed text-[#5E5953]">
+                    Inquiries regarding personal medical conditions or
+                    individual patient care cannot be addressed.
+                  </p>
+                </div>
+              </div>
+            </EvidenceRail>
+          </div>
+        </div>
+
+        {/* Medical Disclaimer Banner */}
+        <section className="pt-4">
+          <MedicalDisclaimer />
+        </section>
+      </div>
+    </PublicShell>
+  );
+}

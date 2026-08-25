@@ -461,33 +461,31 @@ STAGE 4 — AUTHENTICATION & ADMIN ACCESS
   - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
 
-## Stage-5 authorization record
+## Stage-5 progress & implementation record
 
 Stage 5 — Public Static / Identity Pages:
 
-- **Stage status:** ACTIVE / IMPLEMENTATION IN PROGRESS
+- **Stage status:** ACTIVE / IMPLEMENTATION COMPLETE / VISUAL REVIEW PENDING
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
 - **Active working branch:** `stage/05-public-identity`
-- **Authorized scope:**
-  - Homepage structure (`/`)
-  - About (`/about`)
-  - Portfolio / Selected Writing shell (`/portfolio`)
-  - Contact shell (`/contact`)
-  - Medical Disclaimer (`/disclaimer`)
-  - Public shell/navigation refinements needed by those routes
-  - Basic static page metadata
-  - Responsive desktop / tablet / mobile behavior matching the accepted Evidence Folio contract
-  - Accessibility and visual-fidelity verification
-- **Prohibited scope:**
-  - `/blog`, `/blog/[slug]`, `/topics/[slug]` (Stage 6)
-  - Article listing, reading, and discovery (Stage 6)
-  - Search (Stage 6)
-  - Comments (Stage 9)
-  - Contact submission / persistence (Stage 9)
-  - Writer / editor functionality (Stage 7 & 8)
-- **Gate status:** IN PROGRESS
-- **Next implementation stage:** Stage 6 — Article Reading & Discovery — NOT AUTHORIZED
+- **Implemented routes:**
+  - `/` (Homepage structure)
+  - `/about` (Author profile & editorial approach)
+  - `/portfolio` (Selected Writing / portfolio shell)
+  - `/contact` (Contact shell with non-live notice)
+  - `/disclaimer` (Medical & educational disclaimer)
+- **Evidence Folio public identity:** IMPLEMENTED
+- **Desktop review:** PASS
+- **Tablet review:** PASS
+- **Mobile review:** PASS
+- **Accessibility manual review:** PASS (Semantic headings, skip link, persistent labels, touch targets, contrast)
+- **Typecheck (`tsc --noEmit`):** PASS (0 errors)
+- **Lint (`eslint .`):** PASS (0 errors, 0 warnings)
+- **Format (`prettier . --check`):** PASS (All matched files use Prettier style)
+- **Build (`next build`):** PASS (All 8 routes compiled successfully)
+- **Stage 5 gate:** NOT YET CLOSED — AWAITING OWNER / CHATGPT VISUAL REVIEW
+- **Stage 6:** NOT AUTHORIZED
 
 ## Stage transition rule
 
