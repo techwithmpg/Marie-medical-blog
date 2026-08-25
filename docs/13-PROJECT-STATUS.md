@@ -366,7 +366,15 @@ Start conditions verified:
 Stage 4 local implementation and verification record:
 
 - **Stage status:** Stage 4 is ACTIVE / IMPLEMENTATION IN PROGRESS
+- **D026 activation commit:** `f72aad0b995c08a7978b689a67c7d3b6ebaeb9d4` (`docs: activate stage 4 auth architecture`)
+- **Stage-4 implementation commit:** `1fb556382be70f0ec3f073a46279bd777fd68e55` (`feat: implement stage 4 authentication foundation`)
 - **Active decision:** D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
+- **Local Supabase Auth hardening (`supabase/config.toml`):**
+  - `auth.enable_signup = false`
+  - `auth.email.enable_signup = false`
+  - `auth.enable_anonymous_sign_ins = false` (anonymous sign-ins disabled)
+  - Local public email signup rejection verified: REJECTED — PASS (`signup_disabled`)
+  - Local anonymous sign-in rejection verified: DISABLED — PASS (`anonymous_provider_disabled`)
 - **Selected package versions:**
   - `@supabase/supabase-js`: `2.112.4`
   - `@supabase/ssr`: `0.12.5`
@@ -378,7 +386,7 @@ Stage 4 local implementation and verification record:
   - Zero exposure of `private.admin_users`
 - **Database tests & security regression:**
   - New test file: `supabase/tests/database/08_public_is_admin_rpc.test.sql`
-  - Local `supabase db reset`: PASS (2 migrations applied cleanly)
+  - Local `supabase db reset`: PASS (2 migrations applied cleanly, seed loaded)
   - pgTAP test suite: Files = 8, Tests = 95, Result = PASS (100%)
     - `01_schema_structure.test.sql`: PASS
     - `02_anonymous_access.test.sql`: PASS
@@ -393,12 +401,12 @@ Stage 4 local implementation and verification record:
   - `src/lib/supabase/client.ts`: browser client using `createBrowserClient` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
   - `src/lib/supabase/server.ts`: request-scoped server client using `createServerClient` and `cookies()`
   - `src/lib/supabase/proxy.ts`: session refresh and anonymous redirect helper using `getClaims()` and cookie propagation
-  - `src/proxy.ts`: Next.js 16 proxy interceptor
+  - `src/proxy.ts`: Next.js 16 proxy interceptor (`export async function proxy(...)`, legacy middleware export removed)
   - `src/lib/auth/admin.ts`: `requireAdmin()` server authorization gate verifying `getClaims()` and `public.is_admin()`
   - `src/app/admin/login/actions.ts`: `loginAction` (signInWithPassword + allowlist verification + generic error) and `logoutAction` (signOut Server Action)
-  - `src/app/admin/login/page.tsx` & `login-form.tsx`: Evidence Folio admin login interface
+  - `src/app/admin/login/page.tsx` & `login-form.tsx`: Evidence Folio admin login interface (clean inputs, no placeholder credentials)
   - `src/app/admin/layout.tsx`: protected layout invoking `requireAdmin()` before rendering `AdminShell`
-  - `src/app/admin/page.tsx`: authenticated editorial workspace overview
+  - `src/app/admin/page.tsx`: authenticated editorial workspace overview (restrained Data Access / Protected by RLS status)
   - `src/components/admin/admin-shell.tsx` & `admin-mobile-nav.tsx`: logout action wired to Server Action form
 - **Project quality gates:**
   - `npm run typecheck`: PASS (0 errors)

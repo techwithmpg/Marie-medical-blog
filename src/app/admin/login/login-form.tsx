@@ -36,7 +36,6 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
-          placeholder="marie@example.com"
           className="w-full rounded-md border border-[#D2C9BC] bg-[#FFFDF9] px-3.5 py-2.5 text-sm text-[#242321] transition-colors placeholder:text-[#5E5953]/60 focus-visible:border-[#265D7A] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
         />
       </div>

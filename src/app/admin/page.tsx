@@ -86,9 +86,9 @@ export default async function AdminDashboardPage() {
               <Database className="size-5" />
             </div>
             <div>
-              <p className="text-xs font-medium text-[#5E5953]">Database RLS</p>
+              <p className="text-xs font-medium text-[#5E5953]">Data Access</p>
               <p className="font-serif text-sm font-semibold text-[#242321]">
-                Enforced on All Schemas
+                Protected by RLS
               </p>
             </div>
           </div>
