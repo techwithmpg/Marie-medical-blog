@@ -223,37 +223,27 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 6 — Article Reading & Discovery is AUTHORIZED and ACTIVE, with
-implementation currently frozen pending external review.**
+**No new implementation stage is currently authorized.**
 
-Owner authorization was given on **2026-08-25** after Stage 5 was fully
-completed, merged, synchronized, and verified on `main`.
+Stage 6 — Article Reading & Discovery is:
 
-Stage 6 owns:
+- COMPLETE;
+- MERGED into `main`;
+- GATE PASS;
+- closed following project-owner merge approval on **2026-08-25**.
 
-- `/blog`;
-- `/blog/[slug]`;
-- `/topics/[slug]`;
-- published article integration into `/`;
-- published portfolio-featured article integration into `/portfolio`;
-- public Articles navigation;
-- public article discovery/search/pagination;
-- Evidence Folio article reading;
-- public article references and related-writing presentation;
-- safe read-only `content_json` rendering.
+The Stage-6 merge commit is:
 
-Stage 6 implementation is now frozen pending external review.
+`e28665e550dbc9150829351d9e06cafa26c5a577`
 
-Stage 6 must NOT implement:
+The current canonical `main` includes the completed Stage-6 public article
+reading and discovery implementation.
 
-- writer dashboard/editor;
-- article create/edit/admin workflows;
-- Tiptap editor integration;
-- comments;
-- contact persistence/inbox;
-- Stage-7 or later functionality.
+**Stage 7 — Writer Dashboard & Tiptap Editor is the next planned
+implementation stage but remains NOT AUTHORIZED.**
 
-**Stage 7 — Writer Dashboard & Tiptap Editor remains NOT AUTHORIZED.**
+Do not create a Stage-7 branch or begin Stage-7 implementation until explicit
+project-owner authorization is recorded.
 
 ## Stage-1 start record
 
