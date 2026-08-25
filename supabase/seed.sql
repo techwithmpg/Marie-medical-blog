@@ -646,10 +646,10 @@ insert into public.site_settings (
   1,
   'Marie Medere',
   'Medical Writing Portfolio & Educational Blog',
-  'Professional medical writing portfolio and educational blog featuring clear, evidence-based medical communications and clinical writing samples.',
+  'Medical Writing Portfolio & Educational Blog by Marie Medere.',
   '[]'::jsonb,
   'The content published on this website is for educational and informational purposes only and does not constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding medical conditions.',
-  'Welcome to my medical writing portfolio and educational blog. Here you will find peer-referenced articles, clinical writing samples, and resources on medical communications.',
+  'Synthetic Stage 6 homepage introduction used only for local layout and article-discovery verification.',
   now(),
   now()
 ) on conflict (id) do update set

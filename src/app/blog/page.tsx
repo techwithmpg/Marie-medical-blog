@@ -8,6 +8,7 @@ import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
 import {
   getBlogViewData,
   getPublishedCategories,
+  sanitizeSearchQuery,
   type PublicCategory,
   type PublicBlogViewData,
 } from "@/lib/public-articles";
@@ -28,8 +29,13 @@ interface BlogPageProps {
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { q, topic, page: rawPage } = await searchParams;
-  const parsedPage = parseInt(rawPage || "1", 10);
-  const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const parsedPage = Number(rawPage);
+  const currentPage =
+    Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+
+  const safeQuery = sanitizeSearchQuery(q);
+  const hasSearch = safeQuery.length > 0;
+  const isFiltered = Boolean(hasSearch || topic);
 
   let blogData: PublicBlogViewData | null = null;
   let categories: PublicCategory[] = [];
@@ -41,7 +47,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         page: currentPage,
         pageSize: 6,
         topicSlug: topic,
-        searchQuery: q,
+        searchQuery: safeQuery,
       }),
       getPublishedCategories(),
     ]);
@@ -74,9 +80,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     totalPages,
   } = blogData;
 
-  const isFiltered = Boolean(q || topic);
-
-  const sectionHeading = q
+  const sectionHeading = hasSearch
     ? "Search Results"
     : topic
       ? "Topic Entries"
@@ -95,7 +99,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <TopicFilterBar
           categories={categories}
           activeTopicSlug={topic}
-          activeSearchQuery={q}
+          activeSearchQuery={safeQuery}
         />
       </div>
 
@@ -142,7 +146,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               currentPage={currentPage}
               totalPages={totalPages}
               basePath="/blog"
-              searchQuery={q}
+              searchQuery={safeQuery}
               topicSlug={topic}
             />
           </div>
@@ -154,8 +158,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               <EmptyEditorialState
                 title="No matching articles found"
                 description={
-                  q
-                    ? `No published articles matched your search for "${q}".`
+                  safeQuery
+                    ? `No published articles matched your search for "${safeQuery}".`
                     : "No published articles found for this topic filter."
                 }
                 actionLabel="View all articles"

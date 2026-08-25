@@ -46,8 +46,9 @@ export default async function TopicDetailPage({
 }: TopicPageProps) {
   const { slug } = await params;
   const { page: rawPage } = await searchParams;
-  const parsedPage = parseInt(rawPage || "1", 10);
-  const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const parsedPage = Number(rawPage);
+  const currentPage =
+    Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
   let category;
   try {

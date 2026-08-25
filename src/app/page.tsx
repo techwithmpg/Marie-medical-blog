@@ -182,10 +182,10 @@ export default async function HomePage() {
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div className="space-y-2">
               <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-                Featured &amp; Recent Writing
+                Recent Writing
               </h2>
               <p className="max-w-xl text-base leading-relaxed text-[#5E5953]">
-                Curated medical writing entries and educational publications.
+                Published writing and educational articles.
               </p>
             </div>
             <Link
