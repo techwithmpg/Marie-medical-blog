@@ -46,20 +46,20 @@ export function TopicFilterBar({
             defaultValue={activeSearchQuery || ""}
             placeholder="Search articles by title or excerpt..."
             maxLength={100}
-            className="border-control-boundary bg-reading-surface placeholder:text-muted-ink/60 focus:border-brand-oxide h-11 min-h-[44px] w-full rounded border px-4 py-2.5 text-sm text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
+            className="h-11 min-h-[44px] w-full rounded border border-control-border bg-paper px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/60 focus:border-oxide focus:ring-2 focus:ring-focus-slate focus:outline-none"
           />
         </div>
         <div className="flex items-center gap-2">
           <button
             type="submit"
-            className="bg-brand-oxide hover:bg-brand-oxide/90 inline-flex h-11 min-h-[44px] cursor-pointer items-center justify-center rounded px-5 py-2.5 text-sm font-medium text-parchment transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
+            className="inline-flex h-11 min-h-[44px] cursor-pointer items-center justify-center rounded bg-oxide px-5 py-2.5 text-sm font-medium text-parchment transition-colors hover:bg-oxide/90 focus:ring-2 focus:ring-focus-slate focus:outline-none"
           >
             Search
           </button>
           {activeSearchQuery && (
             <Link
               href={buildFilterUrl(activeTopicSlug, undefined)}
-              className="border-control-boundary bg-reading-surface text-muted-ink inline-flex h-11 min-h-[44px] items-center justify-center rounded border px-3.5 py-2.5 text-xs transition-colors hover:text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
+              className="inline-flex h-11 min-h-[44px] items-center justify-center rounded border border-control-border bg-paper px-3.5 py-2.5 text-xs text-ink-muted transition-colors hover:text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
               aria-label="Clear active search query"
             >
               Clear
@@ -74,7 +74,7 @@ export function TopicFilterBar({
           aria-label="Filter articles by topic"
           className="flex flex-wrap items-center gap-2 text-xs"
         >
-          <span className="text-muted-ink mr-1 font-semibold tracking-wider uppercase">
+          <span className="mr-1 font-semibold tracking-wider text-ink-muted uppercase">
             Topics:
           </span>
           <Link
@@ -82,8 +82,8 @@ export function TopicFilterBar({
             aria-current={!activeTopicSlug ? "page" : undefined}
             className={`inline-flex min-h-[44px] items-center justify-center rounded px-4 py-2.5 font-medium transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none ${
               !activeTopicSlug
-                ? "bg-brand-oxide text-parchment"
-                : "border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide border text-ink"
+                ? "bg-oxide text-parchment"
+                : "border border-control-border bg-paper text-ink hover:border-oxide hover:text-oxide"
             }`}
           >
             All Articles
@@ -100,8 +100,8 @@ export function TopicFilterBar({
                 aria-current={isActive ? "page" : undefined}
                 className={`inline-flex min-h-[44px] items-center justify-center rounded px-4 py-2.5 font-medium transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none ${
                   isActive
-                    ? "bg-brand-oxide text-parchment"
-                    : "border-control-boundary bg-reading-surface hover:border-brand-oxide hover:text-brand-oxide border text-ink"
+                    ? "bg-oxide text-parchment"
+                    : "border border-control-border bg-paper text-ink hover:border-oxide hover:text-oxide"
                 }`}
               >
                 {cat.name}
