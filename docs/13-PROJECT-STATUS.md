@@ -4,20 +4,25 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / FINAL PRE-HOSTED REGRESSION GATE PASS
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / HOSTED DEPLOYMENT AUTHORIZED
 - **Draft persistence regression:** FIXED / VERIFIED
 - **Stage-7 draft RPC compatibility:** PASS
 - **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Hosted deployment authorization:** D031 APPROVED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
-- **Owner-approved architecture decision:** D030
+- **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment)
 - **Active working branch:** `stage/08-publishing-workflow`
 - **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
 - **Gate status:** FINAL PRE-HOSTED REGRESSION GATE PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS)
 - **Stage-8 pending migration:** `20260825212334_stage8_publishing_lifecycle.sql`
+- **Authorized migration:** `20260825212334_stage8_publishing_lifecycle.sql`
+- **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
 - **Hosted migration state:** NOT APPLIED (Stage-8 migration absent on hosted project `eoexnnhqzrkurbqgbtnx`)
-- **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
+- **Hosted Stage-8 deployment:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Hosted gate:** AUTHORIZED / PRE-DEPLOYMENT VERIFICATION IN PROGRESS
+- **Stage 8 merge:** NOT AUTHORIZED
 - **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS

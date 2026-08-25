@@ -290,6 +290,42 @@ Implement the Stage-8 publishing lifecycle for Marie Medical Blog under the Evid
 
 **Status:** ACTIVE / FROZEN FOR STAGE 8 IMPLEMENTATION.
 
+## ACTIVE — D031 — Stage-8 controlled hosted migration deployment and verification
+
+**Date:** 2026-08-26
+
+**Decision:**
+The project owner explicitly authorizes deployment of exactly:
+`supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`
+to Supabase project:
+`eoexnnhqzrkurbqgbtnx`
+
+Deployment rules:
+1. Only the reviewed Stage-8 migration may be applied.
+2. Verify the hosted migration baseline before any write.
+3. Standard Supabase CLI migration transport is preferred if available and preserves the reviewed migration history cleanly.
+4. If CLI/session transport is unavailable, the already configured temporary project-scoped Supabase MCP write connection may apply the exact reviewed SQL once.
+5. Do not deploy seed data.
+6. Do not change Auth.
+7. Do not change Storage policies/buckets.
+8. Do not run arbitrary corrective production SQL after migration failure.
+9. If the write attempt fails with zero mutation, STOP and report.
+10. Do not silently retry.
+11. If MCP records a different hosted migration version, reconcile the local migration filename/history to the hosted version with SQL contents byte-for-byte unchanged, then rerun all local gates.
+12. Hosted verification must use synthetic data only and must not modify real content.
+13. Prefer transaction-scoped verification followed by ROLLBACK.
+14. Stage-8 merge remains separately owner-gated.
+15. Stage 9 remains unauthorized.
+
+**Reason:**
+Stage 8 passed final architecture review, local database/security testing, real local Storage lifecycle verification, pre-hosted hardening, and the Stage-7 draft-persistence regression gate.
+
+**Approved by:**
+project owner — explicit hosted-deployment authorization on 2026-08-26.
+
+**Status:**
+ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
+
 ---
 
 ## New decision template
