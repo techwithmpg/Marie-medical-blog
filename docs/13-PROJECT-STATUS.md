@@ -361,6 +361,62 @@ Start conditions verified:
 10. no application code or package installation occurred in this commit;
 11. Stage 5 remains NOT AUTHORIZED.
 
+## Stage-4 progress & local verification record
+
+Stage 4 local implementation and verification record:
+
+- **Stage status:** Stage 4 is ACTIVE / IMPLEMENTATION IN PROGRESS
+- **Active decision:** D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
+- **Selected package versions:**
+  - `@supabase/supabase-js`: `2.112.4`
+  - `@supabase/ssr`: `0.12.5`
+  - Unrelated dependencies added: NONE
+- **Database migration:**
+  - Migration file: `supabase/migrations/20260825071105_add_public_is_admin_rpc.sql`
+  - Function: `public.is_admin()` defined as `SECURITY INVOKER` with `set search_path = ''`, 0 arguments, delegating to `private.is_admin()`
+  - Permissions: revoked from `public, anon`; granted to `authenticated`
+  - Zero exposure of `private.admin_users`
+- **Database tests & security regression:**
+  - New test file: `supabase/tests/database/08_public_is_admin_rpc.test.sql`
+  - Local `supabase db reset`: PASS (2 migrations applied cleanly)
+  - pgTAP test suite: Files = 8, Tests = 95, Result = PASS (100%)
+    - `01_schema_structure.test.sql`: PASS
+    - `02_anonymous_access.test.sql`: PASS
+    - `03_comments_security.test.sql`: PASS
+    - `04_contact_messages_security.test.sql`: PASS
+    - `05_authenticated_non_admin.test.sql`: PASS
+    - `06_admin_access.test.sql`: PASS
+    - `07_storage_security.test.sql`: PASS
+    - `08_public_is_admin_rpc.test.sql`: PASS (10 new assertion tests)
+  - Local database lint (`supabase db lint --level warning --local`): PASS (0 errors, 0 warnings)
+- **Application auth & client helpers:**
+  - `src/lib/supabase/client.ts`: browser client using `createBrowserClient` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  - `src/lib/supabase/server.ts`: request-scoped server client using `createServerClient` and `cookies()`
+  - `src/lib/supabase/proxy.ts`: session refresh and anonymous redirect helper using `getClaims()` and cookie propagation
+  - `src/proxy.ts`: Next.js 16 proxy interceptor
+  - `src/lib/auth/admin.ts`: `requireAdmin()` server authorization gate verifying `getClaims()` and `public.is_admin()`
+  - `src/app/admin/login/actions.ts`: `loginAction` (signInWithPassword + allowlist verification + generic error) and `logoutAction` (signOut Server Action)
+  - `src/app/admin/login/page.tsx` & `login-form.tsx`: Evidence Folio admin login interface
+  - `src/app/admin/layout.tsx`: protected layout invoking `requireAdmin()` before rendering `AdminShell`
+  - `src/app/admin/page.tsx`: authenticated editorial workspace overview
+  - `src/components/admin/admin-shell.tsx` & `admin-mobile-nav.tsx`: logout action wired to Server Action form
+- **Project quality gates:**
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 errors, 0 warnings)
+  - `npm run format:check`: PASS (All files formatted)
+  - `npm run build`: PASS (Production build successful, routes /admin and /admin/login generated)
+  - `git diff --check`: PASS
+- **Route & auth HTTP verification:**
+  - Anonymous `GET /admin`: 307 redirect to `/admin/login` (PASS)
+  - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
+  - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
+- **Hosted execution boundary:**
+  - HOSTED STAGE-4 DEPLOYMENT: NOT YET PERFORMED
+  - HOSTED AUTH CONFIGURATION: NOT YET MODIFIED
+  - MARIE PRODUCTION USER: NOT YET PROVISIONED
+  - STAGE-4 GATE: NOT YET CLOSED (LOCAL IMPLEMENTATION ONLY)
+  - STAGE 5: NOT AUTHORIZED
+
 ## Stage transition rule
 
 A future stage transition requires all of the following:
