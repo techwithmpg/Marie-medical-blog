@@ -246,21 +246,30 @@ Stage 3 implementation and verification record:
 - **Stage status:** Stage 3 remains ACTIVE
 - **Hosted project ref:** `eoexnnhqzrkurbqgbtnx` (Marie Medical Blog)
 - **Active decisions:** D022, D023, D024, D025 ACTIVE in `docs/11-DECISION-LOG.md`
-- **MCP transport verification:**
-  - Read-only inspection tools verified: `list_migrations`, `list_tables`, `get_advisors`, `search_docs`
-  - Pre-deployment hosted state: migration history empty (`[]`), public tables absent (`[]`), `private.admin_users` absent
-  - Hosted advisors pre-deployment: 0 security lints, 0 performance lints
-  - Migration deployment attempted via MCP `apply_migration` with exact authoritative SQL
-  - Result: Remote MCP returned `Cannot apply migration in read-only mode.`
-  - MCP configuration immediately verified and restored to `read_only=true` (`https://mcp.supabase.com/mcp?project_ref=eoexnnhqzrkurbqgbtnx&read_only=true&features=database%2Cdebugging%2Cdocs`)
-  - No unauthorized MCP write tools used
-- **Migration integrity & reconciliation:**
-  - Authoritative migration: `supabase/migrations/20260825032113_initial_database_security_foundation.sql`
+- **MCP transport verification & hosted deployment:**
+  - Historical note: Initial deployment attempt failed due to active read-only session enforcement (`Cannot apply migration in read-only mode.`).
+  - Temporary project-scoped write server `supabase_stage3_write` configured under D024 (`https://mcp.supabase.com/mcp?project_ref=eoexnnhqzrkurbqgbtnx&features=database`).
+  - Pre-deployment hosted state: migration history empty (`[]`), public tables absent (`[]`), `private.admin_users` absent.
+  - Migration deployment executed via `supabase_stage3_write/apply_migration` with exact authoritative SQL for `initial_database_security_foundation`.
+  - Result: `apply_migration` SUCCESS (`{"success":true}`).
+  - Generated hosted migration version captured via `supabase_stage3_write/list_migrations`: `20260825054917`.
+  - Temporary write server `supabase_stage3_write` immediately and completely removed from global MCP configuration.
+  - Read-only protection restored/retained on original `supabase` server (`https://mcp.supabase.com/mcp?project_ref=eoexnnhqzrkurbqgbtnx&read_only=true&features=database%2Cdebugging%2Cdocs`).
+- **Migration integrity & D025 reconciliation:**
+  - Authoritative migration: `supabase/migrations/20260825054917_initial_database_security_foundation.sql`
   - Pre-deployment SHA-256 hash: `53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2`
-  - Post-verification SHA-256 hash: `53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2` (100% match)
-  - Local migration version: `20260825032113`
-  - Hosted migration version: `[]` (unmodified)
-  - Filename rename required: NO (hosted migration not applied)
+  - Post-reconciliation SHA-256 hash: `53C5AB6C77F397E738119B36CB4918C50E1677021631204FEBD3928D28D187E2` (100% match)
+  - Local migration version reconciled: renamed from `20260825032113` to `20260825054917` under D025 to match hosted metadata.
+  - Hosted migration version: `20260825054917` (`initial_database_security_foundation`).
+  - Local and hosted migration histories in exact parity.
+- **Hosted database verification (via read-only `supabase` MCP):**
+  - Migrations: `[{"version":"20260825054917","name":"initial_database_security_foundation"}]`
+  - Public tables: 7 tables verified (`public.profiles`, `public.categories`, `public.articles`, `public.article_references`, `public.comments`, `public.contact_messages`, `public.site_settings`), all RLS enabled, 0 rows.
+  - Private schema: `private.admin_users` verified, RLS enabled, 0 rows.
+  - Storage bucket: `public-assets` verified in `storage.buckets` (public=true, 10MB limit, mime allowlist), `storage.objects` = 0 rows.
+  - Hosted security advisors: 0 security errors/vulnerabilities (1 INFO notice on `private.admin_users` intentional per `security definer` design).
+  - Hosted performance advisors: 0 performance errors (INFO notices on unused indexes on empty tables).
+  - Seed/synthetic production data: NONE exists on hosted project (all tables have 0 rows).
 - **Local database regression gate:**
   - Local `supabase db reset`: PASS
   - pgTAP test suite: Files = 7, Tests = 85, Result = PASS (100%)
