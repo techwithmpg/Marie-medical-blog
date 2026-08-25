@@ -4,8 +4,23 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / MERGED / GATE PASS
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / LOCAL + HOSTED GATE PASS / READY FOR OWNER MERGE APPROVAL
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26)
+- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
+- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
+- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
+- **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
+- **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
+- **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
+- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
+- **Stage-7 owner-approved architecture decision:** D028, D029
+- **Active working branch:** `stage/07-writer-dashboard-editor`
+- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
+- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
@@ -29,9 +44,6 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS
-- **Active working branch:** `main`
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **Stage-6 first review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
@@ -68,7 +80,6 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 merge parents:**
   - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
   - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -223,27 +234,33 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**No new implementation stage is currently authorized.**
+**Stage 7 — Writer Dashboard & Tiptap Editor is AUTHORIZED BY PROJECT OWNER (2026-08-25).**
 
-Stage 6 — Article Reading & Discovery is:
+The external design review PASSED and Stage-7 implementation is explicitly authorized under D028.
 
-- COMPLETE;
-- MERGED into `main`;
-- GATE PASS;
-- closed following project-owner merge approval on **2026-08-25**.
+Stage 7 owns:
+- `/admin/articles` (article list and draft filtering);
+- `/admin/articles/new` (new article draft creation);
+- `/admin/articles/[id]` (existing draft editing and reopening);
+- Tiptap rich-text editor integration (Client Component, StarterKit, JSON persistence);
+- structured article metadata form (title, category, excerpt, featured image, SEO title, SEO description);
+- structured article references management (title, source name, URL, citation details, deterministic sort order);
+- private `draft-assets` storage configuration, RLS policies, and upload lifecycle;
+- atomic persistence RPC `public.save_article_draft`;
+- explicit Save Draft contract with dirty state and error feedback.
 
-The Stage-6 merge commit is:
+Stage 7 may read published and archived articles for listing purposes, but must NOT mutate published or archived content.
 
-`e28665e550dbc9150829351d9e06cafa26c5a577`
+Stage 7 must NOT implement:
+- public preview or preview token routes;
+- publish, unpublish, delete, or archive workflows;
+- canonical publishing slug assignment or publishing timestamps;
+- scheduled publishing;
+- review/approval workflows;
+- comments or contact inbox features;
+- Stage-8 or later functionality.
 
-The current canonical `main` includes the completed Stage-6 public article
-reading and discovery implementation.
-
-**Stage 7 — Writer Dashboard & Tiptap Editor is the next planned
-implementation stage but remains NOT AUTHORIZED.**
-
-Do not create a Stage-7 branch or begin Stage-7 implementation until explicit
-project-owner authorization is recorded.
+**Stage 8 — Publishing Workflow remains NOT AUTHORIZED.**
 
 ## Stage-1 start record
 
@@ -541,7 +558,67 @@ Stage 6 — Article Reading & Discovery:
   - [x] Stage 6 merged into `main` at merge commit `e28665e550dbc9150829351d9e06cafa26c5a577`.
 - **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
-- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
+
+## Stage-7 progress & implementation record
+
+Stage 7 — Writer Dashboard & Tiptap Editor:
+
+- **Stage status:** ACTIVE / LOCAL GATE PASS / HOSTED VERIFICATION AUTHORIZED
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED VERIFICATION AUTHORIZED 2026-08-26)
+- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
+- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
+- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
+- **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
+- **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
+- **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
+- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
+- **Stage-7 owner-approved architecture decision:** D028, D029
+- **Active working branch:** `stage/07-writer-dashboard-editor`
+- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
+- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
+- **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
+- **Phase 7A deliverables completed:**
+  - [x] Exact Tiptap dependencies installed (`@tiptap/react@3.30.3`, `@tiptap/pm@3.30.3`, `@tiptap/starter-kit@3.30.3`, `@tiptap/extension-placeholder@3.30.3`);
+  - [x] Private `draft-assets` bucket created (`public = false`, 5MB limit, image MIME types only);
+  - [x] Storage RLS policies for `draft-assets` (admin only, anonymous/non-admin denied);
+  - [x] Atomic persistence RPC `public.save_article_draft` created as `SECURITY INVOKER` with search_path safety;
+  - [x] Quality gates: local db reset, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS.
+- **Phase 7B deliverables & review corrections completed:**
+  - [x] Route `/admin/articles` implemented with status filters (All, Drafts, Published, Archived), responsive table/card layout, empty states, and "New Article" action link;
+  - [x] Route `/admin/articles/new` implemented with clean unsaved initial state (0 database row created on page load);
+  - [x] Route `/admin/articles/[id]` implemented with UUID regex validation (invalid UUID yields controlled 404 without database query), draft editing workspace for drafts, and read-only view for published/archived rows;
+  - [x] Next.js route error boundary `src/app/admin/articles/error.tsx` implemented with controlled recovery and return navigation;
+  - [x] Next.js development diagnostics root-cause resolved: deterministic date formatting `formatAdminDate()` implemented eliminating SSR/client hydration mismatch and Next.js "1 Issue" badge across all viewports;
+  - [x] Hardened URL validation in `tiptap-toolbar.tsx` and `article-typography.tsx` rejecting protocol-relative URLs (`//`, `/\`) and accepting `/path`, `#hash`, `https://`, `http://`, `mailto:`;
+  - [x] Hardcoded hex colors replaced with semantic tokens (`bg-background`, `border-border`, `text-foreground`, `text-muted-foreground`, `bg-muted`, `bg-card`) across all Stage 7 admin components;
+  - [x] Tiptap typography hierarchy explicitly configured (H2: 24px Newsreader serif, H3: 20px Newsreader serif, P: 16px font-sans);
+  - [x] Featured image upload component hardened with keyboard focusable `<button>`, visible focus ring, concurrent upload guard, and authenticated signed preview;
+  - [x] Interactive Reference Ledger implemented with title, source, URL, citation details, Add, Remove, Move Up, Move Down, and persistent sequential `sort_order`;
+  - [x] Revision-aware dirty tracking (`changeRevisionRef`) implemented so in-flight edits retain dirty "Unsaved changes" state until saved;
+  - [x] Server-Action session invalidation redirect handled cleanly without unhandled rejection or swallowing;
+  - [x] First-save persistent-ID reuse hardened in `ArticleEditor` (`persistedArticleId` ref/state initialized from `article?.id`, captured immediately upon save response before/during `router.replace()`, preventing duplicate draft row creation on rapid saves/Ctrl+S during route transition);
+  - [x] Canonical snake_case RPC reference payload enforced in `public.save_article_draft` migration (strictly accepting `title`, `source_name`, `url`, `citation_details`, removing legacy camelCase fallbacks);
+  - [x] Automated pgTAP regression added in `09_stage7_draft_authoring.test.sql` verifying atomic rollback when non-canonical camelCase `sourceName` is passed (suite updated to 9 files, 124 tests, 0 failures, 100% PASS);
+  - [x] Quality gates: local db reset, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
+  - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow and 0 unresolved Next.js diagnostics.
+- **Hosted Deployment & Verification completed (2026-08-26):**
+  - [x] Owner authorization D029 and replacement addenda recorded;
+  - [x] First two read-only MCP attempts rejected with verified ZERO hosted mutation;
+  - [x] Dedicated authenticated write transport `supabase_stage7_write` verified;
+  - [x] Final owner-authorized migration invocation executed: single reviewed migration deployed to hosted project `eoexnnhqzrkurbqgbtnx`;
+  - [x] Hosted migration version captured: `20260825200129` (`stage7_draft_authoring_foundation`);
+  - [x] Migration filename reconciled locally to `supabase/migrations/20260825200129_stage7_draft_authoring_foundation.sql` under D025/D027/D029 with byte-for-byte SHA-256 preservation (`7c81d861a5288d17b4ea2748c9b3ab1e95bfcf768a3d32ed8540d7252ecb5343`);
+  - [x] Storage bucket `draft-assets` verified: private (`public = false`), 5MB limit, image MIME types only, administrator-only RLS policies, zero public access;
+  - [x] Persistence RPC `public.save_article_draft` verified: `SECURITY INVOKER`, locked safe search path, public/anon execution revoked, strict parameter validation;
+  - [x] Anonymous security checks verified: anonymous RPC denial, anonymous storage denial, zero public leakage;
+  - [x] Synthetic draft verification completed: zero rows before save, initial save created draft record with provisional slug `draft-<UUID>`, second save updated in place without duplicate row creation, private featured image uploaded and verified in `draft-assets` only;
+  - [x] Public leakage test verified: draft content completely inaccessible across `/blog`, `/blog/[slug]`, `/topics/[slug]`, search, and anonymous client queries;
+  - [x] Local quality gates re-verified after reconciliation: `npx supabase db reset`, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
+  - [x] Stage-7 handoff documentation completed in `docs/30-STAGE-7-HANDOFF.md`.
 
 ## Stage transition rule
 

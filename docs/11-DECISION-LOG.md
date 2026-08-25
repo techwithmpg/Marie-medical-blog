@@ -208,6 +208,61 @@ Only record decisions that materially affect product behavior, architecture, sec
 - Marie provisioning remains unauthorized.
 - Stage 5 remains unauthorized.
 
+## ACTIVE — D028 — Stage-7 draft authoring persistence, editor schema, and private draft-media architecture
+**Date:** 2026-08-25
+**Decision:** Freeze the Stage-7 writer/editor architecture around four owner-approved decisions:
+
+A. FIRST-SAVE DRAFT CREATION: `/admin/articles/new` does NOT immediately insert an "Untitled Draft" row. The user may compose an unsaved draft locally. The first explicit Save Draft operation creates the persistent article row. Generate one UUID server-side using platform cryptographic UUID generation. Use it as the article ID and derive the internal provisional slug as `draft-<uuid>` (conceptually equivalent to `draft-${crypto.randomUUID()}`). The provisional slug satisfies the existing NOT NULL / UNIQUE / kebab-case schema, is internal, is not presented as the canonical publication slug, never makes the draft public, and is replaced or finalized only by the Stage-8 publishing workflow. Stage 8 retains ownership of canonical public slug behavior.
+
+B. TIPTAP EDITOR SCHEMA: Freeze the initial Stage-7 editor dependency set to `@tiptap/react@3.30.3`, `@tiptap/pm@3.30.3`, `@tiptap/starter-kit@3.30.3`, and `@tiptap/extension-placeholder@3.30.3`. Do NOT install a separate `@tiptap/extension-link` package (Tiptap v3 StarterKit already includes Link). Configure StarterKit's built-in Link. Tiptap v3 StarterKit also includes Underline; explicitly configure `underline: false` because the public renderer does not support underline formatting. Restrict heading levels to H2 and H3 (H1 remains reserved for the article title). Canonical article body persistence remains Tiptap / ProseMirror JSON stored directly into `public.articles.content_json`. The initial Stage-7 editor schema does NOT include underline, inline Image nodes, TableKit/table nodes, TextAlign, CharacterCount extension, collaboration, AI authoring, or review/comment extensions. Character counts required by form UX are calculated directly from normal field/editor state. For Stage 7, the authorized image/media authoring path is the featured-image workflow; inline body-image nodes are not enabled.
+
+C. PRIVATE DRAFT MEDIA: Draft images must NOT be stored in the existing `public-assets` bucket (which is public and intended for published/public assets). Stage 7 introduces through a reviewed migration during implementation a new private storage bucket: `draft-assets`. Purpose: private unpublished draft featured images. Initial constraints: `public = false`, max file size = 5 MB, allowed MIME types: `image/jpeg`, `image/png`, `image/webp`, `image/avif`. Storage RLS: SELECT, INSERT, UPDATE, DELETE permitted to authenticated admin only (utilizing existing `private.is_admin()`). No anon read, no anon write, no public URL access, no service-role credential. Draft image preview uses authenticated access or short-lived signed URLs. Stage 8 owns promotion/copying of the chosen publication asset from `draft-assets` to `public-assets` and updating the published article's final public featured-image path.
+
+D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC (`public.save_article_draft`) for reliable, atomic article + reference persistence. The function executes one database transaction for first persistent draft creation OR existing draft update, article field persistence, structured reference replacement, and deterministic reference `sort_order`. The function executes as SECURITY INVOKER with an explicit safe `search_path`, is callable only by authenticated callers, rejects anon/public execution, retains RLS, explicitly requires `private.is_admin()`, refuses to mutate an existing article unless `status = 'draft'`, forces new articles to `status = 'draft'`, forces new drafts to `published_at = null`, never publishes/archives/deletes, never mutates published or archived records, leaves feature flags (`is_featured`, `is_portfolio_featured`) unchanged on updates (defaulting to `false` on new drafts), and returns article ID, provisional slug, and `updated_at`. The RPC supports both the initial and subsequent Save Draft operations; article updates and reference replacement succeed or fail together. A DELETE-then-INSERT sequence performed as separate PostgREST requests is prohibited. Server Actions remain responsible for `requireAdmin()` re-verification, application input validation, invoking the RPC, and translating database failures into controlled UI errors.
+
+**Reason:** Avoids abandoned database rows from merely clicking New Article; preserves Stage-8 ownership of canonical publication slugs; prevents Tiptap/public-renderer schema drift; prevents unpublished draft images from becoming publicly accessible; prevents partial draft saves from deleting or corrupting structured academic references.
+**Alternatives considered:** Immediate "Untitled Draft" row creation; nullable slug migration; separate Link extension alongside StarterKit; enabling StarterKit Underline; adding TableKit/image nodes immediately; storing draft images in `public-assets`; adding a `public.media` table; separate article UPDATE + references DELETE/INSERT requests; service-role-backed admin writes.
+**Impact:** Stage-7 implementation requires four Tiptap packages (`@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-placeholder`), one reviewed migration creating private `draft-assets` storage configuration/policies and the atomic `public.save_article_draft` RPC, pgTAP regression tests for atomicity and rollback, and Stage-7 server/client editor implementation. No public article query model is changed, and no Stage-8 workflow is authorized.
+**Approved by:** project owner — explicit approval on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 7.
+
+## ACTIVE — D029 — Stage-7 controlled hosted migration deployment and verification
+**Date:** 2026-08-26
+**Decision:** The project owner explicitly authorized Stage-7 hosted migration deployment and verification for target Supabase project `eoexnnhqzrkurbqgbtnx` on 2026-08-26:
+1. ONLY the single reviewed and local-gate-passed Stage-7 migration (`supabase/migrations/20260825200129_stage7_draft_authoring_foundation.sql`) may be deployed.
+2. Deployment transport follows the established pattern (D024/D027): prefer standard CLI migration push if available; if direct PostgreSQL/session pooler transport is blocked by development network policies, a temporary project-scoped Supabase MCP write connection may be used to apply the exact reviewed SQL once.
+3. If MCP is used and generates a different hosted migration version, reconcile the local migration filename to match the hosted version history without modifying SQL content, update genuine governance references, and re-verify all local gates under D025/D027.
+4. No production seed deployment (`supabase/seed.sql` remains strictly local).
+5. No hosted Auth configuration changes (signups remain disabled, email auth enabled).
+6. No Auth-user creation or password modification for Marie's production admin account.
+7. No arbitrary write SQL or manual schema mutation via Table/SQL editor.
+8. Private `draft-assets` bucket and `public.save_article_draft` SECURITY INVOKER RPC are the only new hosted Stage-7 database and storage objects.
+9. Verify end-to-end draft authoring workflow, zero-row initial route load, persistent article ID reuse, private featured image upload, signed preview, and strict public leak protection using exactly one clearly synthetic private verification draft.
+10. Migration-first governance remains authoritative; Stage 8 and branch merging remain NOT AUTHORIZED.
+**Reason:** Stage 7 passed all local quality gates, external code review, and targeted regression tests. Controlled deployment enables hosted validation of the private draft authoring foundation without risking schema drift, credential leakage, or public exposure.
+**Approved by:** project owner — explicit authorization on 2026-08-26.
+**Status:** ACTIVE / FROZEN FOR STAGE 7 HOSTED DEPLOYMENT.
+
+### D029 execution addendum — one replacement migration attempt
+- **Date:** 2026-08-26
+- The initial `apply_migration` invocation failed because the active MCP session was read-only.
+- Post-failure inspection confirmed ZERO hosted mutation.
+- Project owner explicitly authorized exactly ONE replacement `apply_migration` invocation on 2026-08-26.
+- The replacement must use a freshly verified project-scoped MCP write connection (`eoexnnhqzrkurbqgbtnx`).
+- No additional retry is authorized.
+- All other D029 restrictions remain unchanged.
+
+### D029 execution addendum 2 — authenticated write transport verified and final migration attempt authorized
+- **Date:** 2026-08-26
+- The first `apply_migration` invocation was rejected by read-only MCP with zero hosted mutation.
+- The owner-authorized replacement invocation was also rejected by read-only MCP with zero hosted mutation.
+- Transport troubleshooting then configured and OAuth-authenticated `supabase_stage7_write` (using the official project-scoped URL with the `read_only` parameter omitted).
+- Live inspection through `supabase_stage7_write` succeeded: `list_migrations` returned existing migrations `20260825054917` and `20260825081012`; SELECT-only query confirmed `draft-assets` and `public.save_article_draft` remain absent.
+- Project owner explicitly authorized exactly ONE ADDITIONAL `apply_migration` invocation on 2026-08-26.
+- That invocation MUST use the already authenticated `supabase_stage7_write` server.
+- No further retry is authorized.
+- All other D029 restrictions remain unchanged.
+
 ---
 
 ## New decision template
