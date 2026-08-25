@@ -368,7 +368,14 @@ Stage 4 local implementation and verification record:
 - **Stage status:** Stage 4 is ACTIVE / IMPLEMENTATION IN PROGRESS
 - **D026 activation commit:** `f72aad0b995c08a7978b689a67c7d3b6ebaeb9d4` (`docs: activate stage 4 auth architecture`)
 - **Stage-4 implementation commit:** `1fb556382be70f0ec3f073a46279bd777fd68e55` (`feat: implement stage 4 authentication foundation`)
-- **Active decision:** D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
+- **Active decisions:**
+  - D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
+  - D027 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 controlled MCP migration deployment and version reconciliation)
+- **Controlled deployment authorization:**
+  - Controlled hosted Stage-4 migration deployment authorized under D027
+  - Hosted D026 Supabase Auth configuration authorized
+  - Marie production-user provisioning NOT AUTHORIZED
+  - Stage 5 NOT AUTHORIZED
 - **Local Supabase Auth hardening (`supabase/config.toml`):**
   - `auth.enable_signup = false`
   - `auth.email.enable_signup = false`

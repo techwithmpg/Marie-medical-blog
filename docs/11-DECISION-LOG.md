@@ -190,6 +190,14 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner — explicit approval on 2026-08-25.
 **Status:** ACTIVE / FROZEN FOR STAGE 4.
 
+## ACTIVE — D027 — Stage-4 controlled MCP migration deployment and version reconciliation
+**Date:** 2026-08-25
+**Decision:** When the standard Supabase CLI PostgreSQL deployment transport is unavailable from the development network, the single reviewed Stage-4 migration may be deployed to project `eoexnnhqzrkurbqgbtnx` through a temporary, project-scoped Supabase MCP connection with database write capability. The version-controlled Stage-4 migration is the authoritative SQL source. MCP `apply_migration` may be invoked exactly once with the exact reviewed SQL. After deployment, capture the hosted migration version. If MCP assigns a different migration version, rename the local migration file so its timestamp/version exactly matches hosted migration history without changing its SQL content, rerun the complete local database/security and application quality gates, and verify local/hosted migration-history parity. Temporary MCP write access must then be completely removed and the existing project-scoped MCP connection restored/retained in read-only mode.
+**Boundaries:** No arbitrary hosted write SQL, no production seed deployment, no Auth-user creation, no insertion into `private.admin_users`, no Edge Functions, no Dashboard schema changes, no second migration application, and no Stage-5 work. Hosted Auth configuration already frozen by D026 may be changed only within the separately owner-authorized Stage-4 configuration step.
+**Reason:** The reviewed Stage-4 migration has passed local database/security testing, but the normal Supabase CLI deployment transport remains unavailable because the development network cannot reach the PostgreSQL/session-pooler transport. The controlled MCP procedure preserves migration-first governance without introducing permanent elevated application credentials.
+**Approved by:** project owner — explicit approval on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 4.
+
 ---
 
 ## New decision template
