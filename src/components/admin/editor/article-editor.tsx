@@ -39,7 +39,14 @@ export function ArticleEditor({
   initialReferences = [],
 }: ArticleEditorProps) {
   const router = useRouter();
-  const isNew = !article;
+  // Identity tracking to prevent first-save duplicate draft race conditions
+  const [persistedArticleId, setPersistedArticleId] = React.useState<
+    string | null
+  >(article?.id ?? null);
+  const persistedArticleIdRef = React.useRef<string | null>(
+    article?.id ?? null,
+  );
+  const isNew = !persistedArticleId;
 
   // Form Fields
   const [title, setTitle] = React.useState(article?.title || "");
@@ -102,13 +109,14 @@ export function ArticleEditor({
       return;
     }
 
+    const currentArticleId = persistedArticleIdRef.current;
     const savingRevision = changeRevisionRef.current;
     setSaving(true);
     setErrorMessage(null);
 
     try {
       const result = await saveDraftAction({
-        articleId: article?.id || null,
+        articleId: currentArticleId,
         title: trimmedTitle,
         excerpt: excerpt.trim() || null,
         content_json: contentJson,
@@ -131,17 +139,24 @@ export function ArticleEditor({
         return;
       }
 
+      // Immediately capture persisted article ID in ref & state to prevent duplicate saves
+      if (result.articleId) {
+        persistedArticleIdRef.current = result.articleId;
+        setPersistedArticleId(result.articleId);
+      }
+      if (result.slug) {
+        setSlug(result.slug);
+      }
+
       // Only clear dirty state if no newer local changes occurred during save request flight
       if (changeRevisionRef.current === savingRevision) {
         setIsDirty(false);
       }
       setLastSavedAt(result.updatedAt || new Date().toISOString());
 
-      if (isNew && result.articleId) {
+      if (!currentArticleId && result.articleId) {
         // First save on /admin/articles/new -> replace URL to persistent edit route
         router.replace(`/admin/articles/${result.articleId}`);
-      } else {
-        if (result.slug) setSlug(result.slug);
       }
     } catch (err: unknown) {
       if (
@@ -225,7 +240,7 @@ export function ArticleEditor({
             <p className="mt-0.5 text-xs text-ink-muted">
               {isNew
                 ? "Unsaved composition workspace"
-                : `Provisional slug: ${slug || "draft-" + article?.id}`}
+                : `Provisional slug: ${slug || "draft-" + (persistedArticleId || article?.id)}`}
             </p>
           </div>
         </div>
@@ -404,7 +419,7 @@ export function ArticleEditor({
             </div>
 
             {/* Dates info */}
-            {!isNew && (
+            {!isNew && article && (
               <div className="space-y-1 border-t border-subtle-divider/60 pt-3 text-xs text-ink-muted">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="size-3.5 text-ink-muted" />
@@ -421,7 +436,7 @@ export function ArticleEditor({
 
           {/* Featured Image Management */}
           <FeaturedImageField
-            articleId={article?.id || null}
+            articleId={persistedArticleId || article?.id || null}
             imagePath={featuredImagePath}
             imageAlt={featuredImageAlt}
             onImagePathChange={(path) => {

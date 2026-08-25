@@ -5,7 +5,7 @@
 -- mutation refusal on published/archived rows, and caller authorization boundaries.
 
 begin;
-select plan(28);
+select plan(29);
 
 -- ============================================================================
 -- 1. Verify draft-assets Storage Bucket Configuration
@@ -338,7 +338,24 @@ select throws_ok(
   'Save fails when a reference has an invalid non-http(s) URL'
 );
 
--- 26. Verify pre-save article title and references remain completely intact after rollback
+-- 26. Reference payload using non-canonical camelCase sourceName without source_name is rejected
+select throws_ok(
+  $$
+    select * from public.save_article_draft(
+      p_article_id => '11111111-1111-1111-1111-111111111111'::uuid,
+      p_provisional_slug => 'draft-11111111-1111-1111-1111-111111111111',
+      p_title => 'Title That Should Rollback On CamelCase Ref',
+      p_references => '[
+        {"title": "Valid Title", "sourceName": "NonCanonicalSource", "url": "https://example.invalid"}
+      ]'::jsonb
+    );
+  $$,
+  '23514',
+  null,
+  'RPC rejects reference payload using non-canonical camelCase sourceName'
+);
+
+-- 27. Verify pre-save article title and references remain completely intact after rollback
 select results_eq(
   $$
     select title from public.articles where id = '11111111-1111-1111-1111-111111111111'::uuid
@@ -369,7 +386,7 @@ values (
   '{"type": "doc", "content": []}'::jsonb
 );
 
--- 27. Attempting to mutate published article via save_article_draft is denied
+-- 28. Attempting to mutate published article via save_article_draft is denied
 select throws_ok(
   $$
     select * from public.save_article_draft(
@@ -399,7 +416,7 @@ values (
   '{"type": "doc", "content": []}'::jsonb
 );
 
--- 28. Attempting to mutate archived article via save_article_draft is denied
+-- 29. Attempting to mutate archived article via save_article_draft is denied
 select throws_ok(
   $$
     select * from public.save_article_draft(

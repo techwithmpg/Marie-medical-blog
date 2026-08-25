@@ -190,9 +190,9 @@ begin
   for v_ref in select * from jsonb_array_elements(p_references)
   loop
     v_ref_title := trim(coalesce(v_ref->>'title', ''));
-    v_ref_source := trim(coalesce(v_ref->>'source_name', v_ref->>'sourceName', ''));
+    v_ref_source := trim(coalesce(v_ref->>'source_name', ''));
     v_ref_url := nullif(trim(coalesce(v_ref->>'url', '')), '');
-    v_ref_details := nullif(trim(coalesce(v_ref->>'citation_details', v_ref->>'citationDetails', '')), '');
+    v_ref_details := nullif(trim(coalesce(v_ref->>'citation_details', '')), '');
 
     if char_length(v_ref_title) = 0 then
       raise exception 'Reference title cannot be blank' using errcode = '23514';
