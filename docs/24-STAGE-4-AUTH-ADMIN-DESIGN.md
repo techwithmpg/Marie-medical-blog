@@ -1,10 +1,10 @@
 # 24 — Stage 4 Authentication & Admin Access Design
 
-**Status:** PROPOSED — AWAITING OWNER ARCHITECTURE APPROVAL  
+**Status:** APPROVED / FROZEN FOR STAGE 4 (D026 ACTIVE)
 **Stage:** Stage 4 — Authentication & Admin Access  
 **Date:** 2026-08-25  
 **Author:** AI Development Agent  
-**Governing Documents:** `AI_CONTEXT.md`, `AGENTS.md`, `docs/01-SCOPE-FREEZE.md`, `docs/03-INFORMATION-ARCHITECTURE.md`, `docs/05-SECURITY-RLS.md`, `docs/08-DEVELOPMENT-STAGES.md`, `docs/11-DECISION-LOG.md`, `docs/13-PROJECT-STATUS.md`, `docs/18-UI-IMPLEMENTATION-CONTRACT.md`, `docs/23-STAGE-3-DATABASE-SECURITY-DESIGN.md`
+**Governing Documents:** `AI_CONTEXT.md`, `AGENTS.md`, `docs/01-SCOPE-FREEZE.md`, `docs/03-INFORMATION-ARCHITECTURE.md`, `docs/05-SECURITY-RLS.md`, `docs/08-DEVELOPMENT-STAGES.md`, `docs/11-DECISION-LOG.md` (D026), `docs/13-PROJECT-STATUS.md`, `docs/18-UI-IMPLEMENTATION-CONTRACT.md`, `docs/23-STAGE-3-DATABASE-SECURITY-DESIGN.md`
 
 ---
 
@@ -539,18 +539,18 @@ To pass the Stage-4 quality gate, the implementation must produce verified evide
 
 ---
 
-## Proposed Decision Text (D026)
+## Approved Decision Text (D026)
 
-*The following decision text is PROPOSED for owner approval and is NOT yet active in `docs/11-DECISION-LOG.md`.*
+*The following decision text is ACTIVE in `docs/11-DECISION-LOG.md` under explicit owner authorization.*
 
 ```markdown
-## PROPOSED — D026 — Stage-4 single-admin authentication & route protection architecture
+## ACTIVE — D026 — Stage-4 single-admin authentication & route protection architecture
 
 **Date:** 2026-08-25  
 **Decision:** Implement the V1 single-admin authentication architecture for Marie using `@supabase/supabase-js` and `@supabase/ssr` with cookie-based SSR. House the dedicated admin login at `/admin/login` utilizing Supabase email/password authentication (`signInWithPassword`). Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `NEXT_PUBLIC_SUPABASE_URL` as the application environment contract. Refresh session tokens in Next.js 16 via `proxy.ts` utilizing `supabase.auth.getClaims()`. Restrict Proxy responsibilities to token refresh and baseline anonymous redirection without equating authentication with administrative privilege or replacing server authorization. Enforce server-side route protection across all `/admin` routes using a dedicated `requireAdmin()` helper that cryptographically verifies identity via `getClaims()` and evaluates allowlist membership via a new authenticated SQL proxy function `public.is_admin()` defined as `SECURITY INVOKER` delegating to `private.is_admin()`, acting strictly as an access gate without attempting cookie mutations from Server Components. Execute session revocation for failed non-admin attempts inside `loginAction()` and execute explicit logout through a cookie-writing Server Action. Apply a strict generic error policy ("Unable to sign in with those credentials.") for all authentication and allowlist failures. Disable arbitrary public signup at the Supabase Auth service level via "Allow new users to sign up = OFF" and provision Marie's single administrator account out-of-band via Supabase Dashboard directly into `private.admin_users (user_id)`. Public signup, reader authentication, OAuth, phone/magic-link auth, client-stored roles in `user_metadata`, and browser exposure of service-role keys remain strictly prohibited.  
 **Reason:** The publication requires a calm, secure, single-admin workspace for Marie. Utilizing modern `@supabase/ssr` cookies and Next.js 16 proxy with `getClaims()` ensures trustworthy session validation without stale or unverified JWTs. The two-step `requireAdmin()` gate backed by `private.admin_users` ensures authenticated non-admin accounts cannot access administrative capabilities or private data. Disabling public signups at the service level prevents unauthorized account creation via the public publishable key, while restricting session cookie mutation to valid server mutation contexts prevents Server Component runtime errors.  
 **Alternatives considered:** Using deprecated `@supabase/auth-helpers-nextjs`; relying on `getSession()` on the server; attempting `signOut()` inside Server Components; storing admin roles in JWT user metadata; relying solely on proxy redirects for admin security; exposing `private.admin_users` directly to PostgREST; defining `public.is_admin()` as `SECURITY DEFINER`; adding multi-role RBAC libraries.  
 **Impact:** Introduces `@supabase/supabase-js` and `@supabase/ssr`; creates Supabase client helpers in `src/lib/supabase/`; adds Next.js proxy in `src/proxy.ts`; adds `src/lib/auth/admin.ts`; creates `/admin/login` and `/admin` routes; adds a focused migration for `public.is_admin()` as `SECURITY INVOKER` with pgTAP security tests; enforces out-of-band provisioning of Marie's `user_id`.  
-**Approved by:** PROPOSED — Awaiting project owner architecture approval.  
-**Status:** PROPOSED — PENDING OWNER APPROVAL.
+**Approved by:** project owner — explicit approval on 2026-08-25.
+**Status:** ACTIVE / FROZEN FOR STAGE 4.
 ```
