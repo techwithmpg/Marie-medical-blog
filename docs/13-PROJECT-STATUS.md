@@ -371,11 +371,13 @@ Stage 4 local implementation and verification record:
 - **Active decisions:**
   - D026 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 single-admin authentication & route protection architecture)
   - D027 ACTIVE in `docs/11-DECISION-LOG.md` (Stage-4 controlled MCP migration deployment and version reconciliation)
-- **Controlled deployment authorization:**
-  - Controlled hosted Stage-4 migration deployment authorized under D027
-  - D027 replacement attempt: OWNER AUTHORIZED — 2026-08-25 (one replacement attempt through freshly bound `supabase_stage4_write` connection after initial rejection by stale read-only MCP session; zero hosted mutations occurred)
-  - Hosted D026 Supabase Auth configuration authorized
-  - Marie production-user provisioning NOT AUTHORIZED
+- **Controlled deployment & provisioning authorization:**
+  - Controlled hosted Stage-4 migration deployment authorized under D027 (COMPLETED)
+  - D027 replacement attempt: OWNER AUTHORIZED — 2026-08-25 (SUCCESS)
+  - Hosted D026 Supabase Auth configuration authorized (COMPLETED / OWNER VERIFIED)
+  - FINAL STAGE-4 PRODUCTION-ADMIN PROVISIONING: OWNER AUTHORIZED — 2026-08-25
+    - Authorized operations: exactly one Marie Supabase Auth identity, exactly one matching private.admin_users row, real admin login/access/logout verification, Stage-4 gate closeout if all tests pass
+    - NO OTHER AUTH USERS AUTHORIZED
   - Stage 5 NOT AUTHORIZED
 - **Local Supabase Auth hardening (`supabase/config.toml`):**
   - `auth.enable_signup = false`
