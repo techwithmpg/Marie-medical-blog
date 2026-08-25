@@ -4,8 +4,8 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / LOCAL + HOSTED GATE PASS / READY FOR OWNER MERGE APPROVAL
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26)
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / MERGED / GATE PASS
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26, MERGE AUTHORIZED 2026-08-26)
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
@@ -16,9 +16,16 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028, D029
-- **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
-- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Stage-7 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
+- **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
+- **Stage-7 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
+- **Stage-7 merge parents:**
+  - first parent (prior main): `927412a054ccf15bbb1caa23a54a48d761731a04`
+  - second parent (approved Stage-7 head): `1fd848d60aa223d53589e6eea598399085ca7157`
+- **Active working branch:** `main`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Gate status:** PASS
 - **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
@@ -234,33 +241,15 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 7 — Writer Dashboard & Tiptap Editor is AUTHORIZED BY PROJECT OWNER (2026-08-25).**
+**NO NEW IMPLEMENTATION STAGE IS CURRENTLY AUTHORIZED.**
 
-The external design review PASSED and Stage-7 implementation is explicitly authorized under D028.
+Stage 7 — Writer Dashboard & Tiptap Editor is:
+- **COMPLETE**;
+- **MERGED** into `main` at commit `e8ab70f730bea656b421a4bbb0ea6afd30073141` (parents: prior main `927412a054ccf15bbb1caa23a54a48d761731a04` and approved Stage-7 head `1fd848d60aa223d53589e6eea598399085ca7157`);
+- **GATE PASS** across all local pgTAP/typecheck/lint/format/build/diff gates and hosted Supabase verification;
+- closed following project-owner merge approval on 2026-08-26.
 
-Stage 7 owns:
-- `/admin/articles` (article list and draft filtering);
-- `/admin/articles/new` (new article draft creation);
-- `/admin/articles/[id]` (existing draft editing and reopening);
-- Tiptap rich-text editor integration (Client Component, StarterKit, JSON persistence);
-- structured article metadata form (title, category, excerpt, featured image, SEO title, SEO description);
-- structured article references management (title, source name, URL, citation details, deterministic sort order);
-- private `draft-assets` storage configuration, RLS policies, and upload lifecycle;
-- atomic persistence RPC `public.save_article_draft`;
-- explicit Save Draft contract with dirty state and error feedback.
-
-Stage 7 may read published and archived articles for listing purposes, but must NOT mutate published or archived content.
-
-Stage 7 must NOT implement:
-- public preview or preview token routes;
-- publish, unpublish, delete, or archive workflows;
-- canonical publishing slug assignment or publishing timestamps;
-- scheduled publishing;
-- review/approval workflows;
-- comments or contact inbox features;
-- Stage-8 or later functionality.
-
-**Stage 8 — Publishing Workflow remains NOT AUTHORIZED.**
+Stage 8 — Publishing Workflow is the next planned implementation stage but remains **NOT AUTHORIZED**. No Stage-8 implementation work or branch creation is permitted until explicit project-owner authorization.
 
 ## Stage-1 start record
 
@@ -559,12 +548,12 @@ Stage 6 — Article Reading & Discovery:
 - **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
 
-## Stage-7 progress & implementation record
+## Stage-7 outcome & implementation record
 
-Stage 7 — Writer Dashboard & Tiptap Editor:
+Stage 7 is complete, verified, and merged into `main`:
 
-- **Stage status:** ACTIVE / LOCAL GATE PASS / HOSTED VERIFICATION AUTHORIZED
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED VERIFICATION AUTHORIZED 2026-08-26)
+- **Stage status:** COMPLETE / MERGED / GATE PASS
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26, MERGE AUTHORIZED 2026-08-26)
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
@@ -575,9 +564,16 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028, D029
-- **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
-- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Stage-7 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
+- **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
+- **Stage-7 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
+- **Stage-7 merge parents:**
+  - first parent (prior main): `927412a054ccf15bbb1caa23a54a48d761731a04`
+  - second parent (approved Stage-7 head): `1fd848d60aa223d53589e6eea598399085ca7157`
+- **Active working branch:** `main`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Gate status:** PASS
 - **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
