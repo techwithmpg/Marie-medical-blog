@@ -3,17 +3,17 @@
 ## 1. Stage metadata
 
 - **Stage:** Stage 8 — Publishing Workflow
-- **Status:** PRE-IMPLEMENTATION DESIGN HARDENING (EXTERNAL REVIEW CORRECTIONS APPLIED)
+- **Status:** PRE-IMPLEMENTATION DESIGN HARDENING (FINAL ARCHITECTURE MICRO-HARDENING APPLIED)
 - **Canonical Base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Active Working Branch:** `stage/08-publishing-workflow`
-- **Governing Decisions:** D028, D029 (Proposed D030 detailed in Section 24)
+- **Governing Decisions:** D028, D029 (Proposed D030 detailed in Section 12)
 - **Authorizing Date:** 2026-08-26
 
 ---
 
 ## 2. Objective
 
-Design the complete private administrative publishing lifecycle, canonical slug assignment, publication timestamp handling, draft-to-public featured image promotion, public-to-private image demotion, published content editing, unpublishing, archiving, restoration, deletion governance, and cache revalidation for Marie Medical Blog under the Evidence Folio design system.
+Design the complete private administrative publishing lifecycle, canonical slug assignment, publication timestamp handling, native cross-bucket featured image promotion/demotion, published content editing, unpublishing, archiving, restoration, deletion governance, and cache revalidation for Marie Medical Blog under the Evidence Folio design system.
 
 This design establishes the exact architecture and verification criteria before any application code, database migrations, or hosted mutations are executed. Implementation remains strictly frozen pending external design review and project-owner approval.
 
@@ -24,30 +24,31 @@ This design establishes the exact architecture and verification criteria before 
 ### In-scope for Stage 8:
 1. **Article Publishing Lifecycle:**
    - Pre-publication validation and canonical slug generation/editing;
+   - Rejection of internal provisional UUID slugs for publication;
    - First-time publication timestamp (`published_at`) assignment;
-   - Atomic database status transition (`draft` -> `published`);
-   - Server-side featured image promotion from private `draft-assets` to public `public-assets` using unique paths with `upsert: false`;
+   - Single-path atomic database status transition (`draft` -> `published` only);
+   - Server-side featured image promotion from private `draft-assets` to public `public-assets` using native authenticated cross-bucket `copy()` with unique paths (`upsert: false`);
    - Atomic structured reference preservation during publication.
 2. **Published Article Editing & Update:**
    - Full editing of published articles in the Evidence Folio editor without a complex versioning subsystem;
    - Strict preservation of original `published_at` publication timestamp;
    - Strict preservation of canonical `slug`;
    - Atomic update of article body, metadata, references, and featured images;
-   - Handling of published image replacement, promotion, and superseded asset cleanup.
+   - Handling of published image replacement via cross-bucket promotion and superseded public asset cleanup.
 3. **Unpublishing, Archiving & Restoring:**
    - Unpublish transition (`published` -> `draft`);
    - Archive transition (`published` -> `archived` and `draft` -> `archived`);
    - Restore transition (`archived` -> `draft`);
-   - Demotion of featured images from `public-assets` to `draft-assets` on unpublish/archive;
+   - Demotion of featured images from `public-assets` to `draft-assets` via native cross-bucket `copy()` on unpublish/archive;
    - Immediate revocation of public visibility across all public queries and feeds;
    - Reset of `is_featured` and `is_portfolio_featured` flags.
 4. **Deletion Governance:**
    - Deletion permitted strictly for never-published articles (`status IN ('draft', 'archived') AND published_at IS NULL`);
-   - Hard deletion of ever-published articles is prohibited (must use Archive to retire content while preserving URL ownership);
+   - Hard deletion of ever-published articles is prohibited (must use Archive to retire content while preserving URL ownership and history);
    - Explicit confirmation UX barrier with destructive styling;
    - Storage cleanup for associated draft objects.
 5. **Admin-Local Preview System:**
-   - Full-fidelity Evidence Folio preview rendering the drafted/updated document tree, structured references, and metadata side-by-side inside the private writer workspace;
+   - Full-fidelity Evidence Folio preview rendering the drafted/updated document tree, structured references, and metadata side-by-side inside the private writer workspace using unsaved client state;
    - Strict isolation from public routes with zero draft data leakage.
 6. **Cache Revalidation:**
    - Surgical server-side revalidation of affected public routes (`/`, `/blog`, `/blog/[slug]`, `/topics/[slug]`, `/portfolio`) and administrative indices (`/admin/articles`, `/admin/articles/[id]`).
@@ -108,15 +109,17 @@ This design establishes the exact architecture and verification criteria before 
 
 ### Public Data Layer Audit (`src/lib/public-articles.ts`)
 The actual exported query functions in the public data layer are:
-1. `getPublishedArticleBySlug(slug: string)`
-2. `getBlogViewData(options?: PublicBlogQueryOptions)`
-3. `getCategoryViewData(categorySlug: string, options?: PublicBlogQueryOptions)`
-4. `getHomepageRecentArticles(limit?: number)`
-5. `getPortfolioArticles()`
-6. `getPublicCategories()`
-7. `getRecentArticlesForDiscovery(currentArticleId: string, categoryId?: string | null, limit?: number)`
+1. `getPublishedCategories()`
+2. `getCategoryBySlug(slug: string)`
+3. `getPublishedArticles(options?: PublicBlogQueryOptions)`
+4. `getBlogViewData(options?: PublicBlogQueryOptions)`
+5. `getPublishedArticleBySlug(slug: string)`
+6. `getFeaturedPublishedArticle()`
+7. `getLatestPublishedArticles(limit?: number)`
+8. `getPortfolioPublishedArticles()`
+9. `getRelatedPublishedArticles(currentArticleId: string, categoryId?: string | null, limit?: number)`
 
-Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "published")`. This ensures that even if an authenticated administrator accesses public routes, draft and archived data are never returned.
+**Public Article Query Contract:** Every PUBLIC query that reads `public.articles` for article content explicitly enforces `status = 'published'`. Category-only queries do not require an article-status predicate. Stage 8 must strictly preserve the `status = 'published'` predicate across all public article queries.
 
 ---
 
@@ -130,11 +133,12 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
   - Calling exact paths for singular articles and pattern paths for dynamic category/feed pages ensures on-demand cache freshness without redundant calls.
 - **Draft Mode Evaluation:** Next.js `draftMode().enable()` sets a bypass cookie allowing Server Components to bypass static caching. However, in our architecture, public data functions strictly query `status = 'published'`. Enabling Draft Mode on public routes would require altering public query logic and introducing cookie checks on public routes, increasing surface area for accidental data leakage. An admin-local preview environment isolates draft rendering completely without touching public routes or cookies.
 
-### Supabase Storage API (v2)
-- **Cross-Bucket Operations:** The official Supabase JavaScript client (`@supabase/storage-js` v2) `copy()` API operates exclusively within a single bucket. Cross-bucket copying is not natively supported in a single RPC.
-- **Server-Side Promotion Protocol:** An authenticated Server Action downloads bytes from `draft-assets` via `.download(path)` and uploads them to `public-assets` via `.upload(path, blob, { contentType, upsert: false })`.
-- **Avoid `upsert: true`:** Official Supabase guidance recommends using new, unique destination paths rather than overwriting existing objects. This prevents CDN caching anomalies and race conditions during simultaneous updates.
-- **Compensating Transactions:** If the subsequent database transaction fails, the server action immediately invokes `.remove([publicPath])` on `public-assets` to maintain strict storage-to-database consistency.
+### Supabase Storage API (`@supabase/storage-js` v2.112.4)
+- **Native Cross-Bucket Operations:** The installed `@supabase/storage-js` library (version 2.112.4) natively supports cross-bucket copying via `StorageFileApi.copy(sourcePath, destinationPath, { destinationBucket: 'target-bucket' })`.
+- **Promotion / Demotion Protocol:** Authenticated server actions invoke `supabase.storage.from(fromBucket).copy(fromPath, toPath, { destinationBucket: toBucket })` directly. This eliminates the need for intermediate server byte downloading and re-uploading as the primary architecture.
+- **Reject `move()` as Primary Operation:** `move()` removes the source object before database transaction confirmation, complicating rollback on database errors. Authenticated `copy()` followed by post-transaction source cleanup provides strict safety and simple compensation.
+- **Unique Paths (`upsert: false`):** Promoted and demoted assets always use unique, newly-generated destination paths (`articles/<article-id>/featured/<uuid>-<sanitized-filename>`). This prevents CDN caching anomalies and guarantees that live assets are never overwritten.
+- **Compensating Transactions:** If the database transaction fails, the server action immediately invokes `.remove([destinationPath])` on the destination bucket to ensure zero orphaned target assets.
 
 ---
 
@@ -159,8 +163,15 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
   3. Trim hyphens: Leading and trailing hyphens stripped (`^-+|-+$` -> `""`).
   4. Truncation: Base truncated so that the final slug (including any collision suffix) never exceeds **80 characters**.
   5. Fallback: If empty, fallback to `article-<first 8 chars of UUID>`.
-  6. Collision Resolution (Database Authority): The `publish_article` RPC verifies uniqueness within the database transaction. If a collision exists on any other article (`id <> p_article_id`), it appends `-2`, `-3`, etc., truncating the base as necessary to guarantee uniqueness and length <= 80 chars.
-- **Editorial Customization:** Marie may manually adjust the candidate slug in the "Publish Article" confirmation modal prior to first publication. Manual input must satisfy the same kebab-case regex (`^[a-z0-9]+(?:-[a-z0-9]+)*$`) and 80-char limit.
+  6. Reserved Provisional Pattern Rule: The publication RPC **strictly rejects** any slug matching the system provisional UUID pattern:
+     `^draft-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`
+     The internal provisional slug must never become public.
+- **Concurrency-Safe Collision Resolution (Database Authority):**
+  - Application-side candidate generation provides initial validation and UX preview.
+  - The database `UNIQUE` constraint on `public.articles.slug` is the final authority.
+  - In `publish_article`, the source row is locked (`FOR UPDATE`). If candidate slug insertion encounters a `unique_violation` (e.g. concurrent publication with identical title), the RPC catches the exception and retries with sequential suffixes (`-2`, `-3`, etc.), dynamically truncating the base to guarantee total length <= 80 characters.
+  - The retry loop is defensively bounded (max 50 iterations).
+- **Editorial Customization:** Marie may manually adjust the candidate slug in the "Publish Article" confirmation modal prior to first publication. Manual input must satisfy kebab-case regex `^[a-z0-9]+(?:-[a-z0-9]+)*$` and 80-char limit.
 - **Permanent Slug Freeze:** Once published, the canonical slug is **permanently frozen** for the lifetime of that article row. It remains immutable across subsequent published updates, unpublishing, archiving, restoring, and republishing. Unpublishing does NOT reopen slug editing. This eliminates the need for a redirect/slug-history subsystem.
 
 ---
@@ -191,34 +202,36 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
 ---
 
 ### DG8-05 — Database Mutation & Lifecycle RPC Architecture
-- **Complete Proposed Lifecycle RPC Set:**
+- **Single-Path Lifecycle Transitions:**
   1. `public.publish_article(p_article_id, p_slug, p_title, p_excerpt, p_content_json, p_category_id, p_featured_image_path, p_featured_image_alt, p_seo_title, p_seo_description, p_references)`:
-     - Source status required: `draft` (or `archived` if republishing an archived draft);
+     - **Source status required: `draft` ONLY** (direct `archived` -> `published` is rejected; archived content must restore to `draft` first);
+     - Locks article row `FOR UPDATE` to prevent concurrent duplicate publishing;
      - Sets `status = 'published'`;
      - Sets `published_at = coalesce(published_at, now())`;
-     - Assigns canonical slug (resolving collisions);
+     - Rejects provisional UUID slug pattern;
+     - Assigns canonical slug with collision-safe unique constraint handling (<= 80 chars);
      - Replaces references atomically.
   2. `public.update_published_article(p_article_id, p_title, p_excerpt, p_content_json, p_category_id, p_featured_image_path, p_featured_image_alt, p_seo_title, p_seo_description, p_references)`:
-     - Source status required: `published`;
+     - **Source status required: `published`**;
      - Updates content, metadata, references, and image path;
      - Locks `status = 'published'`, `slug`, and `published_at`.
   3. `public.unpublish_article(p_article_id, p_private_image_path)`:
-     - Source status required: `published`;
+     - **Source status required: `published`**;
      - Sets `status = 'draft'`, `is_featured = false`, `is_portfolio_featured = false`;
      - Updates `featured_image_path = p_private_image_path`;
      - Preserves `slug` and `published_at`.
   4. `public.archive_article(p_article_id, p_private_image_path)`:
-     - Source status required: `published` or `draft`;
+     - **Source status required: `published` or `draft`**;
      - Sets `status = 'archived'`, `is_featured = false`, `is_portfolio_featured = false`;
-     - Updates `featured_image_path = p_private_image_path` (if demoted);
+     - Updates `featured_image_path = p_private_image_path` (if demoted from published);
      - Preserves `slug` and `published_at`.
   5. `public.restore_article(p_article_id)`:
-     - Source status required: `archived`;
+     - **Source status required: `archived`**;
      - Sets `status = 'draft'`;
      - Preserves `slug`, `published_at`, and `featured_image_path`.
   6. `public.delete_article(p_article_id)`:
-     - Source status required: `draft` or `archived`;
-     - Condition required: `published_at IS NULL` (ever-published articles cannot be deleted);
+     - **Source status required: `draft` or `archived`**;
+     - **Condition required: `published_at IS NULL`** (ever-published articles cannot be deleted);
      - Cascades reference deletion;
      - Deletes article row.
 - **Security & Function Controls:**
@@ -244,7 +257,7 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
          │                   ▼                     │
   ┌──────┴───────┐    ┌──────────────┐      ┌──────┴───────┐
   │  published   │    │  published   │─────►│   archived   │
-  └──────┬───────┘    └──────────────┘      └──────────────┘
+  └──────────────┘    └──────────────┘      └──────────────┘
          │ (Archive)         ▲
          └───────────────────┘
 ```
@@ -261,6 +274,7 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
 | `published` | Archive | `archived` | YES | Sets `status = 'archived'`, resets featured flags, preserves `slug` and `published_at`. Demotes image to `draft-assets`. |
 | `published` | Delete | *Deleted* | **PROHIBITED** | Must Unpublish/Archive first, and blocked if ever published. |
 | `archived` | Restore | `draft` | YES | Sets `status = 'draft'`, preserves `slug` and `published_at`. |
+| `archived` | Publish | `published` | **PROHIBITED** | Must call `restore_article` to `draft` first, then publish. |
 | `archived` | Delete | *Deleted* | YES *(if `published_at IS NULL`)* | Blocked if `published_at IS NOT NULL`. |
 
 ---
@@ -275,7 +289,7 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
 
 ---
 
-### DG8-08 — Storage Invariant & Image Promotion/Demotion Architecture
+### DG8-08 — Storage Invariant & Native Cross-Bucket Image Promotion/Demotion
 - **Storage Invariant:**
   - `status = 'published'` -> featured image must resolve from `public-assets`
   - `status IN ('draft', 'archived')` -> featured image must resolve from `draft-assets`
@@ -285,24 +299,42 @@ Every query in `src/lib/public-articles.ts` strictly specifies `.eq("status", "p
 - **First Publish / Republish Flow:**
   1. `await requireAdmin()`.
   2. Validate private candidate in `draft-assets` belongs to the article.
-  3. Download image bytes from `draft-assets`.
-  4. Upload to `public-assets` at new unique path with `upsert: false`.
-  5. Call `publish_article` RPC with new public path.
-  6. If RPC fails: delete newly uploaded public object (compensating cleanup); retain private candidate and prior valid image.
-  7. If RPC succeeds: delete private source object from `draft-assets`.
+  3. Generate new unique destination path in `public-assets`.
+  4. Call native cross-bucket copy:
+     ```ts
+     const { error: copyError } = await supabase.storage
+       .from("draft-assets")
+       .copy(sourcePath, destinationPath, {
+         destinationBucket: "public-assets",
+       });
+     ```
+  5. If copy fails: abort operation before DB mutation; private source remains intact; return error to user.
+  6. Call `publish_article` RPC with `destinationPath`.
+  7. If RPC fails: delete newly copied public object from `public-assets` via `.remove([destinationPath])`; private source remains intact; return error to user.
+  8. If RPC succeeds: delete private source object from `draft-assets`. If private cleanup fails, log cleanup warning without corrupting database state.
 - **Published Image Replacement Flow:**
-  1. Upload new candidate to `draft-assets`.
-  2. Upload candidate bytes to `public-assets` with `upsert: false`.
-  3. Call `update_published_article` RPC with new public path.
-  4. If RPC fails: remove newly uploaded public object; retain old public image and private candidate.
-  5. If RPC succeeds: delete private candidate; then remove superseded old public image from `public-assets`.
-  6. If old public image cleanup fails: log cleanup warning; article database state remains valid pointing to new image.
+  1. Administrator uploads new candidate to `draft-assets`.
+  2. Generate new unique destination path in `public-assets`.
+  3. Call cross-bucket copy from `draft-assets` to `public-assets`.
+  4. If copy fails: abort before DB update; old public image and private candidate remain intact.
+  5. Call `update_published_article` RPC with new public path.
+  6. If RPC fails: delete newly copied public object from `public-assets`; old public image remains active.
+  7. If RPC succeeds: delete private candidate from `draft-assets`; then remove superseded old public image from `public-assets`.
+  8. If old public image cleanup fails: log cleanup warning; article database state remains valid pointing to new image.
 - **Unpublish / Archive Demotion Flow:**
-  1. Download current image bytes from `public-assets`.
-  2. Upload bytes to new unique path in `draft-assets` with `upsert: false`.
-  3. Call `unpublish_article` / `archive_article` RPC with new private path.
-  4. If RPC fails: delete newly uploaded private object; retain public state.
-  5. If RPC succeeds: delete old public object from `public-assets`.
+  1. Generate new unique private destination path in `draft-assets`.
+  2. Call cross-bucket copy:
+     ```ts
+     const { error: copyError } = await supabase.storage
+       .from("public-assets")
+       .copy(sourcePath, destinationPath, {
+         destinationBucket: "draft-assets",
+       });
+     ```
+  3. If copy fails: abort before DB transition; public article and public asset remain intact.
+  4. Call `unpublish_article` / `archive_article` RPC with new private path.
+  5. If RPC fails: delete newly copied private object from `draft-assets`; public article and asset remain intact.
+  6. If RPC succeeds: delete old public object from `public-assets`. If public cleanup fails, log warning.
 
 ---
 
@@ -385,18 +417,19 @@ AdminArticleDetailPage (Server Component)
 
 Because database tables do not contain all constraints as table-level checks, every Stage-8 article-writing RPC must explicitly enforce:
 1. Caller is authenticated admin (`private.is_admin() = true`).
-2. Valid source status for requested transition.
+2. Valid source status for requested transition (e.g. `publish_article` requires `status = 'draft'`).
 3. Title is non-blank (`char_length(trim(title)) > 0`).
 4. `content_json` is a JSON object with `type = 'doc'` and contains non-empty content for publication.
 5. Canonical slug matches kebab-case regex `^[a-z0-9]+(?:-[a-z0-9]+)*$` and is <= 80 characters.
-6. Category ID is valid UUID and exists in `public.categories`.
-7. Featured image path, if present, is non-blank and scoped to `articles/<article-id>/featured/`.
-8. Featured image alt text is non-blank when an image path is attached.
-9. `references` is a JSON array.
-10. Each reference item contains non-blank `title` and `source_name`.
-11. Reference `url` is null or begins with `http://` or `https://`.
-12. Deterministic `sort_order` is assigned to references.
-13. Article update and reference replacement are executed atomically in a single transaction.
+6. Canonical slug is rejected if it matches the internal provisional UUID pattern `^draft-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`.
+7. Category ID is valid UUID and exists in `public.categories`.
+8. Featured image path, if present, is non-blank and scoped to `articles/<article-id>/featured/`.
+9. Featured image alt text is non-blank when an image path is attached.
+10. `references` is a JSON array.
+11. Each reference item contains non-blank `title` and `source_name`.
+12. Reference `url` is null or begins with `http://` or `https://`.
+13. Deterministic `sort_order` is assigned to references.
+14. Article update and reference replacement are executed atomically in a single transaction.
 
 ---
 
@@ -404,11 +437,11 @@ Because database tables do not contain all constraints as table-level checks, ev
 
 | Operation Step | Failure Mode | Compensation / Handling |
 |---|---|---|
-| Image Promotion Upload | Supabase Storage error on upload to `public-assets` | Abort operation; do not invoke DB RPC; private source asset remains intact; return user error. |
-| Database Publication RPC | SQL error / collision / validation failure in `publish_article` | Catch error; invoke `storage.from('public-assets').remove([newPublicPath])`; private source asset remains intact; return user error. |
+| Image Promotion Copy | Supabase Storage error on cross-bucket copy to `public-assets` | Abort operation; do not invoke DB RPC; private source asset remains intact; return user error. |
+| Database Publication RPC | SQL error / collision / validation failure in `publish_article` | Catch error; invoke `storage.from('public-assets').remove([destinationPath])`; private source asset remains intact; return user error. |
 | Private Asset Cleanup | Storage error deleting from `draft-assets` after successful publish | Log/report cleanup warning; do not fail publication since database and public storage are valid. |
-| Image Demotion Upload | Storage error uploading to `draft-assets` during unpublish | Abort operation; do not invoke unpublish RPC; public article and public asset remain intact; return user error. |
-| Database Demotion RPC | SQL error during `unpublish_article` / `archive_article` | Catch error; remove newly uploaded private copy from `draft-assets`; public article and asset remain intact. |
+| Image Demotion Copy | Storage error cross-bucket copying to `draft-assets` during unpublish | Abort operation; do not invoke unpublish RPC; public article and public asset remain intact; return user error. |
+| Database Demotion RPC | SQL error during `unpublish_article` / `archive_article` | Catch error; remove newly copied private destination from `draft-assets`; public article and asset remain intact. |
 | Public Asset Cleanup | Storage error deleting from `public-assets` after successful unpublish | Log/report cleanup warning; database record points to private asset; article is unpublished publicly. |
 
 ---
@@ -418,9 +451,12 @@ Because database tables do not contain all constraints as table-level checks, ev
 ### Database Unit Tests (`supabase/tests/database/10_stage8_publishing_workflow.test.sql`)
 1. **Publication:**
    - First publication assigns valid canonical slug and sets `status = 'published'`.
+   - Rejects exact internal provisional `draft-<UUID>` slug and system provisional UUID regex.
    - Rejects invalid/malformed slugs.
    - Handles empty candidate fallback to `article-<short-uuid>`.
-   - Resolves database slug collisions deterministically (`slug-2`, `slug-3`) keeping length <= 80.
+   - Concurrency/collision allocation is protected by database `UNIQUE` constraint handling with retry suffixes (`-2`, `-3`), guaranteeing total length <= 80 chars.
+   - `publish_article` rejects non-draft source status (e.g. `archived` source rejected; must restore first).
+   - Same-article concurrent publication transitions are blocked via row-level `FOR UPDATE` lock.
    - Sets `published_at = now()` on first publication.
 2. **Published Updates:**
    - Updates article content, metadata, and references atomically.
@@ -431,6 +467,8 @@ Because database tables do not contain all constraints as table-level checks, ev
    - `unpublish_article` sets `status = 'draft'`, resets `is_featured = false`, `is_portfolio_featured = false`, preserves `slug` and `published_at`.
    - `archive_article` sets `status = 'archived'` from draft or published state, preserves `slug` and `published_at`.
    - `restore_article` sets `status = 'draft'` from archived state, preserves `slug` and `published_at`.
+   - Restore `archived` -> `draft` then `publish` succeeds.
+   - Canonical slug and `published_at` remain identical after restore and republish.
    - Rejects invalid source status transitions (e.g. restoring a published article).
 4. **Deletion Governance:**
    - Deleting never-published draft (`published_at IS NULL`) succeeds and cascades references.
@@ -443,20 +481,28 @@ Because database tables do not contain all constraints as table-level checks, ev
    - Anonymous queries against `public.articles` return 0 rows for draft and archived records.
 
 ### Storage & Orchestration Tests
+- Cross-bucket copy `draft-assets` -> `public-assets` succeeds under admin policies using `destinationBucket`.
 - Anonymous read of private draft image is rejected.
 - Promoted public image is readable publicly.
-- Promotion upload failure leaves database unchanged.
-- Database RPC failure after public upload deletes newly uploaded public object.
-- Published image replacement generates new unique path with `upsert: false`.
-- Old public asset is removed only after successful database update.
-- Unpublish/archive demotes public image to private bucket.
+- Source private object remains until DB publication succeeds.
+- Successful publish removes private source after DB success.
+- DB publication failure removes only newly created public destination (compensation does NOT remove previous valid public object).
+- Published replacement creates a fresh unique public path (`upsert: false`).
+- Old public path remains active until update RPC succeeds.
+- Cross-bucket `public-assets` -> `draft-assets` copy succeeds during demotion.
+- DB demotion failure removes only new private destination.
+- Successful demotion removes old public object after DB success.
+- Raw old public object is no longer retrievable after successful cleanup.
+- Cleanup failure is surfaced without DB corruption.
 
 ### Public & Browser Tests
 - Draft never appears on `/`, `/blog`, `/topics`, `/portfolio`, or `/blog/[slug]`.
+- Provisional draft UUID slug returns no public article.
 - Published article appears on public surfaces immediately.
 - Published update reflects on public surfaces.
 - Category change updates both old and new topic listing pages.
 - Unpublished / archived article disappears from public site.
+- Restored article remains private.
 - Republished article returns at exact same canonical slug.
 - Admin-local preview reflects unsaved editor state without making database mutations.
 
@@ -479,14 +525,14 @@ Because database tables do not contain all constraints as table-level checks, ev
 | Gate | Focus | Recommended Choice | Rationale |
 |---|---|---|---|
 | **DG8-01** | Preview Architecture | **Implement Admin-Local Preview in Stage 8** | Reuses tested renderer, zero token overhead, zero leak risk, real-time feedback on unsaved edits. |
-| **DG8-02** | Canonical Slug Contract | **Auto-Generated on First Publish with DB Authority & Permanent Freeze** | Clean SEO URLs, collision-safe, permalink stability without complex redirect subsystem. |
+| **DG8-02** | Canonical Slug Contract | **Auto-Generated on First Publish with DB Authority & Permanent Freeze** | Clean SEO URLs, collision-safe via DB unique constraint retry, permalink stability without complex redirect subsystem. Rejects provisional UUID slugs. |
 | **DG8-03** | Publication Timestamps | **`published_at` Set on First Publish; Preserved Forever on Update/Republish** | Truthful historical publication metadata; `updated_at` records revisions. |
 | **DG8-04** | Published Editing | **Direct In-Place Editing with Atomic Update RPC** | Avoids complex versioning while ensuring transactional safety and image replacement tracking. |
-| **DG8-05** | Database Mutation | **Focused PostgreSQL `SECURITY INVOKER` RPCs per Lifecycle Transition** | Maximum auditability, atomic reference replacement, tight RLS, explicit source status enforcement. |
-| **DG8-06** | Unpublish vs Archive | **Explicit 3-State Lifecycle Machine (`draft`, `published`, `archived`)** | Clear semantics for temporary unpublishing vs permanent retirement with restore capability. |
+| **DG8-05** | Database Mutation | **Single-Path PostgreSQL `SECURITY INVOKER` RPCs per Lifecycle Transition** | Maximum auditability, atomic reference replacement, tight RLS, single-path publish (`draft` only; archived must restore first). |
+| **DG8-06** | Unpublish vs Archive | **Strict 3-State Lifecycle Machine (`draft`, `published`, `archived`)** | Clear semantics for temporary unpublishing vs permanent retirement with restore capability. |
 | **DG8-07** | Delete Rules | **Allowed ONLY for Never-Published Records (`published_at IS NULL`)** | Protects canonical URL ownership and prevents accidental loss of historical public records. |
-| **DG8-08** | Image Promotion & Demotion | **Unique Paths (`upsert: false`) with Compensating Orchestration** | Clean separation of private drafts and public assets; safe promotion and demotion flows. |
-| **DG8-09** | Cache Revalidation | **Targeted `revalidatePath` on Affected Public & Admin Routes** | Ensures instantaneous freshness across feeds, archives, detail pages, and topic categories. |
+| **DG8-08** | Image Promotion & Demotion | **Native Cross-Bucket `copy()` with Unique Paths (`upsert: false`) & Compensation** | Clean separation of private drafts and public assets; safe promotion and demotion flows without `move()` or overwrite risk. |
+| **DG8-09** | Cache Revalidation | **Targeted `revalidatePath` on Affected Public & Admin Routes** | Ensures instantaneous freshness across feeds, archives, detail pages, and topic categories (including category changes). |
 | **DG8-10** | Security / Leakage | **`requireAdmin()` Server Gate + Locked DB Functions + Non-Weakened Public Queries** | Preserves impenetrable defense-in-depth isolation. |
 
 ---
@@ -502,11 +548,11 @@ Stage 8 requires a robust, secure, and maintainable publishing workflow for a si
 
 ### Decision:
 1. **Admin-Local Preview:** Implement an interactive full-fidelity preview mode inside the private `ArticleEditor` workspace, reusing existing presentational components (`ArticleTypography`, `ReferenceLedger`) and unsaved client state without public preview routes, tokens, or cookies.
-2. **Permanent Canonical Slug Freeze:** Canonical slugs are generated from title on first publication (with manual override allowed prior to first publish), resolved for collisions inside the DB transaction, and permanently frozen across all subsequent lifecycle transitions (update, unpublish, archive, restore, republish).
-3. **Immutable Publication Timestamp:** `published_at` is set upon first publication and preserved permanently across all updates, unpublishing, and republishing to reflect truthful original publication history.
-4. **Focused `SECURITY INVOKER` Lifecycle RPCs:** Implement `publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, and `delete_article` with locked search paths, strict parameter validation, and `private.is_admin()` checks.
+2. **Permanent Canonical Slug Freeze & Concurrency Safety:** Canonical slugs are generated from title on first publication (with manual override allowed prior to first publish), validated to reject system provisional UUID slugs, resolved for collisions inside the DB transaction via `UNIQUE` constraint handling with retry suffixes, and permanently frozen across all subsequent lifecycle transitions (update, unpublish, archive, restore, republish).
+3. **Immutable Publication Timestamp:** `published_at` is set upon first publication and preserved permanently across all updates, unpublishing, archiving, restoring, and republishing to reflect truthful original publication history.
+4. **Single-Path `SECURITY INVOKER` Lifecycle RPCs:** Implement `publish_article` (accepting `draft` only), `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, and `delete_article` with locked search paths, strict parameter validation, and `private.is_admin()` checks. Archived content must restore to `draft` before republishing.
 5. **Permalink & Deletion Safety:** Hard deletion is permitted strictly for never-published records (`published_at IS NULL`). Ever-published records must be retired via `Archive`.
-6. **Storage Invariant & Unique-Path Promotion/Demotion:** Enforce that public articles use `public-assets` while draft/archived articles use `draft-assets`. Promote/demote images using unique paths with `upsert: false` and compensating rollback on failure.
+6. **Storage Invariant & Native Cross-Bucket Promotion/Demotion:** Enforce that public articles use `public-assets` while draft/archived articles use `draft-assets`. Promote/demote images using native authenticated cross-bucket `copy()` (`destinationBucket`) with unique paths (`upsert: false`) and compensating rollback on failure. Never use `move()` as the primary lifecycle operation.
 7. **Targeted Revalidation:** Apply surgical `revalidatePath` calls across affected public routes (including category change handling) and admin indices upon lifecycle mutations.
 8. **Uncompromised Public Queries:** Public data queries in `src/lib/public-articles.ts` remain strictly filtered by `status = 'published'`.
 
@@ -518,9 +564,9 @@ Stage 8 requires a robust, secure, and maintainable publishing workflow for a si
    - Author migration with `publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, `delete_article`;
    - Author pgTAP tests in `supabase/tests/database/10_stage8_publishing_workflow.test.sql`;
    - Verify local database reset and test suite pass.
-2. **Phase 8B — Server Actions & Image Promotion Service:**
+2. **Phase 8B — Server Actions & Native Cross-Bucket Image Service:**
    - Implement `publishArticleAction`, `updatePublishedArticleAction`, `unpublishArticleAction`, `archiveArticleAction`, `restoreArticleAction`, `deleteArticleAction` in `src/app/admin/articles/actions.ts`;
-   - Implement image promotion/demotion helper in `src/lib/admin/image-promotion.ts`;
+   - Implement native cross-bucket image promotion/demotion helper in `src/lib/admin/image-promotion.ts`;
    - Integrate Next.js `revalidatePath` calls.
 3. **Phase 8C — Editorial UI & Lifecycle Controls:**
    - Update `ArticleEditor` with publish, update, unpublish, archive, restore, delete action buttons and confirmation modals;
