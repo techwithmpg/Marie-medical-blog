@@ -14,14 +14,15 @@ Stage 4 establishes the minimum secure, single-admin authentication and route au
 
 ### Deliverables:
 - **Dedicated Admin Login:** Calm, restrained login interface at `/admin/login` matching the Evidence Folio design contract.
-- **Client Architecture:** Next.js cookie-based Supabase client integration using `@supabase/ssr` and `@supabase/supabase-js`.
-- **Session Refresh:** Next.js 16 `proxy.ts` request interceptor for automatic token refresh and cookie synchronization.
-- **Server Authorization Gate:** `requireAdmin()` server-side helper validating cryptographic session legitimacy via `getUser()` and verifying allowlist membership via `public.is_admin()`.
-- **Database Authorization RPC:** Minimal, authenticated-only boolean function `public.is_admin()` in PostgreSQL delegating to `private.is_admin()`.
+- **Client Architecture:** Next.js cookie-based Supabase client integration using `@supabase/ssr` and `@supabase/supabase-js` adhering to the `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` environment contract.
+- **Session Refresh:** Next.js 16 `proxy.ts` request interceptor for automatic token refresh, cookie synchronization, and anonymous-request redirection.
+- **Server Authorization Gate:** `requireAdmin()` server-side helper validating cryptographic identity legitimacy via `supabase.auth.getClaims()` and verifying allowlist membership via `public.is_admin()`.
+- **Database Authorization RPC:** Minimal, authenticated-only SQL function `public.is_admin()` defined with `security invoker` in PostgreSQL delegating directly to `private.is_admin()`.
 - **Protected Workspace Shell:** Server-protected layout for `/admin` and sub-routes wrapped in the existing `AdminShell`.
 - **Secure Session Termination:** Server-action-based logout invalidating Supabase Auth sessions and clearing cookies.
-- **Unauthorized & Non-Admin Defense:** Clean redirects and session invalidation for anonymous or non-allowlisted visitors.
-- **Automated Verification:** Comprehensive pgTAP tests for database functions and end-to-end route protection gates.
+- **Unauthorized & Non-Admin Defense:** Generic error messages and immediate session revocation for anonymous or non-allowlisted visitors.
+- **Service-Level Signup Prevention:** Disablement of arbitrary public signups at the Supabase Auth service level.
+- **Automated Verification:** Comprehensive pgTAP tests for database functions and end-to-end route protection quality gates.
 
 ---
 
@@ -31,40 +32,43 @@ Research conducted on **2026-08-25** using current official documentation:
 
 | Domain | Source URL | Key Technical Mandate |
 | :--- | :--- | :--- |
-| **Supabase SSR for Next.js** | `https://supabase.com/docs/guides/auth/server-side/creating-a-client` | Deprecates `@supabase/auth-helpers-nextjs`. Mandates `@supabase/ssr` with `createBrowserClient` (singleton in browser) and `createServerClient` (per-request in Server Components/Actions/Proxy with `getAll` / `setAll` cookie handlers). |
-| **Password Authentication** | `https://supabase.com/docs/guides/auth/passwords` | Use `supabase.auth.signInWithPassword({ email, password })`. PKCE flow is default with SSR. Errors must not distinguish whether account exists to prevent email enumeration. |
-| **Server Token Verification** | `https://supabase.com/docs/guides/auth/server-side/creating-a-client` | Never trust `supabase.auth.getSession()` inside server code (Proxy, Server Components, Server Actions) for access control because it reads unverified cookie data. Always call `supabase.auth.getUser()` (or `supabase.auth.getClaims()`) to validate the JWT against Supabase Auth. |
+| **Supabase SSR for Next.js** | `https://supabase.com/docs/guides/auth/server-side/creating-a-client` | Deprecates `@supabase/auth-helpers-nextjs`. Mandates `@supabase/ssr` with `createBrowserClient` (singleton in browser) and `createServerClient` (per-request in Server Components/Actions/Proxy with `getAll` / `setAll(cookiesToSet, headers)` handlers). Uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. |
+| **Server Identity Validation** | `https://supabase.com/docs/guides/auth/server-side/creating-a-client` | `supabase.auth.getClaims()` is the primary method for validating identity when protecting pages and user data because it verifies the cryptographic JWT signature against project keys without relying on unvalidated local cookie state. `getUser()` may be used only when a fresh Auth user record is genuinely required. `getSession()` must never be trusted for authorization decisions. Never insert arbitrary code between `createServerClient()` and `getClaims()`. |
+| **Password Authentication** | `https://supabase.com/docs/guides/auth/passwords` | Use `supabase.auth.signInWithPassword({ email, password })`. PKCE flow is default with SSR. Login errors must be generic to prevent email enumeration or disclosure of allowlist status. |
 | **Next.js 16 Proxy Convention** | `https://nextjs.org/docs/app/getting-started/proxy` | Next.js 16 supports `proxy.ts` with matcher configuration to intercept requests, refresh auth cookies via `updateSession()`, and pass updated headers/cookies to downstream Server Components and back to the browser. |
-| **User Administration** | `https://supabase.com/docs/guides/auth/managing-user-data` | Authorizes out-of-band admin creation via Supabase Dashboard (Auth > Users > Invite / Add User). Prevents committing credentials or exposing service-role keys in application code. |
+| **User Administration & Signup Disablement** | `https://supabase.com/docs/guides/auth/managing-user-data` | Disabling public signup at the Supabase Auth service level (`auth.email.enable_signup = false` / Dashboard Email Provider setting) ensures no arbitrary users can be created via the public publishable key. Marie is provisioned directly out-of-band. |
 
 ---
 
-## 3. Package Recommendation
+## 3. Package Recommendation & Version Policy
 
 ### Required Production Dependencies:
-1. `@supabase/supabase-js` (`^2.49.x`): The official Supabase isomorphic client library.
-2. `@supabase/ssr` (`^0.5.x`): The official cookie-based SSR adapter for Supabase in Next.js App Router.
+- `@supabase/supabase-js`
+- `@supabase/ssr`
+
+### Package Version Policy:
+At implementation time, the agent must inspect current official package releases, verify version compatibility with Next.js 16 and React 19, install the current appropriate compatible releases, and allow `package-lock.json` to freeze the exact resolved versions.
 
 ### Explicit Exclusions:
 - No `@supabase/auth-helpers-nextjs` (deprecated).
-- No third-party auth wrappers (NextAuth/Auth.js, Clerk, Lucia, Firebase Auth).
-- No new UI component libraries or form wizards.
+- No third-party auth libraries (NextAuth/Auth.js, Clerk, Lucia, Firebase Auth).
+- No new UI component libraries or form frameworks.
 
 ---
 
 ## 4. Supabase Client Architecture
 
-To cleanly separate client and server contexts, two client factories will be created in `src/lib/supabase/`:
+Two client factories will be created in `src/lib/supabase/` using the repository's authoritative environment contract (`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`):
 
 ### A. Browser Client (`src/lib/supabase/client.ts`)
-Creates a client for use in Client Components (e.g. real-time subscriptions, client forms):
+Creates a client for use in Client Components:
 ```typescript
 import { createBrowserClient } from "@supabase/ssr";
 
 export function createClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
   );
 }
 ```
@@ -80,13 +84,13 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, _headers) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options),
@@ -104,9 +108,19 @@ export async function createClient() {
 
 ---
 
-## 5. Next.js Proxy & Session Refresh
+## 5. Next.js Proxy & Session Refresh Responsibilities
 
-In Next.js 16 App Router, the proxy intercepts incoming requests to refresh expired tokens and maintain cookie synchronization:
+In Next.js 16 App Router, `proxy.ts` handles cookie refreshing and baseline routing checks.
+
+### Proxy Responsibilities:
+1. Refresh Supabase auth session tokens by calling `supabase.auth.getClaims()` immediately after `createServerClient()`.
+2. Apply refreshed cookies and response headers (cache-control headers) from `@supabase/ssr` to the response.
+3. Redirect unauthenticated (anonymous) visitors attempting to access `/admin/*` (other than `/admin/login`) to `/admin/login`.
+
+### What the Proxy Must NOT Do:
+1. **The Proxy must NOT equate "authenticated" with "admin".** Authenticated non-admin users must not be permitted into `/admin` by the proxy.
+2. **The Proxy must NOT redirect authenticated visitors from `/admin/login` to `/admin`.** If an authenticated non-admin user visits `/admin/login`, automatically bouncing them to `/admin` would cause an open redirect loop or premature routing error.
+3. **The Proxy must NOT replace `requireAdmin()`.** The server-side `requireAdmin()` helper remains the sole authoritative gate for verifying `private.admin_users` allowlist membership.
 
 ### A. Proxy Entrypoint (`src/proxy.ts`)
 ```typescript
@@ -134,7 +148,7 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -158,25 +172,18 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Validates JWT against Supabase Auth servers
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // IMPORTANT: Do not insert code between createServerClient and getClaims().
+  // getClaims() cryptographically validates the JWT against project keys.
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
 
   const isAccessingAdmin = request.nextUrl.pathname.startsWith("/admin");
   const isLoginPage = request.nextUrl.pathname.startsWith("/admin/login");
 
   // Redirect unauthenticated requests to /admin/* to login
-  if (!user && isAccessingAdmin && !isLoginPage) {
+  if (!claims && isAccessingAdmin && !isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect authenticated requests at /admin/login to dashboard
-  if (user && isLoginPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin";
     return NextResponse.redirect(url);
   }
 
@@ -188,7 +195,7 @@ export async function updateSession(request: NextRequest) {
 
 ## 6. Server-Side `requireAdmin` Design
 
-To provide authoritative defense in depth, all Server Components (`src/app/admin/layout.tsx`) and administrative Server Actions must call `requireAdmin()`:
+`requireAdmin()` in `src/lib/auth/admin.ts` provides authoritative server-side defense in depth for Server Components (`src/app/admin/layout.tsx`) and administrative Server Actions:
 
 ```typescript
 // src/lib/auth/admin.ts
@@ -203,43 +210,49 @@ export interface AuthenticatedAdmin {
 export async function requireAdmin(): Promise<AuthenticatedAdmin> {
   const supabase = await createClient();
 
-  // 1. Cryptographic token & identity check
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  // 1. Cryptographic token & claims verification
+  const { data: claimsData, error: claimsError } =
+    await supabase.auth.getClaims();
+  const claims = claimsData?.claims;
 
-  if (userError || !user) {
+  if (claimsError || !claims || !claims.sub) {
     redirect("/admin/login");
   }
 
-  // 2. Allowlist authorization check against private.admin_users
+  // 2. Authorize allowlist membership against private.admin_users
   const { data: isAdmin, error: rpcError } = await supabase.rpc("is_admin");
 
   if (rpcError || !isAdmin) {
     // Authenticated user exists but is not on the admin allowlist
     await supabase.auth.signOut();
-    redirect("/admin/login?error=unauthorized");
+    redirect("/admin/login");
   }
 
   return {
-    id: user.id,
-    email: user.email,
+    id: claims.sub as string,
+    email: claims.email as string | undefined,
   };
 }
 ```
 
+### Authorization Rules:
+1. **No Authorization by Email:** Identity and authorization rely strictly on `auth.uid()` / `claims.sub` evaluated in PostgreSQL. Email strings are never used for access control decisions.
+2. **Display-Only Email:** If email is needed for the admin UI header, it is read from verified claims or retrieved via `getUser()` only when a fresh Auth user record is genuinely needed.
+3. **Generic Unauthorized Behavior:** If authentication or allowlist checks fail, the user is signed out and redirected to `/admin/login` without disclosing internal database details.
+
 ---
 
-## 7. Admin Allowlist Lookup Mechanism
+## 7. Admin Allowlist Lookup Mechanism (`public.is_admin()`)
 
-In Stage 3, `private.admin_users` and `private.is_admin()` were established inside the private schema. Because PostgREST hides non-public schemas, Stage 4 introduces a minimal, authenticated-only SQL proxy function in `public`:
+In Stage 3, `private.admin_users` and `private.is_admin()` were established. Stage 3 already granted the `authenticated` role `USAGE` on schema `private` and `EXECUTE` on `private.is_admin()`, with `private.is_admin()` hardened as `SECURITY DEFINER` with `set search_path = ''`.
+
+Because PostgREST exposes the `public` schema, Stage 4 introduces a minimal, authenticated-only proxy function defined as **`SECURITY INVOKER`**:
 
 ```sql
 create or replace function public.is_admin()
 returns boolean
 language sql
-security definer
+security invoker
 set search_path = ''
 stable
 as $$
@@ -247,33 +260,36 @@ as $$
 $$;
 
 revoke all on function public.is_admin() from public, anon;
-grant execute on function public.is_admin() to authenticated, service_role;
+grant execute on function public.is_admin() to authenticated;
 
 comment on function public.is_admin() is
-  'Returns true if the authenticated caller is present in private.admin_users. Denied to anon.';
+  'Exposes private.is_admin() boolean check to authenticated callers without exposing private schema.';
 ```
 
 ### Security Properties:
-1. **Zero Arguments:** Prevents any caller from probing another user's authorization status.
-2. **Context-Derived:** Relies exclusively on `auth.uid()`.
-3. **Zero Data Leakage:** Returns only a scalar boolean; never exposes email addresses or UUID rows from `private.admin_users`.
-4. **Anon Denial:** Direct calls from unauthenticated visitors are rejected with PostgreSQL error `42501 (permission denied)`.
+1. **Security Invoker:** Runs with caller permissions, cleanly delegating to the underlying `private.is_admin()` which enforces `SECURITY DEFINER`.
+2. **Zero Arguments:** Takes 0 arguments; strictly derives caller identity from `auth.uid()`.
+3. **Zero Probing:** Callers cannot supply arbitrary user IDs to probe another user's authorization status.
+4. **Zero Data Exposure:** Returns a scalar boolean; never exposes UUIDs, emails, or table rows from `private.admin_users`.
+5. **Anon Denial:** Direct execution by anonymous callers is rejected with PostgreSQL error `42501 (permission denied)`.
 
 ---
 
-## 8. Login Route Choice
+## 8. Login Route & Service-Level Signup Disablement
 
 **Route:** `/admin/login`
 
-### Rationale:
-- This is a single-author publication with no reader accounts.
-- Consistently places all administrative workflows under the `/admin` prefix.
-- Prevents confusing public readers who have no concept of user accounts on the blog.
-- Matches `docs/03-INFORMATION-ARCHITECTURE.md` recommendation.
+### Architectural Requirements:
+1. **No Application Signup:** The application codebase contains zero signup forms, zero signup Server Actions, and zero calls to `supabase.auth.signUp()`.
+2. **Service-Level Signup Disablement:** Because the Supabase publishable key is public, arbitrary user creation must be disabled at the Supabase Auth service level.
+   - **Hosted Setting:** In the Supabase Dashboard under `Authentication > Providers > Email`, toggle **Enable Signup** to **OFF** (`Disable Email Signup`).
+   - **Local CLI Setting:** In `supabase/config.toml`, ensure `[auth.email] enable_signup = false`.
+   - This ensures that direct POST requests to `/auth/v1/signup` using the publishable key are rejected at the API gateway.
+   - Marie's account is created out-of-band by the project owner.
 
 ---
 
-## 9. Login Action
+## 9. Login Action & Generic Error Policy
 
 Located in `src/app/admin/login/actions.ts`:
 ```typescript
@@ -286,6 +302,8 @@ export interface LoginActionResult {
   error?: string;
 }
 
+const GENERIC_AUTH_ERROR = "Unable to sign in with those credentials.";
+
 export async function loginAction(
   formData: FormData,
 ): Promise<LoginActionResult | void> {
@@ -293,7 +311,7 @@ export async function loginAction(
   const password = formData.get("password")?.toString();
 
   if (!email || !password) {
-    return { error: "Please provide both email and password." };
+    return { error: GENERIC_AUTH_ERROR };
   }
 
   const supabase = await createClient();
@@ -305,23 +323,28 @@ export async function loginAction(
   });
 
   if (error || !data.user) {
-    return { error: "Invalid email or password." };
+    return { error: GENERIC_AUTH_ERROR };
   }
 
   // 2. Authorize allowlist membership
   const { data: isAdmin, error: rpcError } = await supabase.rpc("is_admin");
 
   if (rpcError || !isAdmin) {
+    // Valid password authentication, but account is not allowlisted
     await supabase.auth.signOut();
-    return {
-      error:
-        "Access denied: this account is not authorized for administrative access.",
-    };
+    return { error: GENERIC_AUTH_ERROR };
   }
 
   redirect("/admin");
 }
 ```
+
+### Generic Error Policy:
+- The system returns the exact same generic error message (`"Unable to sign in with those credentials."`) whether:
+  - The email does not exist;
+  - The password is incorrect;
+  - The user authenticated successfully but is not in `private.admin_users`.
+- Prevents user enumeration and conceals the existence or structure of the administrative allowlist.
 
 ---
 
@@ -345,21 +368,20 @@ export async function logoutAction(): Promise<void> {
 
 ## 11. Redirect Behavior
 
-- **Post-Login:** Automatically redirects allowlisted Marie to `/admin`.
-- **Post-Logout:** Terminates session and redirects to `/admin/login`.
-- **Open-Redirect Protection:** If dynamic return URLs are supported in future, redirect targets must be validated as relative paths starting with `/admin` and strictly forbidding `//` or external protocols (`http:`, `javascript:`).
-- **Authenticated Login Visit:** If Marie is already logged in and navigates to `/admin/login`, proxy automatically routes her to `/admin`.
+- **Post-Login:** Validated, allowlisted Marie is redirected to `/admin`.
+- **Post-Logout:** Session is invalidated and client is redirected to `/admin/login`.
+- **Open-Redirect Protection:** Redirect destinations are hardcoded or strictly validated as relative paths within `/admin`, prohibiting `//` and external URI schemes (`http:`, `javascript:`).
 
 ---
 
 ## 12. Authenticated-Non-Admin Behavior
 
-If an authenticated user exists in `auth.users` who is NOT in `private.admin_users`:
+If an authenticated user exists in `auth.users` who is NOT present in `private.admin_users`:
 1. `public.is_admin()` returns `false`.
 2. `requireAdmin()` and `loginAction` catch the authorization failure.
 3. The session is immediately revoked via `supabase.auth.signOut()`.
-4. The user is redirected to `/admin/login?error=unauthorized` or shown a generic access-denied error without leaking database schema details.
-5. Commenter email privacy under D023 remains 100% secure (`using (private.is_admin())` on `public.comments`).
+4. The user is redirected or shown the generic `"Unable to sign in with those credentials."` failure.
+5. Commenter email privacy under D023 remains 100% intact (`using (private.is_admin())` on `public.comments`).
 
 ---
 
@@ -367,30 +389,42 @@ If an authenticated user exists in `auth.users` who is NOT in `private.admin_use
 
 Marie Medere's account has not yet been provisioned in hosted `private.admin_users`.
 
+The authoritative schema for `private.admin_users` is:
+```sql
+create table private.admin_users (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  created_at timestamptz not null default pg_catalog.now()
+);
+```
+
 ### Safe Out-of-Band Provisioning Flow:
 1. **User Creation:** The project owner creates Marie's account via the official Supabase Dashboard (`Authentication > Users > Add User` or `Invite User`).
-2. **UUID Capture:** The generated `auth.users.id` UUID is copied.
-3. **Allowlist Insertion:** In the Supabase SQL Editor (or secure migration), the owner executes:
+2. **UUID Capture:** The owner captures the generated `auth.users.id` UUID.
+3. **Allowlist Insertion:** In the Supabase SQL Editor, the owner executes the one-time data insertion:
    ```sql
-   insert into private.admin_users (user_id, email, full_name)
-   values ('<marie-auth-uuid>', 'marie@example.com', 'Marie Medere');
+   insert into private.admin_users (user_id)
+   values ('<marie-auth-uuid>');
    ```
-4. **Zero Password Leakage:** No passwords, plaintext secrets, or temporary production credentials are ever written into Git, documentation, or application source code.
+4. **Data Provisioning Boundary:**
+   - This is DATA provisioning, not a schema migration.
+   - Marie's real UUID, email, and password must never be committed to Git or written into repository files.
+   - Production provisioning requires a separate explicit owner-controlled execution gate after Marie's Auth user exists.
 
 ---
 
 ## 14. Local Testing Strategy
 
-1. **Database Migration & pgTAP Tests:**
-   - Execute `npx supabase db reset` to apply the Stage-4 migration.
-   - Execute `npx supabase test db` including a new test file `supabase/tests/database/08_public_is_admin_rpc.test.sql`:
-     - Test 1: Anonymous user cannot execute `public.is_admin()` (throws 42501).
-     - Test 2: Authenticated non-admin user receives `false` from `public.is_admin()`.
-     - Test 3: Authenticated admin user receives `true` from `public.is_admin()`.
-2. **Next.js Route Protection Verification:**
-   - Test unauthenticated requests to `/admin` -> redirects to `/admin/login`.
-   - Test login with synthetic admin credentials -> redirects to `/admin`.
-   - Test logout -> redirects to `/admin/login`.
+1. **Database Migration & pgTAP Tests (`supabase/tests/database/08_public_is_admin_rpc.test.sql`):**
+   - Test 1: Anonymous caller cannot execute `public.is_admin()` (throws `42501 permission denied`).
+   - Test 2: Authenticated non-admin caller receives `false` from `public.is_admin()`.
+   - Test 3: Authenticated allowlisted admin caller receives `true` from `public.is_admin()`.
+   - Test 4: Function takes 0 parameters (cannot pass arbitrary user ID).
+   - Test 5: Direct `SELECT` on `private.admin_users` remains denied to `anon` and `authenticated`.
+2. **Route Protection & Flow Verification:**
+   - Unauthenticated access to `/admin` -> redirected to `/admin/login`.
+   - Authenticated non-admin access -> session terminated and denied.
+   - Allowlisted admin access -> renders admin workspace.
+   - Logout -> terminates session and redirects to `/admin/login`.
 3. **Quality Gates:**
    - `npm run typecheck`
    - `npm run lint`
@@ -403,15 +437,15 @@ Marie Medere's account has not yet been provisioned in hosted `private.admin_use
 
 1. Deploy the Stage-4 migration `add_public_is_admin_rpc` to hosted project `eoexnnhqzrkurbqgbtnx` via authorized MCP transport.
 2. Verify migration version metadata and absence of database lint/security warnings.
-3. Verify `private.admin_users` remains protected and empty until Marie is provisioned.
-4. Verify hosted public tables and storage buckets retain full RLS protection.
+3. Verify hosted public signup is disabled in Supabase Auth settings.
+4. Verify `private.admin_users` remains protected and empty until Marie is provisioned.
+5. Verify hosted public tables and storage buckets retain full RLS protection.
 
 ---
 
 ## 16. Required Migration
 
-A new version-controlled migration file will be created:
-`supabase/migrations/<timestamp>_add_public_is_admin_rpc.sql`
+`supabase/migrations/<timestamp>_add_public_is_admin_rpc.sql`:
 
 ```sql
 -- Migration: Add public.is_admin() authorization RPC for single-admin Next.js client
@@ -420,7 +454,7 @@ A new version-controlled migration file will be created:
 create or replace function public.is_admin()
 returns boolean
 language sql
-security definer
+security invoker
 set search_path = ''
 stable
 as $$
@@ -428,10 +462,10 @@ as $$
 $$;
 
 revoke all on function public.is_admin() from public, anon;
-grant execute on function public.is_admin() to authenticated, service_role;
+grant execute on function public.is_admin() to authenticated;
 
 comment on function public.is_admin() is
-  'Exposes private.is_admin() boolean check to authenticated clients without exposing private schema.';
+  'Exposes private.is_admin() boolean check to authenticated callers without exposing private schema.';
 ```
 
 ---
@@ -440,7 +474,7 @@ comment on function public.is_admin() is
 
 - **D001–D025 Continuity:** All previous architectural decisions remain active and unchanged.
 - **Strict RLS:** All 7 public tables and `private.admin_users` maintain row level security.
-- **Zero Service-Role Leakage:** Application code uses only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- **Zero Service-Role Leakage:** Application code uses only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 - **D023 Commenter Privacy:** Authenticated non-admins cannot query comment rows or view emails.
 - **Explicit Schema Boundary:** Private schema remains completely unexposed in PostgREST.
 
@@ -470,12 +504,12 @@ comment on function public.is_admin() is
 
 ## 19. Explicit Exclusions
 
-- **No Public Signup:** No registration UI, endpoints, or public sign-up flows.
+- **No Public Signup:** No registration UI, endpoints, or public sign-up flows; disabled at Auth service level.
 - **No Reader Accounts:** No reader login, reader profile, or bookmarking system.
 - **No Third-Party Auth:** No OAuth, social logins, SMS OTP, or magic links.
 - **No Multi-Author RBAC:** No complex permission tables or contributor roles.
 - **No Stage-5 Pages:** No public Homepage, About, Contact, or Portfolio implementation.
-- **No Tiptap Editor:** No rich-text editor or publishing workflows (Stage 6).
+- **No Tiptap Editor:** No rich-text editor or publishing workflows (Stage 7 — Writer Dashboard & Tiptap Editor).
 
 ---
 
@@ -483,10 +517,10 @@ comment on function public.is_admin() is
 
 To pass the Stage-4 quality gate, the implementation must produce verified evidence that:
 1. Anonymous requests to `/admin` and `/admin/*` are intercepted and redirected to `/admin/login`.
-2. Authenticated non-admin accounts are denied access, logged out, and redirected.
+2. Authenticated non-admin accounts are denied access, logged out, and redirected with a generic error.
 3. Authenticated allowlisted Marie can access the `/admin` overview dashboard.
 4. Logout terminates session cookies and prevents back-navigation access.
-5. All 8 database test suites (85+ pgTAP tests) pass with 100% success.
+5. All database test suites (including `08_public_is_admin_rpc.test.sql`) pass with 100% success.
 6. TypeScript, ESLint, Prettier, and Next.js production build pass cleanly with 0 errors.
 
 ---
@@ -499,10 +533,10 @@ To pass the Stage-4 quality gate, the implementation must produce verified evide
 ## PROPOSED — D026 — Stage-4 single-admin authentication & route protection architecture
 
 **Date:** 2026-08-25  
-**Decision:** Implement the V1 single-admin authentication architecture for Marie using `@supabase/supabase-js` and `@supabase/ssr` with cookie-based SSR. House the dedicated admin login at `/admin/login` utilizing Supabase email/password authentication (`signInWithPassword`). Refresh session tokens in Next.js 16 via `proxy.ts`. Enforce server-side route protection across all `/admin` routes using a dedicated `requireAdmin()` helper that verifies cryptographic session validity via `supabase.auth.getUser()` and evaluates admin allowlist membership via a new authenticated SQL function `public.is_admin()`. Public signup, reader authentication, OAuth, phone auth, client-stored roles in `user_metadata`, and browser exposure of service-role keys remain strictly prohibited.  
-**Reason:** The publication requires a calm, secure, single-admin workspace for Marie. Utilizing modern `@supabase/ssr` cookies and Next.js 16 proxy ensures seamless session synchronization without stale JWTs, while the two-step `requireAdmin()` gate backed by `private.admin_users` ensures authenticated non-admin accounts cannot access administrative capabilities or private data.  
-**Alternatives considered:** Using deprecated `@supabase/auth-helpers-nextjs`; storing admin roles in JWT user metadata; relying solely on cookie existence or client-side redirects; exposing `private.admin_users` directly to PostgREST; adding multi-role RBAC libraries.  
-**Impact:** Introduces `@supabase/supabase-js` and `@supabase/ssr`; creates Supabase client helpers in `src/lib/supabase/`; adds Next.js proxy in `src/proxy.ts`; adds `src/lib/auth/admin.ts`; creates `/admin/login` and `/admin` routes; adds a focused migration for `public.is_admin()` with pgTAP security tests.  
+**Decision:** Implement the V1 single-admin authentication architecture for Marie using `@supabase/supabase-js` and `@supabase/ssr` with cookie-based SSR. House the dedicated admin login at `/admin/login` utilizing Supabase email/password authentication (`signInWithPassword`). Use `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `NEXT_PUBLIC_SUPABASE_URL` as the application environment contract. Refresh session tokens in Next.js 16 via `proxy.ts` utilizing `supabase.auth.getClaims()`. Restrict Proxy responsibilities to token refresh and baseline anonymous redirection without equating authentication with administrative privilege or replacing server authorization. Enforce server-side route protection across all `/admin` routes using a dedicated `requireAdmin()` helper that cryptographically verifies identity via `getClaims()` and evaluates allowlist membership via a new authenticated SQL proxy function `public.is_admin()` defined as `SECURITY INVOKER` delegating to `private.is_admin()`. Apply a strict generic error policy ("Unable to sign in with those credentials.") for all authentication and allowlist failures. Disable arbitrary public signup at the Supabase Auth service level and provision Marie's single administrator account out-of-band via Supabase Dashboard directly into `private.admin_users (user_id)`. Public signup, reader authentication, OAuth, phone/magic-link auth, client-stored roles in `user_metadata`, and browser exposure of service-role keys remain strictly prohibited.  
+**Reason:** The publication requires a calm, secure, single-admin workspace for Marie. Utilizing modern `@supabase/ssr` cookies and Next.js 16 proxy with `getClaims()` ensures trustworthy session validation without stale or unverified JWTs. The two-step `requireAdmin()` gate backed by `private.admin_users` ensures authenticated non-admin accounts cannot access administrative capabilities or private data. Disabling public signups at the service level prevents unauthorized account creation via the public publishable key.  
+**Alternatives considered:** Using deprecated `@supabase/auth-helpers-nextjs`; relying on `getSession()` on the server; storing admin roles in JWT user metadata; relying solely on proxy redirects for admin security; exposing `private.admin_users` directly to PostgREST; defining `public.is_admin()` as `SECURITY DEFINER`; adding multi-role RBAC libraries.  
+**Impact:** Introduces `@supabase/supabase-js` and `@supabase/ssr`; creates Supabase client helpers in `src/lib/supabase/`; adds Next.js proxy in `src/proxy.ts`; adds `src/lib/auth/admin.ts`; creates `/admin/login` and `/admin` routes; adds a focused migration for `public.is_admin()` as `SECURITY INVOKER` with pgTAP security tests; enforces out-of-band provisioning of Marie's `user_id`.  
 **Approved by:** PROPOSED — Awaiting project owner architecture approval.  
 **Status:** PROPOSED — PENDING OWNER APPROVAL.
 ```
