@@ -28,8 +28,8 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-2 merge parents:**
   - first parent (prior main): `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
   - second parent (approved Stage-2 head): `e33875485ab5f37fe813081479e40fabf39bc4bb`
-- **Stage-3 implementation commit:** `ebc5618b7ae2fdfef9375ff6007ec18b8770d10b`
-- **Stage-3 correction commit:** `a2de6c05ef1a355cb9d5a711413a286dc01804d9`
+- **Stage-3 implementation commit:** `ebc5618b267ac90a78474d4b1cfdd30bb3b54bf2`
+- **Stage-3 correction commit:** `a2de6c0ed8638f4b080669f5c98eed2afa54ce65`
 - **Stage-3 deployment & reconciliation commit:** `652f483637e24778ae5437b8e561f5b41231def1`
 - **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
