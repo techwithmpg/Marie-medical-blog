@@ -4,14 +4,15 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / DESIGN APPROVED / DESIGN FREEZE
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / IMPLEMENTATION AUTHORIZED / PHASE 7A
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** FROZEN PENDING FINAL EXTERNAL REVIEW OF DESIGN HARDENING
-- **Gate status:** IN PROGRESS — DESIGN FREEZE
+- **Application coding authorized:** YES — STAGE 7 ONLY
+- **Gate status:** IN PROGRESS — PERSISTENCE FOUNDATION
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -228,7 +229,7 @@ This acceptance defines future implementation requirements only. It does **not**
 
 **Stage 7 — Writer Dashboard & Tiptap Editor is AUTHORIZED BY PROJECT OWNER (2026-08-25).**
 
-Application implementation for Stage 7 remains temporarily frozen pending external review and approval of the Stage-7 pre-implementation design (`docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`).
+The external design review PASSED and Stage-7 implementation is explicitly authorized under D028.
 
 Stage 7 owns:
 - `/admin/articles` (article list and draft filtering);
@@ -237,6 +238,8 @@ Stage 7 owns:
 - Tiptap rich-text editor integration (Client Component, StarterKit, JSON persistence);
 - structured article metadata form (title, category, excerpt, featured image, SEO title, SEO description);
 - structured article references management (title, source name, URL, citation details, deterministic sort order);
+- private `draft-assets` storage configuration, RLS policies, and upload lifecycle;
+- atomic persistence RPC `public.save_article_draft`;
 - explicit Save Draft contract with dirty state and error feedback.
 
 Stage 7 may read published and archived articles for listing purposes, but must NOT mutate published or archived content.
@@ -553,14 +556,15 @@ Stage 6 — Article Reading & Discovery:
 
 Stage 7 — Writer Dashboard & Tiptap Editor:
 
-- **Stage status:** ACTIVE / DESIGN APPROVED / DESIGN FREEZE
+- **Stage status:** ACTIVE / IMPLEMENTATION AUTHORIZED / PHASE 7A
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** FROZEN PENDING FINAL EXTERNAL REVIEW OF DESIGN HARDENING
-- **Gate status:** IN PROGRESS — DESIGN FREEZE
+- **Application coding authorized:** YES — STAGE 7 ONLY
+- **Gate status:** IN PROGRESS — PERSISTENCE FOUNDATION
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 

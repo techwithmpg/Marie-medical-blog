@@ -216,7 +216,7 @@ flowchart TD
   ```
   draft-<uuid>
   ```
-  *(e.g., `draft-8f3a1b2c-4d5e-4b6a-9a7c-1e2f3a4b5c6d` or `draft-8f3a1b2c4d5e`)*
+  *(e.g., `draft-8f3a1b2c-4d5e-4b6a-9a7c-1e2f3a4b5c6d`)*
 - **Rationale & Guardrails:**
   1. Guarantees 100% compliance with existing database check constraints (`chk_articles_slug_format`) and uniqueness without requiring database schema migrations or nullable columns.
   2. Prevents title-based slug collisions during drafting.
@@ -428,7 +428,7 @@ To ensure proper breadcrumb and navigation feedback:
 All Stage-7 UI components will strictly adhere to canonical Tailwind tokens defined in `src/app/globals.css`:
 
 - Backgrounds: `bg-paper` (`#FFFDF9`), `bg-parchment` (`#F6F1E8`), `bg-subtle-field` (`#E8E2D7`)
-- Text: `text-ink` (`#242321`), `text-ink-muted` (`#5E5953`), `text-oxide-link` (`#7B3F35`)
+- Text: `text-ink` (`#242321`), `text-ink-muted` (`#5E5953`), `text-oxide-link` (`#704037`)
 - Borders: `border-control-border` (`#918579`), `border-subtle-divider` (`#D2C9BC`), `border-oxide` (`#7B3F35`)
 - Badges & Accents: `bg-sage` (`#3F5E52`), `ring-focus-slate` (`#265D7A`)
 
