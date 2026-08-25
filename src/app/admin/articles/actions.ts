@@ -232,9 +232,10 @@ export async function saveDraftAction(
     const supabase = await createClient();
 
     const { data: savedData, error: rpcError } = await supabase.rpc(
-      "save_draft_article",
+      "save_article_draft",
       {
         p_article_id: articleId,
+        p_provisional_slug: provisionalSlug,
         p_title: trimmedTitle,
         p_excerpt: payload.excerpt?.trim() || null,
         p_content_json: payload.content_json,

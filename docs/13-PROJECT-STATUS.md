@@ -4,7 +4,9 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / LOCAL IMPLEMENTATION CORRECTION GATE PASS
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / FINAL PRE-HOSTED REGRESSION GATE PASS
+- **Draft persistence regression:** FIXED / VERIFIED
+- **Stage-7 draft RPC compatibility:** PASS
 - **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
@@ -12,7 +14,7 @@ This file is the authoritative repository record of the currently active develop
 - **Owner-approved architecture decision:** D030
 - **Active working branch:** `stage/08-publishing-workflow`
 - **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
-- **Gate status:** LOCAL IMPLEMENTATION CORRECTION GATE PASS (210/210 DATABASE TESTS, 27/27 NODE TESTS)
+- **Gate status:** FINAL PRE-HOSTED REGRESSION GATE PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS)
 - **Stage-8 pending migration:** `20260825212334_stage8_publishing_lifecycle.sql`
 - **Hosted migration state:** NOT APPLIED (Stage-8 migration absent on hosted project `eoexnnhqzrkurbqgbtnx`)
 - **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
@@ -736,6 +738,33 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npx supabase db reset`: PASS (clean reset from zero across all 4 migrations)
   - `npx supabase test db`: PASS (10 files, 210 tests, 0 failures; 86 tests in Stage-8 suite)
   - `node --test tests/*.test.mjs`: PASS (5 test files, 27 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
+
+## Stage-8 progress record — Final Pre-Hosted Draft-Save Regression Fix (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Final Pre-Hosted Draft Persistence Regression Fix
+- **Objective:** Correct the application-layer RPC invocation in `saveDraftAction` to restore the established Stage-7 database RPC `public.save_article_draft` with its exact parameter contract including `p_provisional_slug: provisionalSlug`.
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Application file modified:** `src/app/admin/articles/actions.ts`
+- **Regression test file updated:** `tests/stage8-phase8b-actions.test.mjs` (added source contract & RPC parameter regression check)
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Restored Stage-7 RPC Invocation:** `saveDraftAction` in `src/app/admin/articles/actions.ts` updated to call `save_article_draft` supplying all required parameters: `p_article_id`, `p_provisional_slug`, `p_title`, `p_excerpt`, `p_content_json`, `p_category_id`, `p_featured_image_path`, `p_featured_image_alt`, `p_seo_title`, `p_seo_description`, `p_references`.
+  - [x] **Zero Incorrect References:** Verified zero occurrences of `save_draft_article` across the entire codebase.
+  - [x] **Automated Action Contract Regression Test:** Added regression test in `tests/stage8-phase8b-actions.test.mjs` that continuously asserts zero occurrences of `save_draft_article` and validates the presence of `save_article_draft` with `p_provisional_slug: provisionalSlug`.
+  - [x] **Real Writer Workflow Verification:** Executed full end-to-end admin writer workflow: initial save creates draft record with `slug = draft-<full UUID>`, `status = 'draft'`, `published_at = null`; second save updates the existing row in place with 0 duplicate rows created; reload/persistence confirmed.
+- **Local Quality Gates (Final Pre-Hosted Gate):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all 4 migrations)
+  - `npx supabase test db`: PASS (10 files, 210 tests, 0 failures; 86 tests in Stage-8 suite)
+  - `node --test tests/*.test.mjs`: PASS (5 test files, 28 tests, 0 failures)
   - `npm run typecheck`: PASS (0 type errors)
   - `npm run lint`: PASS (0 warnings, 0 errors)
   - `npm run format:check`: PASS (Prettier verified across entire codebase)

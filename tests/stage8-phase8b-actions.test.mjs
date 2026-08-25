@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 // Test suite for Stage 8 Phase 8B application layer & storage orchestration
 // Validates:
@@ -12,6 +14,7 @@ import assert from "node:assert/strict";
 // 7. Permalink & ever-published deletion safety rules
 // 8. Error surfacing when DB fails AND compensation cleanup fails
 // 9. Warning surfacing when lifecycle transitions succeed BUT asset cleanup fails
+// 10. saveDraftAction RPC contract regression (save_article_draft with p_provisional_slug)
 
 test("PublishArticleAction validation: rejects invalid UUID, empty content, and provisional slug", async () => {
   const invalidIdPayload = {
@@ -296,4 +299,55 @@ test("Deletion safety invariant: permits deletion only when never published", ()
   assert.equal(canDelete(everPublishedDraft), false);
   assert.equal(canDelete(everPublishedArchived), false);
   assert.equal(canDelete(livePublished), false);
+});
+
+test("saveDraftAction RPC Contract Regression: enforces save_article_draft with p_provisional_slug", async () => {
+  const actionsPath = path.resolve("src/app/admin/articles/actions.ts");
+  const actionsSource = await fs.readFile(actionsPath, "utf8");
+
+  // 1. Zero occurrences of wrong name save_draft_article
+  assert.equal(
+    actionsSource.includes("save_draft_article"),
+    false,
+    "actions.ts must not contain save_draft_article",
+  );
+
+  // 2. Contains save_article_draft invocation
+  assert.equal(
+    actionsSource.includes('"save_article_draft"'),
+    true,
+    "actions.ts must call save_article_draft",
+  );
+
+  // 3. Verifies p_provisional_slug is supplied to save_article_draft
+  const saveDraftMatch = actionsSource.match(
+    /supabase\.rpc\(\s*"save_article_draft",\s*\{([\s\S]*?)\}\s*\)/,
+  );
+  assert.ok(saveDraftMatch, "save_article_draft invocation block must exist");
+  const rpcArgs = saveDraftMatch[1];
+  assert.match(
+    rpcArgs,
+    /p_provisional_slug:\s*provisionalSlug/,
+    "save_article_draft must supply p_provisional_slug: provisionalSlug",
+  );
+  assert.match(
+    rpcArgs,
+    /p_article_id:\s*articleId/,
+    "save_article_draft must supply p_article_id",
+  );
+  assert.match(
+    rpcArgs,
+    /p_title:\s*trimmedTitle/,
+    "save_article_draft must supply p_title",
+  );
+  assert.match(
+    rpcArgs,
+    /p_content_json:\s*payload\.content_json/,
+    "save_article_draft must supply p_content_json",
+  );
+  assert.match(
+    rpcArgs,
+    /p_references:\s*refResult\.data/,
+    "save_article_draft must supply p_references",
+  );
 });
