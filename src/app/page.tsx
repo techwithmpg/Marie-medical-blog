@@ -1,130 +1,223 @@
 import * as React from "react";
+import Link from "next/link";
 import { PublicShell } from "@/components/site/public-shell";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { FolioMarker } from "@/components/evidence/folio-marker";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { TopicImprint } from "@/components/evidence/topic-imprint";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
-import { ReferenceLedger } from "@/components/evidence/reference-ledger";
+import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
+import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
+import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
+import { cn } from "@/lib/utils";
 
-export default function Home() {
-  const sampleReferences = [
-    {
-      id: 1,
-      text: "Reference layout placeholder one demonstrating source presentation formatting.",
-      citation: "Layout Reference A",
-    },
-    {
-      id: 2,
-      text: "Reference layout placeholder two demonstrating citation and ledger structure.",
-      citation: "Layout Reference B",
-    },
-  ];
+export const metadata = {
+  title: "Marie Medere — Medical Writing Portfolio & Educational Blog",
+  description: "Medical Writing Portfolio & Educational Blog by Marie Medere.",
+};
+
+export default async function HomePage() {
+  const profile = await getPublicProfile();
+  const settings = await getPublicSiteSettings();
+
+  const siteTitle =
+    settings.site_title || profile.display_name || "Marie Medere";
+  const tagline =
+    settings.tagline ||
+    profile.professional_tagline ||
+    "Medical Writing Portfolio & Educational Blog";
+  const introText =
+    settings.homepage_intro ||
+    profile.short_bio ||
+    "A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication.";
 
   return (
     <PublicShell>
-      <div className="space-y-16 sm:space-y-20">
-        {/* Section 01: Typographic Masthead & Identity */}
+      <div className="space-y-16 sm:space-y-24">
+        {/* Section 01: Professional & Editorial Positioning */}
         <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <FolioMarker number={1} label="Design System Baseline" />
-            <TopicImprint variant="oxide">Stage 2 Foundation</TopicImprint>
+          <div className="flex flex-wrap items-center gap-3">
+            <FolioMarker number={1} label="Publication Masthead" />
+            <TopicImprint variant="oxide">Medical Writing</TopicImprint>
           </div>
 
-          <h1 className="max-w-3xl font-serif text-4xl leading-[1.12] font-medium tracking-tight text-[#242321] sm:text-5xl lg:text-6xl">
-            Marie Medere Medical Writing Portfolio &amp; Educational Blog
-          </h1>
+          <div className="max-w-4xl space-y-3">
+            <h1 className="font-serif text-4xl leading-[1.12] font-medium tracking-tight text-[#242321] sm:text-5xl lg:text-6xl">
+              {siteTitle}
+            </h1>
+            <p className="font-serif text-xl font-normal text-[#7B3F35] sm:text-2xl">
+              {tagline}
+            </p>
+          </div>
 
           <p className="max-w-2xl font-sans text-lg leading-relaxed text-[#5E5953] sm:text-xl">
-            Editorial design-system validation fixture establishing typography
-            scale, restrained surfaces, and signature Evidence Folio structural
-            primitives.
+            {introText}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Button variant="default" size="default">
-              Primary Action
-            </Button>
-            <Button variant="secondary" size="default">
-              Secondary Action
-            </Button>
-            <Button variant="outline" size="default">
-              Outline Action
-            </Button>
+            <Link
+              href="/portfolio"
+              className={cn(buttonVariants({ variant: "default", size: "lg" }))}
+            >
+              Explore Selected Writing
+            </Link>
+            <Link
+              href="/about"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+            >
+              About the Author
+            </Link>
+            <Link
+              href="/contact"
+              className={cn(
+                buttonVariants({ variant: "secondary", size: "lg" }),
+              )}
+            >
+              Contact
+            </Link>
           </div>
 
-          <SplitRule className="pt-4" />
+          <SplitRule className="pt-6" />
         </section>
 
-        {/* Section 02: Signature Components & Editorial Grid */}
+        {/* Section 02: Publication Scope & Evidence Rail */}
         <section className="space-y-8">
           <div className="flex items-center gap-3">
-            <FolioMarker number={2} label="Editorial Primitives" />
-            <TopicImprint variant="sage">Signature Language</TopicImprint>
+            <FolioMarker number={2} label="Editorial Foundations" />
+            <TopicImprint variant="sage">Purpose &amp; Scope</TopicImprint>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-            {/* Primary reading column */}
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
+            {/* Primary reading & structural column */}
             <div className="space-y-6 lg:col-span-8">
-              <h2 className="font-serif text-2xl font-medium text-[#242321] sm:text-3xl">
-                Typography and Content Hierarchy
+              <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl lg:text-4xl">
+                Evidence-Led Medical Communication
               </h2>
 
               <p className="text-base leading-relaxed text-[#242321] sm:text-lg">
-                Body copy is rendered in Source Sans 3 with generous line height
-                and controlled line measure to ensure optimal readability across
-                mobile, tablet, and desktop environments.
+                This platform serves as an independent publication and writing
+                portfolio. Its objective is to present medical communication,
+                educational writing, and healthcare topics with clarity and
+                referenced sources.
               </p>
 
-              <div className="space-y-4 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-6">
-                <div className="flex items-center justify-between">
-                  <span className="font-serif text-lg font-medium text-[#242321]">
-                    Sample Reading Card
-                  </span>
-                  <TopicImprint variant="muted">Specification</TopicImprint>
-                </div>
-                <p className="text-sm leading-relaxed text-[#5E5953]">
-                  Surfaces utilize paper tones with subtle borders and
-                  restrained corner radii, avoiding heavy floating shadows in
-                  favor of typographic structure and spacing.
-                </p>
-                <div className="pt-2">
-                  <Button variant="link" size="sm">
-                    Read documentation →
-                  </Button>
-                </div>
-              </div>
-
-              {/* Reference Ledger primitive */}
-              <ReferenceLedger items={sampleReferences} />
+              <p className="text-base leading-relaxed text-[#5E5953]">
+                Published materials emphasize clear organization, accessible
+                language, and responsible educational presentation.
+              </p>
             </div>
 
-            {/* Evidence Rail side column on desktop */}
+            {/* Desktop Evidence Rail */}
             <div className="space-y-6 lg:col-span-4">
               <EvidenceRail
-                marker="Ref 02"
-                label="Structural Cue"
-                className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/60 p-4"
+                marker="Ref 01"
+                label="Publication Approach"
+                className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
               >
-                <p className="text-xs leading-normal text-[#5E5953]">
-                  The Evidence Rail serves as a subtle structural reference cue
-                  on desktop without competing with the primary reading flow.
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <TopicImprint variant="default">Topic A</TopicImprint>
-                  <TopicImprint variant="sage">Topic B</TopicImprint>
+                <div className="space-y-3">
+                  <span className="font-serif text-base font-medium text-[#242321]">
+                    Clear, Referenced Communication
+                  </span>
+                  <p className="text-xs leading-relaxed text-[#5E5953]">
+                    This publication is designed to present medical writing with
+                    clear structure, readable language, and visible references
+                    where appropriate.
+                  </p>
                 </div>
               </EvidenceRail>
-
-              <div className="lg:hidden">
-                <EvidenceRail
-                  orientation="horizontal"
-                  marker="Ref 02"
-                  label="Collapsed Mobile Rail"
-                />
-              </div>
             </div>
           </div>
+        </section>
+
+        {/* Section 03: Selected Writing Overview (Editorial Layout, No 3-card grid) */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <FolioMarker number={3} label="Selected Writing" />
+            <TopicImprint variant="oxide">Portfolio</TopicImprint>
+          </div>
+
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="space-y-2">
+              <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
+                Selected Writing &amp; Publications
+              </h2>
+              <p className="max-w-xl text-base leading-relaxed text-[#5E5953]">
+                Curated medical writing entries and educational publications.
+              </p>
+            </div>
+            <Link
+              href="/portfolio"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+            >
+              View Portfolio Overview →
+            </Link>
+          </div>
+
+          <EmptyEditorialState
+            title="Selected Writing"
+            description="Published articles and selected medical writing entries will appear here as publications are released."
+            topicLabel="Publication Archive"
+            actionHref="/portfolio"
+            actionLabel="View Portfolio Overview"
+          />
+        </section>
+
+        {/* Section 04: About Marie Bridge */}
+        <section className="space-y-6 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-8 sm:p-12">
+          <div className="flex items-center gap-3">
+            <FolioMarker number={4} label="Author Profile" />
+            <TopicImprint variant="sage">About</TopicImprint>
+          </div>
+
+          <div className="max-w-3xl space-y-4">
+            <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
+              About Marie Medere
+            </h2>
+            <p className="text-base leading-relaxed text-[#5E5953] sm:text-lg">
+              {profile.short_bio ||
+                "Marie Medere authors medical writing and educational publications focused on clarity, scientific accuracy, and accessible communication."}
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/about"
+                className={cn(
+                  buttonVariants({ variant: "default", size: "default" }),
+                )}
+              >
+                Read Full Profile &amp; Approach
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 05: Contact CTA */}
+        <section className="space-y-6 text-center">
+          <div className="flex justify-center">
+            <FolioMarker number={5} label="Inquiries" />
+          </div>
+
+          <h2 className="font-serif text-3xl font-medium tracking-tight text-[#242321] sm:text-4xl">
+            Contact &amp; Inquiries
+          </h2>
+
+          <p className="mx-auto max-w-xl text-base leading-relaxed text-[#5E5953] sm:text-lg">
+            For professional inquiries regarding medical writing and educational
+            publications.
+          </p>
+
+          <div className="pt-2">
+            <Link
+              href="/contact"
+              className={cn(buttonVariants({ variant: "default", size: "lg" }))}
+            >
+              Contact
+            </Link>
+          </div>
+        </section>
+
+        {/* Section 06: Medical Disclaimer Banner */}
+        <section className="pt-4">
+          <MedicalDisclaimer />
         </section>
       </div>
     </PublicShell>

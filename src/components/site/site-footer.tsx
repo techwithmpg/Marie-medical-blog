@@ -8,10 +8,10 @@ interface FooterLink {
 
 const footerLinks: FooterLink[] = [
   { label: "Home", href: "/" },
-  { label: "Articles", href: "/blog" },
-  { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
+  { label: "Selected Writing", href: "/portfolio" },
   { label: "Contact", href: "/contact" },
+  { label: "Disclaimer", href: "/disclaimer" },
 ];
 
 export function SiteFooter() {
