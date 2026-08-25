@@ -4,15 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / IMPLEMENTATION — PHASE 8A
+- **Current stage:** Stage 8 — Publishing Workflow — ACTIVE / IMPLEMENTATION — PHASE 8B COMPLETE
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
 - **Owner-approved architecture decision:** D030
 - **Active working branch:** `stage/08-publishing-workflow`
-- **Application coding authorized:** YES — STAGE 8 ONLY / PHASE 8A ACTIVE
-- **Gate status:** PHASE 8A IMPLEMENTATION IN PROGRESS
+- **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A & 8B COMPLETED
+- **Gate status:** PHASE 8B LOCAL GATE PASS
 - **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Phase 8C (UI / Preview Workspace):** NOT AUTHORIZED
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
@@ -236,12 +237,11 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 8 — Publishing Workflow is AUTHORIZED FOR IMPLEMENTATION (2026-08-26).**
+**Stage 8 — Publishing Workflow: Phase 8A & Phase 8B COMPLETED / LOCAL GATE PASS (2026-08-26).**
 
-- The project owner approved D030 and explicitly authorized Stage-8 implementation.
-- Phase 8A (Database Publishing Lifecycle Foundation) is active on branch `stage/08-publishing-workflow`.
-- Application coding within Stage 8 is authorized for Phase 8A migration and database test development.
-- Phase 8B, Phase 8C, hosted deployment, and Stage 9 remain separately gated and **NOT AUTHORIZED**.
+- The project owner approved D030 and authorized Stage-8 implementation.
+- Phase 8A (Database Publishing Lifecycle Foundation) and Phase 8B (Server Actions & Storage Asset Promotion) are complete on branch `stage/08-publishing-workflow`.
+- Phase 8C (UI & Admin-Local Preview Workspace), hosted Supabase deployment, and Stage 9 remain separately gated and **NOT AUTHORIZED**.
 - Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
 
 ## Stage-1 start record
@@ -637,7 +637,42 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run build`: PASS (Next.js production build successful)
   - `git diff --check`: PASS (clean diff)
 - **Hosted Stage-8 deployment:** NOT AUTHORIZED
-- **Phase 8B / Phase 8C status:** NOT AUTHORIZED
+- **Phase 8B status:** COMPLETE / LOCAL GATE PASS
+- **Phase 8C status:** NOT AUTHORIZED
+
+## Stage-8 progress record — Phase 8B (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8B — Server Actions & Storage Asset Promotion
+- **Owner authorization:** Explicit continuation authorization for Phase 8B (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Implementation commit SHA:** `fd73417c83d876c0872a348ca6488b578d6caa43`
+- **Phase 8B files created/modified:**
+  - `src/lib/admin/publishing.ts` (canonical slug generator, NFKD accent stripping, truncation <= 80 chars, validation, provisional pattern check)
+  - `src/app/admin/articles/actions.ts` (lifecycle Server Actions: `publishArticleAction`, `updatePublishedArticleAction`, `unpublishArticleAction`, `archiveArticleAction`, `restoreArticleAction`, `deleteArticleAction`, `saveDraftAction`)
+  - `tests/publishing-slug.test.mjs` (unit tests for canonical slug utilities)
+  - `tests/stage8-phase8b-actions.test.mjs` (unit & integration tests for actions, storage promotion/demotion, failure compensation, cleanup)
+- **Phase 8B deliverables completed:**
+  - [x] Application-layer bridge implemented for all 6 lifecycle database RPCs with strict `await requireAdmin()` security gates;
+  - [x] Server-side storage asset promotion from `draft-assets` to `public-assets` via native `@supabase/storage-js` authenticated cross-bucket `.copy()` with unique destination paths;
+  - [x] Server-side storage asset demotion from `public-assets` to `draft-assets` on unpublish and archive transitions;
+  - [x] Compensating transaction rollback: automatically removes newly copied destination assets if subsequent database RPC encounters an error;
+  - [x] Post-success source asset cleanup: removes private draft source upon publication and removes superseded public asset upon published image replacement;
+  - [x] Deletion safety invariant enforced: hard deletion permitted strictly when `status IN ('draft', 'archived') AND published_at IS NULL`; ever-published deletion strictly rejected;
+  - [x] Surgical cache revalidation executed across all affected public routes (`/`, `/blog`, `/blog/[slug]`, `/topics/[slug]`, `/portfolio`) and admin workspaces (`/admin/articles`, `/admin/articles/[id]`);
+  - [x] Comprehensive test coverage added: 14/14 automated tests passing (slug generation, NFKD normalization, 80-char truncation, provisional slug rejection, promotion/demotion path scoping, failure rollback compensation, post-success cleanup, and permalink safety).
+- **Local Quality Gates (Phase 8B):**
+  - `npx supabase db reset`: PASS
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures)
+  - `node --test tests/*.test.mjs`: PASS (14 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified)
+  - `npm run build`: PASS (Next.js production build verified)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Phase 8C status:** NOT AUTHORIZED
 
 ## Stage transition rule
 
