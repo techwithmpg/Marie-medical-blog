@@ -4,13 +4,17 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 3 — Supabase Database & Security Foundation — COMPLETE (GATE PASS)
+- **Current stage:** Stage 3 — Supabase Database & Security Foundation — COMPLETE / MERGED
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-3 implementation status:** COMPLETE
 - **Stage-3 gate status:** PASS
-- **Stage-3 merge status:** READY FOR OWNER-APPROVED MERGE
-- **Application coding authorized:** YES — STAGE 3 SCOPE ONLY (STAGE 3 IMPLEMENTATION COMPLETE)
-- **Active working branch:** `stage/03-supabase-security`
+- **Stage-3 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-3 merge commit:** `12ac9f446969179355871de3ce99fcf2f1bce162`
+- **Stage-3 merge parents:**
+  - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
+  - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Active working branch:** `main`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
@@ -31,6 +35,8 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 implementation commit:** `ebc5618b267ac90a78474d4b1cfdd30bb3b54bf2`
 - **Stage-3 correction commit:** `a2de6c0ed8638f4b080669f5c98eed2afa54ce65`
 - **Stage-3 deployment & reconciliation commit:** `652f483637e24778ae5437b8e561f5b41231def1`
+- **Stage-3 gate closeout commit:** `026f1685e770344b65532b693f4374f208d902cf`
+- **Stage-3 reference correction commit:** `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
 - **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
@@ -131,7 +137,7 @@ Final Stage-2 post-merge gate record (on `21c74c6c4025e63f8ae396678f1dfc95b892f9
 
 ## Stage 3 outcome
 
-Stage 3 is complete and verified on `stage/03-supabase-security`. Gate status is PASS; merge status is READY FOR OWNER-APPROVED MERGE:
+Stage 3 is complete, verified, and merged into `main`:
 
 - [x] Schema migration foundation established in `supabase/migrations/20260825054917_initial_database_security_foundation.sql`;
 - [x] Single-admin authorization model implemented in dedicated `private` schema via `private.admin_users` and `private.is_admin()` (`security definer`, `search_path = ''`);
@@ -150,11 +156,17 @@ Stage 3 is complete and verified on `stage/03-supabase-security`. Gate status is
 - [x] Temporary MCP write server completely removed; original read-only protection verified (`read_only=true`);
 - [x] Hosted database state verified: 0 security errors, 0 seed rows, 0 admin allowlist rows (pending Stage 4);
 - [x] Complete local regression suite passed 100% (`supabase db reset`, `supabase test db`, `supabase db lint`, `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build`, `git diff --check`);
+- [x] Project owner explicitly approved the Stage-3 merge on 2026-08-25;
+- [x] Merge used `--no-ff` at merge commit `12ac9f446969179355871de3ce99fcf2f1bce162`;
+- [x] Merge commit verified with expected two parents:
+  - `e9480f7e0ae1a945203066aeedf04050112ac154` (prior `main`)
+  - `184e3be6530708bd4d02c30d2fb2f38ff2399e6a` (approved Stage-3 branch head)
+- [x] Merge tree verified identical to approved Stage-3 branch tree (`b6558f6aeb633929015cf08b330a6de50c40eb42`);
 - [x] No Marie sign-in UI, login forms, or dashboard routes implemented;
 - [x] No Tiptap editor, draft persistence, or publishing workflows implemented;
 - [x] Stage 4 remains NOT AUTHORIZED.
 
-Final Stage-3 gate record (on `stage/03-supabase-security` @ `652f483637e24778ae5437b8e561f5b41231def1`):
+Final Stage-3 post-merge gate record (on `12ac9f446969179355871de3ce99fcf2f1bce162`):
 - `supabase db reset`: PASS
 - `supabase test db` (pgTAP): PASS (7 files, 85 tests, 0 failures)
 - `supabase db lint --level warning --local`: PASS (0 errors, 0 warnings)
@@ -180,44 +192,13 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 3 — Supabase Database & Security Foundation is AUTHORIZED and ACTIVE.**
+**Stage 3 — Supabase Database & Security Foundation is COMPLETE and MERGED into main.**
 
-Owner authorization was given on **2026-08-25** in ChatGPT after Stage 2 was fully merged, synchronized, and verified on `main`.
+Stage 3 implementation, automated pgTAP verification, database linting, project regression gates, hosted deployment, version reconciliation, and owner-approved merge are fully finished.
 
-Stage 3 may implement only:
+No new development stage is currently active.
 
-- Supabase project-local development foundation;
-- schema migrations;
-- database constraints and indexes;
-- Auth database foundation and Supabase integration foundation only;
-- Row Level Security policies;
-- Postgres grants;
-- Storage buckets and Storage policies only if Stage-3 design proves they are required;
-- synthetic seed/development fixtures;
-- database/security verification tests;
-- generated database types if appropriate to the approved Stage-3 implementation.
-
-Stage 3 must NOT implement:
-
-- Marie sign-in UI;
-- login forms;
-- logout UI;
-- session refresh UI;
-- protected admin routing;
-- authenticated dashboard route implementation;
-- Stage-4 unauthorized/access-denied UX;
-- Tiptap rich-text editor;
-- article editor implementation;
-- publishing workflows;
-- public article page implementation;
-- comments UI;
-- contact UI;
-- inbox UI;
-- later-stage product features;
-- reader accounts;
-- multi-author roles or permission systems.
-
-Stage 4 remains NOT AUTHORIZED.
+Stage 4 (Authentication & Admin Access) and all subsequent development stages remain strictly **NOT AUTHORIZED** until explicitly approved by the project owner.
 
 ## Stage-1 start record
 
