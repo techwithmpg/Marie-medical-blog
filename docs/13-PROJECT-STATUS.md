@@ -4,8 +4,8 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / LOCAL GATE PASS / HOSTED VERIFICATION AUTHORIZED
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED VERIFICATION AUTHORIZED 2026-08-26)
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / LOCAL + HOSTED GATE PASS / READY FOR OWNER MERGE APPROVAL
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26)
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
@@ -17,9 +17,9 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028, D029
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
-- **Gate status:** IN PROGRESS — HOSTED VERIFICATION
-- **Hosted Stage-7 deployment:** AUTHORIZED / TWO PREVIOUS TRANSPORT CALLS REJECTED WITH ZERO MUTATION / WRITE TRANSPORT VERIFIED / ONE FINAL OWNER-AUTHORIZED MIGRATION INVOCATION PENDING
+- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -576,9 +576,9 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028, D029
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
-- **Gate status:** IN PROGRESS — HOSTED VERIFICATION
-- **Hosted Stage-7 deployment:** AUTHORIZED / TWO PREVIOUS TRANSPORT CALLS REJECTED WITH ZERO MUTATION / WRITE TRANSPORT VERIFIED / ONE FINAL OWNER-AUTHORIZED MIGRATION INVOCATION PENDING
+- **Application coding authorized:** NO FURTHER STAGE-7 IMPLEMENTATION — AWAITING OWNER MERGE APPROVAL
+- **Gate status:** PASS — LOCAL AND HOSTED VERIFIED
+- **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 - **Phase 7A deliverables completed:**
@@ -605,6 +605,20 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
   - [x] Automated pgTAP regression added in `09_stage7_draft_authoring.test.sql` verifying atomic rollback when non-canonical camelCase `sourceName` is passed (suite updated to 9 files, 124 tests, 0 failures, 100% PASS);
   - [x] Quality gates: local db reset, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
   - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow and 0 unresolved Next.js diagnostics.
+- **Hosted Deployment & Verification completed (2026-08-26):**
+  - [x] Owner authorization D029 and replacement addenda recorded;
+  - [x] First two read-only MCP attempts rejected with verified ZERO hosted mutation;
+  - [x] Dedicated authenticated write transport `supabase_stage7_write` verified;
+  - [x] Final owner-authorized migration invocation executed: single reviewed migration deployed to hosted project `eoexnnhqzrkurbqgbtnx`;
+  - [x] Hosted migration version captured: `20260825200129` (`stage7_draft_authoring_foundation`);
+  - [x] Migration filename reconciled locally to `supabase/migrations/20260825200129_stage7_draft_authoring_foundation.sql` under D025/D027/D029 with byte-for-byte SHA-256 preservation (`7c81d861a5288d17b4ea2748c9b3ab1e95bfcf768a3d32ed8540d7252ecb5343`);
+  - [x] Storage bucket `draft-assets` verified: private (`public = false`), 5MB limit, image MIME types only, administrator-only RLS policies, zero public access;
+  - [x] Persistence RPC `public.save_article_draft` verified: `SECURITY INVOKER`, locked safe search path, public/anon execution revoked, strict parameter validation;
+  - [x] Anonymous security checks verified: anonymous RPC denial, anonymous storage denial, zero public leakage;
+  - [x] Synthetic draft verification completed: zero rows before save, initial save created draft record with provisional slug `draft-<UUID>`, second save updated in place without duplicate row creation, private featured image uploaded and verified in `draft-assets` only;
+  - [x] Public leakage test verified: draft content completely inaccessible across `/blog`, `/blog/[slug]`, `/topics/[slug]`, search, and anonymous client queries;
+  - [x] Local quality gates re-verified after reconciliation: `npx supabase db reset`, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
+  - [x] Stage-7 handoff documentation completed in `docs/30-STAGE-7-HANDOFF.md`.
 
 ## Stage transition rule
 

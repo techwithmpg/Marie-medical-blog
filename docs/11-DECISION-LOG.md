@@ -229,7 +229,7 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 ## ACTIVE — D029 — Stage-7 controlled hosted migration deployment and verification
 **Date:** 2026-08-26
 **Decision:** The project owner explicitly authorized Stage-7 hosted migration deployment and verification for target Supabase project `eoexnnhqzrkurbqgbtnx` on 2026-08-26:
-1. ONLY the single reviewed and local-gate-passed Stage-7 migration (`supabase/migrations/20260825160000_stage7_draft_authoring_foundation.sql`) may be deployed.
+1. ONLY the single reviewed and local-gate-passed Stage-7 migration (`supabase/migrations/20260825200129_stage7_draft_authoring_foundation.sql`) may be deployed.
 2. Deployment transport follows the established pattern (D024/D027): prefer standard CLI migration push if available; if direct PostgreSQL/session pooler transport is blocked by development network policies, a temporary project-scoped Supabase MCP write connection may be used to apply the exact reviewed SQL once.
 3. If MCP is used and generates a different hosted migration version, reconcile the local migration filename to match the hosted version history without modifying SQL content, update genuine governance references, and re-verify all local gates under D025/D027.
 4. No production seed deployment (`supabase/seed.sql` remains strictly local).
