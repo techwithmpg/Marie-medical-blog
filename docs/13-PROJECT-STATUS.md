@@ -213,35 +213,37 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 4 — Authentication & Admin Access is AUTHORIZED and ACTIVE.**
+**Stage 6 — Article Reading & Discovery is AUTHORIZED and ACTIVE, with
+implementation currently frozen pending external review.**
 
-Owner authorization was given on **2026-08-25** in ChatGPT after Stage 3 was fully merged, synchronized, and verified on `main`.
+Owner authorization was given on **2026-08-25** after Stage 5 was fully
+completed, merged, synchronized, and verified on `main`.
 
-Stage 4 may implement only:
+Stage 6 owns:
 
-- Marie sign-in UI at `/admin/login`;
-- Next.js cookie-based Supabase SSR client architecture;
-- Next.js session refresh proxy/middleware;
-- server-side single-admin authorization helper `requireAdmin()`;
-- authenticated boolean RPC `public.is_admin()` for allowlist evaluation against `private.admin_users`;
-- protected admin routing for `/admin` and sub-routes;
-- logout / session termination handling;
-- unauthorized redirection and non-admin access denial;
-- automated and integration tests for authentication and route protection boundaries;
-- documentation and decision records for Stage-4 architecture.
+- `/blog`;
+- `/blog/[slug]`;
+- `/topics/[slug]`;
+- published article integration into `/`;
+- published portfolio-featured article integration into `/portfolio`;
+- public Articles navigation;
+- public article discovery/search/pagination;
+- Evidence Folio article reading;
+- public article references and related-writing presentation;
+- safe read-only `content_json` rendering.
 
-Stage 4 must NOT implement:
+Stage 6 implementation is now frozen pending external review.
 
-- public signup forms or workflows;
-- reader accounts or authentication;
-- multi-author roles, permissions, or enterprise RBAC;
-- Stage 5 public static/identity pages (Homepage, About, Contact page UI, Disclaimer page UI, Portfolio page UI);
-- Tiptap rich-text editor or article creation/editing UI;
-- publishing, preview, or draft persistence workflows;
-- comments or contact inbox management UI;
-- later-stage product features.
+Stage 6 must NOT implement:
 
-Stage 5 remains NOT AUTHORIZED.
+- writer dashboard/editor;
+- article create/edit/admin workflows;
+- Tiptap editor integration;
+- comments;
+- contact persistence/inbox;
+- Stage-7 or later functionality.
+
+**Stage 7 — Writer Dashboard & Tiptap Editor remains NOT AUTHORIZED.**
 
 ## Stage-1 start record
 
