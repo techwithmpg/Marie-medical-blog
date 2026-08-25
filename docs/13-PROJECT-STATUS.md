@@ -4,8 +4,15 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
+- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / MERGED / GATE PASS
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Stage-6 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
+- **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
+- **Stage-6 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-6 merge parents:**
+  - first parent (prior main): `7d4af1583473d4851f9bf165e21b0b21e0c53570`
+  - second parent (approved Stage-6 head): `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-5 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
 - **Stage-5 merge commit:** `cd1007538a16868deca1f404ae62f54142df308c`
@@ -22,9 +29,9 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
-- **Active working branch:** `stage/06-article-discovery`
+- **Active working branch:** `main`
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **Stage-6 first review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
@@ -508,16 +515,19 @@ Stage 5 is complete, verified, and merged into `main`:
 
 Stage 6 — Article Reading & Discovery:
 
-- **Stage status:** COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
+- **Stage status:** COMPLETE / MERGED / GATE PASS
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
-- **Active working branch:** `stage/06-article-discovery`
+- **Active working branch:** `main` (merged from `stage/06-article-discovery`)
 - **Initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
 - **First review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
 - **Final review micro-correction commit:** `e6fdad81f738b3eedacd0b1eb098584bd5fe614f`
 - **Governance alignment commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
 - **Visual-control correction commit:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
 - **Gate-closeout commit:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
+- **Handoff metadata correction commit:** `b31233eb644182cb84cad64642c824846cac9761`
+- **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
+- **Stage-6 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
 - **Implementation scope & review corrections:**
   - [x] `/blog` (Published article discovery, lead story hero, topic filtering, sanitized search, strict positive-integer pagination, lead deduplication across all pages);
   - [x] `/blog/[slug]` (Evidence Folio long-form article view, Reference Ledger with data preservation, author context, medical disclaimer, category-based related writing);
@@ -537,9 +547,10 @@ Stage 6 — Article Reading & Discovery:
   - [x] Security matrix SEC-01 through SEC-10 verified;
   - [x] Quality gates: local db reset, pgTAP (8 files, 95 tests), typecheck, lint, format check, and production build PASS;
   - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow;
-  - [x] External visual, code, and security reviews: PASS.
-- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
-- **Gate status:** PASS — AWAITING OWNER MERGE APPROVAL (DO NOT MERGE)
+  - [x] External visual, code, and security reviews: PASS;
+  - [x] Stage 6 merged into `main` at merge commit `e28665e550dbc9150829351d9e06cafa26c5a577`.
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Gate status:** PASS
 - **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 
 ## Stage transition rule
