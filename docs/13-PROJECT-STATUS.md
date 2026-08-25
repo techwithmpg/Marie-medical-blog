@@ -14,6 +14,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
 - **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
+- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** AUTHORIZED — STAGE 7 CORRECTIONS ONLY
@@ -572,6 +573,7 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
 - **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
 - **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
+- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** AUTHORIZED — STAGE 7 CORRECTIONS ONLY
@@ -584,7 +586,7 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
   - [x] Private `draft-assets` bucket created (`public = false`, 5MB limit, image MIME types only);
   - [x] Storage RLS policies for `draft-assets` (admin only, anonymous/non-admin denied);
   - [x] Atomic persistence RPC `public.save_article_draft` created as `SECURITY INVOKER` with search_path safety;
-  - [x] Quality gates: local db reset, pgTAP (9 files, 123 tests, 0 failures), typecheck, lint, format check, and production build PASS.
+  - [x] Quality gates: local db reset, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS.
 - **Phase 7B deliverables & review corrections completed:**
   - [x] Route `/admin/articles` implemented with status filters (All, Drafts, Published, Archived), responsive table/card layout, empty states, and "New Article" action link;
   - [x] Route `/admin/articles/new` implemented with clean unsaved initial state (0 database row created on page load);
@@ -598,7 +600,10 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
   - [x] Interactive Reference Ledger implemented with title, source, URL, citation details, Add, Remove, Move Up, Move Down, and persistent sequential `sort_order`;
   - [x] Revision-aware dirty tracking (`changeRevisionRef`) implemented so in-flight edits retain dirty "Unsaved changes" state until saved;
   - [x] Server-Action session invalidation redirect handled cleanly without unhandled rejection or swallowing;
-  - [x] Quality gates: local db reset, pgTAP (9 files, 123 tests, 0 failures), typecheck, lint, format check, and production build PASS;
+  - [x] First-save persistent-ID reuse hardened in `ArticleEditor` (`persistedArticleId` ref/state initialized from `article?.id`, captured immediately upon save response before/during `router.replace()`, preventing duplicate draft row creation on rapid saves/Ctrl+S during route transition);
+  - [x] Canonical snake_case RPC reference payload enforced in `public.save_article_draft` migration (strictly accepting `title`, `source_name`, `url`, `citation_details`, removing legacy camelCase fallbacks);
+  - [x] Automated pgTAP regression added in `09_stage7_draft_authoring.test.sql` verifying atomic rollback when non-canonical camelCase `sourceName` is passed (suite updated to 9 files, 124 tests, 0 failures, 100% PASS);
+  - [x] Quality gates: local db reset, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
   - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow and 0 unresolved Next.js diagnostics.
 
 ## Stage transition rule
