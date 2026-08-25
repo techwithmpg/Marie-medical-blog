@@ -89,8 +89,48 @@ Executed full transactional synthetic verification against hosted Supabase:
 
 ---
 
-## 6. Stage Completion Status
+## 6. Environment Changes
 
-* **Stage 8 Implementation:** COMPLETE & VERIFIED (Local + Hosted).
-* **Stage 8 Merge:** **NOT AUTHORIZED** (awaiting external final review and project-owner merge approval).
-* **Stage 9:** **NOT AUTHORIZED**.
+* **Application Environment Variables:** No environment variables added or removed.
+* **Authentication Configuration:** No production Auth configuration changes.
+* **Application Runtime Transport:** No persistent MCP or write connection becomes part of the application runtime.
+* **Inspection Connection:** Normal Supabase inspection connection remains configured in read-only mode (`read_only=true`).
+* **Credential Boundaries:** No service-role or secret credentials added to application or browser-facing code.
+
+---
+
+## 7. Known Limitations
+
+1. **Synthetic Hosted Storage Mutation:** Hosted synthetic lifecycle verification intentionally used no featured image and therefore did not mutate hosted Storage objects.
+2. **Local Storage Lifecycle Proof:** Real cross-bucket Storage promotion, demotion, replacement, and compensation behavior was verified against local Supabase through `tests/stage8-storage-lifecycle-e2e.test.mjs`.
+3. **Targeted Invariant Testing:** Hosted verification validated database lifecycle and security invariants while avoiding unnecessary production Storage mutations.
+4. **Single-Current-Article Model:** This is not a revision/version-history system; D030 intentionally preserves the frozen V1 single-current-article model.
+5. **Stage Scope Boundaries:** Stage 8 does not implement comments, contact inbox, settings, or any Stage-9 features.
+
+---
+
+## 8. Scope Not Implemented
+
+Stage 8 intentionally does **NOT** add:
+* Reader accounts or reader authentication;
+* Multi-author or editorial role hierarchies;
+* Article revision/version-control subsystem;
+* Public draft-preview route or unauthenticated preview tokens;
+* Slug redirect or URL history subsystem;
+* AI article generation;
+* Stage-9 comments, contact inbox, or settings implementation.
+
+---
+
+## 9. Next Stage Readiness
+
+* **Stage 8 Status:** **READY FOR OWNER MERGE APPROVAL**
+* **Stage 8 Merge:** **NOT YET AUTHORIZED**
+* **Stage 9 Status:** **NOT AUTHORIZED**
+
+Stage 9 may begin only after:
+1. Stage 8 receives explicit project-owner merge approval;
+2. Stage 8 is merged to `main`;
+3. `main` is verified and synchronized;
+4. Stage-8 branch cleanup is complete;
+5. Stage 9 receives separate explicit project-owner authorization.
