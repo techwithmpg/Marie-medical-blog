@@ -339,8 +339,22 @@ ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
    - `public.save_article_draft` remained intact and unaffected.
    - Storage buckets (`draft-assets` private, `public-assets` public) and Auth configuration remained unchanged.
 4. The first authorized write attempt is **CONSUMED**.
-5. **NO replacement migration attempt is currently authorized.**
-6. The next gate is write-channel runtime recovery, dual-namespace configuration isolation (`supabase` read-only vs `supabase_stage8_write` write-capable), runtime reload, and read-only inspection proof only.
+5. The next gate was write-channel runtime recovery, dual-namespace configuration isolation (`supabase` read-only vs `supabase_stage8_write` write-capable), runtime reload, and read-only inspection proof.
+
+### D031 Execution Addendum 2 — Owner Authorization of Replacement Migration Attempt
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The first D031 `apply_migration` attempt failed safely because the active runtime was in read-only mode (`"Cannot apply migration in read-only mode."`).
+2. Zero hosted database mutations were verified.
+3. Dedicated write namespace recovery subsequently passed: `supabase_stage8_write` is now active, authenticated through normal MCP flow, connected to project `eoexnnhqzrkurbqgbtnx`, verified to list the expected three hosted migrations, and properly exposing `apply_migration`.
+4. Migration SHA-256 was verified as:
+   `0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`
+5. The project owner explicitly stated:
+   *"I authorize exactly one replacement Stage-8 `apply_migration` attempt through the verified `supabase_stage8_write` connection for project `eoexnnhqzrkurbqgbtnx`, using only `20260825212334_stage8_publishing_lifecycle.sql`."*
+6. If this replacement attempt fails, **NO automatic retry is authorized**.
+7. Stage-8 merge remains unauthorized; Stage 9 remains unauthorized.
 
 ---
 

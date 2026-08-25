@@ -4,28 +4,25 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYMENT BLOCKED / WRITE CHANNEL RECOVERY
+- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYMENT / REPLACEMENT ATTEMPT AUTHORIZED
 - **Draft persistence regression:** FIXED / VERIFIED
 - **Stage-7 draft RPC compatibility:** PASS
 - **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
 - **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
-- **Hosted deployment authorization:** D031 ACTIVE
-- **First Stage-8 hosted write attempt:** FAILED SAFELY / ZERO MUTATION / ATTEMPT CONSUMED
-- **Hosted Stage-8 migration:** NOT APPLIED
-- **Hosted blocker:** WRITE MCP RUNTIME REMAINED READ-ONLY
-- **Replacement apply_migration attempt:** NOT AUTHORIZED
+- **Hosted deployment authorization:** D031 ACTIVE (REPLACEMENT ATTEMPT AUTHORIZED BY PROJECT OWNER — 2026-08-26)
+- **Write transport:** `supabase_stage8_write` — VERIFIED
+- **Replacement apply_migration:** AUTHORIZED — EXACTLY ONE ATTEMPT
+- **Hosted Stage-8 migration:** NOT YET APPLIED
+- **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
+- **Stage-8 pending migration:** `20260825212334_stage8_publishing_lifecycle.sql`
+- **Authorized migration:** `20260825212334_stage8_publishing_lifecycle.sql`
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
 - **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
-- **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addendum)
+- **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addenda)
 - **Active working branch:** `stage/08-publishing-workflow`
 - **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
 - **Gate status:** FINAL PRE-HOSTED REGRESSION GATE PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS)
-- **Stage-8 pending migration:** `20260825212334_stage8_publishing_lifecycle.sql`
-- **Authorized migration:** `20260825212334_stage8_publishing_lifecycle.sql`
-- **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
 - **Hosted migration state:** NOT APPLIED (Stage-8 migration absent on hosted project `eoexnnhqzrkurbqgbtnx`)
-- **Hosted Stage-8 deployment:** BLOCKED / AWAITING WRITE CHANNEL RECOVERY & REPLACEMENT AUTHORIZATION
-- **Hosted gate:** WRITE CHANNEL RECOVERY GATE
 - **Stage 8 merge:** NOT AUTHORIZED
 - **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
 - **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
