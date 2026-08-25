@@ -4,7 +4,7 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 4 — Authentication & Admin Access — COMPLETE / MERGED / GATE PASS
+- **Current stage:** Stage 5 — Public Static / Identity Pages — ACTIVE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-4 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-4 approved branch head:** `daf172e574eebe05b164f988455cd7d69d418d4f`
@@ -15,9 +15,10 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS
-- **Active working branch:** `main`
+- **Application coding authorized:** YES — STAGE 5 SCOPE ONLY
+- **Gate status:** IN PROGRESS
+- **Active working branch:** `stage/05-public-identity`
+- **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
@@ -459,6 +460,34 @@ STAGE 4 — AUTHENTICATION & ADMIN ACCESS
   - Anonymous `GET /admin`: 307 redirect to `/admin/login` (PASS)
   - Anonymous `GET /admin/login`: 200 with Evidence Folio login UI (PASS)
   - Authenticated non-admin caller: `public.is_admin()` returns `false` (PASS)
+
+## Stage-5 authorization record
+
+Stage 5 — Public Static / Identity Pages:
+
+- **Stage status:** ACTIVE / IMPLEMENTATION IN PROGRESS
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
+- **Active working branch:** `stage/05-public-identity`
+- **Authorized scope:**
+  - Homepage structure (`/`)
+  - About (`/about`)
+  - Portfolio / Selected Writing shell (`/portfolio`)
+  - Contact shell (`/contact`)
+  - Medical Disclaimer (`/disclaimer`)
+  - Public shell/navigation refinements needed by those routes
+  - Basic static page metadata
+  - Responsive desktop / tablet / mobile behavior matching the accepted Evidence Folio contract
+  - Accessibility and visual-fidelity verification
+- **Prohibited scope:**
+  - `/blog`, `/blog/[slug]`, `/topics/[slug]` (Stage 6)
+  - Article listing, reading, and discovery (Stage 6)
+  - Search (Stage 6)
+  - Comments (Stage 9)
+  - Contact submission / persistence (Stage 9)
+  - Writer / editor functionality (Stage 7 & 8)
+- **Gate status:** IN PROGRESS
+- **Next implementation stage:** Stage 6 — Article Reading & Discovery — NOT AUTHORIZED
 
 ## Stage transition rule
 
