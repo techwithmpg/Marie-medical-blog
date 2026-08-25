@@ -4,8 +4,8 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / LOCAL IMPLEMENTATION CORRECTED / EXTERNAL REVIEW PENDING
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / LOCAL GATE PASS / HOSTED VERIFICATION AUTHORIZED
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED VERIFICATION AUTHORIZED 2026-08-26)
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
@@ -15,11 +15,11 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
-- **Stage-7 owner-approved architecture decision:** D028
+- **Stage-7 owner-approved architecture decision:** D028, D029
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** AUTHORIZED — STAGE 7 CORRECTIONS ONLY
-- **Gate status:** IN PROGRESS — EXTERNAL REVIEW PENDING
-- **Hosted Stage-7 deployment:** NOT AUTHORIZED / NOT DEPLOYED
+- **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
+- **Gate status:** IN PROGRESS — HOSTED VERIFICATION
+- **Hosted Stage-7 deployment:** AUTHORIZED BY PROJECT OWNER — 2026-08-26 / PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -563,8 +563,8 @@ Stage 6 — Article Reading & Discovery:
 
 Stage 7 — Writer Dashboard & Tiptap Editor:
 
-- **Stage status:** ACTIVE / LOCAL IMPLEMENTATION CORRECTED / EXTERNAL REVIEW PENDING
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Stage status:** ACTIVE / LOCAL GATE PASS / HOSTED VERIFICATION AUTHORIZED
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED VERIFICATION AUTHORIZED 2026-08-26)
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
@@ -574,11 +574,11 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
 - **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
 - **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
 - **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
-- **Stage-7 owner-approved architecture decision:** D028
+- **Stage-7 owner-approved architecture decision:** D028, D029
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** AUTHORIZED — STAGE 7 CORRECTIONS ONLY
-- **Gate status:** IN PROGRESS — EXTERNAL REVIEW PENDING
-- **Hosted Stage-7 deployment:** NOT AUTHORIZED / NOT DEPLOYED
+- **Application coding authorized:** NO FURTHER LOCAL CODING — HOSTED VERIFICATION ONLY
+- **Gate status:** IN PROGRESS — HOSTED VERIFICATION
+- **Hosted Stage-7 deployment:** AUTHORIZED BY PROJECT OWNER — 2026-08-26 / PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 - **Phase 7A deliverables completed:**

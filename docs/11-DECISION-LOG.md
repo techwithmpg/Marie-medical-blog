@@ -226,6 +226,23 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 **Approved by:** project owner — explicit approval on 2026-08-25.
 **Status:** ACTIVE / FROZEN FOR STAGE 7.
 
+## ACTIVE — D029 — Stage-7 controlled hosted migration deployment and verification
+**Date:** 2026-08-26
+**Decision:** The project owner explicitly authorized Stage-7 hosted migration deployment and verification for target Supabase project `eoexnnhqzrkurbqgbtnx` on 2026-08-26:
+1. ONLY the single reviewed and local-gate-passed Stage-7 migration (`supabase/migrations/20260825160000_stage7_draft_authoring_foundation.sql`) may be deployed.
+2. Deployment transport follows the established pattern (D024/D027): prefer standard CLI migration push if available; if direct PostgreSQL/session pooler transport is blocked by development network policies, a temporary project-scoped Supabase MCP write connection may be used to apply the exact reviewed SQL once.
+3. If MCP is used and generates a different hosted migration version, reconcile the local migration filename to match the hosted version history without modifying SQL content, update genuine governance references, and re-verify all local gates under D025/D027.
+4. No production seed deployment (`supabase/seed.sql` remains strictly local).
+5. No hosted Auth configuration changes (signups remain disabled, email auth enabled).
+6. No Auth-user creation or password modification for Marie's production admin account.
+7. No arbitrary write SQL or manual schema mutation via Table/SQL editor.
+8. Private `draft-assets` bucket and `public.save_article_draft` SECURITY INVOKER RPC are the only new hosted Stage-7 database and storage objects.
+9. Verify end-to-end draft authoring workflow, zero-row initial route load, persistent article ID reuse, private featured image upload, signed preview, and strict public leak protection using exactly one clearly synthetic private verification draft.
+10. Migration-first governance remains authoritative; Stage 8 and branch merging remain NOT AUTHORIZED.
+**Reason:** Stage 7 passed all local quality gates, external code review, and targeted regression tests. Controlled deployment enables hosted validation of the private draft authoring foundation without risking schema drift, credential leakage, or public exposure.
+**Approved by:** project owner — explicit authorization on 2026-08-26.
+**Status:** ACTIVE / FROZEN FOR STAGE 7 HOSTED DEPLOYMENT.
+
 ---
 
 ## New decision template
