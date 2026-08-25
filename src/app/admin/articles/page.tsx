@@ -1,6 +1,14 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { Plus, FileText, Calendar, Clock, Tag } from "lucide-react";
+import {
+  Plus,
+  FileText,
+  Calendar,
+  Clock,
+  Tag,
+  ExternalLink,
+  Edit3,
+} from "lucide-react";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getAdminArticles, type ArticleStatus } from "@/lib/admin/articles";
 import { cn, formatAdminDate } from "@/lib/utils";
@@ -83,8 +91,8 @@ export default async function AdminArticlesPage({
             Articles Workspace
           </h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Manage drafts, review published research, and access the writing
-            workspace.
+            Manage drafts, publish medical research, and operate the Evidence
+            Folio publishing workflow.
           </p>
         </div>
 
@@ -169,13 +177,14 @@ export default async function AdminArticlesPage({
                     Published
                   </th>
                   <th scope="col" className="px-6 py-3.5 text-right">
-                    Action
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-subtle-divider/60">
                 {articles.map((article) => {
                   const isDraft = article.status === "draft";
+                  const isPublished = article.status === "published";
                   return (
                     <tr
                       key={article.id}
@@ -189,7 +198,9 @@ export default async function AdminArticlesPage({
                           {article.title}
                         </Link>
                         <p className="mt-0.5 max-w-xs truncate font-mono text-xs text-ink-muted/70">
-                          {article.slug}
+                          {isPublished
+                            ? `/blog/${article.slug}`
+                            : article.slug || "draft"}
                         </p>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -222,17 +233,38 @@ export default async function AdminArticlesPage({
                         )}
                       </td>
                       <td className="px-6 py-4 text-right text-xs whitespace-nowrap">
-                        <Link
-                          href={`/admin/articles/${article.id}`}
-                          className={cn(
-                            "inline-flex items-center rounded-md px-3 py-1.5 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
-                            isDraft
-                              ? "bg-oxide text-paper hover:bg-oxide-link"
-                              : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field hover:text-ink",
+                        <div className="flex items-center justify-end gap-2">
+                          {isPublished && (
+                            <Link
+                              href={`/blog/${article.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="View live published article"
+                              className="inline-flex items-center gap-1 rounded-md border border-subtle-divider bg-paper px-2.5 py-1.5 font-medium text-ink-muted transition-colors hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
+                            >
+                              <ExternalLink className="size-3 text-oxide" />
+                              <span>Live</span>
+                            </Link>
                           )}
-                        >
-                          {isDraft ? "Edit Draft" : "View"}
-                        </Link>
+                          <Link
+                            href={`/admin/articles/${article.id}`}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
+                              isDraft
+                                ? "bg-oxide text-paper hover:bg-oxide-link"
+                                : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field hover:text-ink",
+                            )}
+                          >
+                            <Edit3 className="size-3" />
+                            <span>
+                              {isDraft
+                                ? "Edit Draft"
+                                : isPublished
+                                  ? "Edit"
+                                  : "Manage"}
+                            </span>
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -245,6 +277,7 @@ export default async function AdminArticlesPage({
           <div className="divide-y divide-subtle-divider/60 md:hidden">
             {articles.map((article) => {
               const isDraft = article.status === "draft";
+              const isPublished = article.status === "published";
               return (
                 <div key={article.id} className="space-y-3 p-4">
                   <div className="flex items-start justify-between gap-2">
@@ -276,17 +309,33 @@ export default async function AdminArticlesPage({
                     )}
                   </div>
 
-                  <div className="pt-1">
+                  <div className="flex items-center gap-2 pt-1">
+                    {isPublished && (
+                      <Link
+                        href={`/blog/${article.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-3 py-2 text-xs font-semibold text-ink-muted hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
+                      >
+                        <ExternalLink className="size-3.5 text-oxide" />
+                        View Live
+                      </Link>
+                    )}
                     <Link
                       href={`/admin/articles/${article.id}`}
                       className={cn(
-                        "inline-flex min-h-[44px] w-full items-center justify-center rounded-md px-4 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
+                        "inline-flex min-h-[44px] items-center justify-center rounded-md px-4 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
+                        isPublished ? "flex-1" : "w-full",
                         isDraft
                           ? "bg-oxide text-paper hover:bg-oxide-link"
                           : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field hover:text-ink",
                       )}
                     >
-                      {isDraft ? "Edit Draft" : "View Details"}
+                      {isDraft
+                        ? "Edit Draft"
+                        : isPublished
+                          ? "Edit Article"
+                          : "Manage / Restore"}
                     </Link>
                   </div>
                 </div>

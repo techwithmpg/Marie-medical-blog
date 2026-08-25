@@ -7,14 +7,13 @@ import {
   getAdminArticleReferences,
 } from "@/lib/admin/articles";
 import { ArticleEditor } from "@/components/admin/editor/article-editor";
-import { ReadOnlyArticleView } from "@/components/admin/editor/read-only-article-view";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const metadata: Metadata = {
-  title: "Edit Article Draft | Marie Medere Workspace",
-  description: "Edit article draft in Evidence Folio workspace.",
+  title: "Edit Article | Marie Medere Workspace",
+  description: "Edit article in Evidence Folio publishing workspace.",
   robots: {
     index: false,
     follow: false,
@@ -51,21 +50,7 @@ export default async function AdminArticleDetailPage({
     notFound();
   }
 
-  // If the article is published or archived, render the read-only view in Stage 7
-  if (article.status !== "draft") {
-    const category =
-      categories.find((c) => c.id === article.category_id) || null;
-
-    return (
-      <ReadOnlyArticleView
-        article={article}
-        category={category}
-        references={references}
-      />
-    );
-  }
-
-  // Otherwise render the full editing workspace
+  // Render the full Stage 8 editing and lifecycle workspace
   return (
     <ArticleEditor
       article={article}

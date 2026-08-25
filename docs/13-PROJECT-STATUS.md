@@ -4,18 +4,27 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / MERGED / GATE PASS
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25 (HOSTED DEPLOYMENT AUTHORIZED 2026-08-26, MERGE AUTHORIZED 2026-08-26)
-- **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
-- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
-- **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
-- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
-- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
-- **Stage-7 initial implementation SHA:** `5b07ee2580e5f95fe360138ad560c9257e397017`
-- **Stage-7 initial status SHA:** `ef569327d384f69076581e6351d346fac529e580`
-- **Stage-7 correction implementation SHA:** `4d8c648f98716de638f5b6c1dbad7eabf3af3fec`
-- **Stage-7 final persistence micro-correction SHA:** `69d5aede201e780af98f946e949827113c948483`
-- **Stage-7 owner-approved architecture decision:** D028, D029
+- **Current stage:** Stage 8 — Publishing Workflow — HOSTED DEPLOYED / VERIFIED / AWAITING EXTERNAL FINAL REVIEW & OWNER MERGE APPROVAL
+- **Draft persistence regression:** FIXED / VERIFIED
+- **Stage-7 draft RPC compatibility:** PASS
+- **External pre-hosted review:** CORRECTIONS APPLIED / LOCAL GATE PASS
+- **Stage authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Hosted deployment authorization:** D031 ACTIVE (DEPLOYED & VERIFIED — 2026-08-26)
+- **Write transport:** `supabase_stage8_write` — APPLIED ONCE / VERIFIED / SAFE MODE RESTORED
+- **Replacement apply_migration:** SUCCESS (1 ATTEMPT)
+- **Hosted Stage-8 migration:** APPLIED (`20260825232024_stage8_publishing_lifecycle.sql`)
+- **Hosted deployment target:** `eoexnnhqzrkurbqgbtnx`
+- **Hosted migration version:** `20260825232024` (RECONCILED TO LOCAL MIGRATION FILE)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
+- **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addenda)
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Application coding authorized:** YES — STAGE 8 ONLY / PHASES 8A, 8B, 8C & PRE-HOSTED CORRECTIONS COMPLETED
+- **Gate status:** FULL LOCAL + HOSTED QUALITY GATE PASS (10/10 pgTAP FILES, 210/210 TESTS; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
+- **Hosted migration state:** APPLIED & VERIFIED
+- **Stage 8 merge:** NOT AUTHORIZED
+- **Phase 8C (UI / Preview Workspace):** COMPLETE / LOCAL GATE PASS
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
 - **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
@@ -23,11 +32,8 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-7 merge parents:**
   - first parent (prior main): `927412a054ccf15bbb1caa23a54a48d761731a04`
   - second parent (approved Stage-7 head): `1fd848d60aa223d53589e6eea598399085ca7157`
-- **Active working branch:** `main`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS
 - **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
-- **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
@@ -241,15 +247,12 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**NO NEW IMPLEMENTATION STAGE IS CURRENTLY AUTHORIZED.**
+**Stage 8 — Publishing Workflow: Phase 8A & Phase 8B COMPLETED / LOCAL GATE PASS (2026-08-26).**
 
-Stage 7 — Writer Dashboard & Tiptap Editor is:
-- **COMPLETE**;
-- **MERGED** into `main` at commit `e8ab70f730bea656b421a4bbb0ea6afd30073141` (parents: prior main `927412a054ccf15bbb1caa23a54a48d761731a04` and approved Stage-7 head `1fd848d60aa223d53589e6eea598399085ca7157`);
-- **GATE PASS** across all local pgTAP/typecheck/lint/format/build/diff gates and hosted Supabase verification;
-- closed following project-owner merge approval on 2026-08-26.
-
-Stage 8 — Publishing Workflow is the next planned implementation stage but remains **NOT AUTHORIZED**. No Stage-8 implementation work or branch creation is permitted until explicit project-owner authorization.
+- The project owner approved D030 and authorized Stage-8 implementation.
+- Phase 8A (Database Publishing Lifecycle Foundation) and Phase 8B (Server Actions & Storage Asset Promotion) are complete on branch `stage/08-publishing-workflow`.
+- Phase 8C (UI & Admin-Local Preview Workspace), hosted Supabase deployment, and Stage 9 remain separately gated and **NOT AUTHORIZED**.
+- Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
 
 ## Stage-1 start record
 
@@ -615,6 +618,165 @@ Stage 7 is complete, verified, and merged into `main`:
   - [x] Public leakage test verified: draft content completely inaccessible across `/blog`, `/blog/[slug]`, `/topics/[slug]`, search, and anonymous client queries;
   - [x] Local quality gates re-verified after reconciliation: `npx supabase db reset`, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
   - [x] Stage-7 handoff documentation completed in `docs/30-STAGE-7-HANDOFF.md`.
+
+## Stage-8 progress record — Phase 8A (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8A — Database Publishing Lifecycle Foundation
+- **Owner authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Design specification:** `docs/31-STAGE-8-PUBLISHING-WORKFLOW-DESIGN.md`
+- **Phase 8A migration:** `supabase/migrations/20260825232024_stage8_publishing_lifecycle.sql`
+- **Phase 8A test suite:** `supabase/tests/database/10_stage8_publishing_workflow.test.sql`
+- **Phase 8A deliverables completed:**
+  - [x] Lifecycle RPC `public.publish_article` implemented (single-path from `draft`, canonical kebab slug validation, provisional draft slug pattern rejection, dynamic base truncation with unique collision suffix loop <=80 chars, first-time timestamp assignment `published_at = now()`, atomic reference replacement);
+  - [x] Lifecycle RPC `public.update_published_article` implemented (updates published article content and references while strictly preserving slug, status, published_at, and featured flags);
+  - [x] Lifecycle RPC `public.unpublish_article` implemented (transitions published article to `draft`, clears featured flags, demotes image path to `draft-assets`, preserves canonical slug and original `published_at`);
+  - [x] Lifecycle RPC `public.archive_article` implemented (transitions `draft` or `published` article to `archived`, clears featured flags, demotes image to private bucket if published, preserves canonical slug and `published_at`);
+  - [x] Lifecycle RPC `public.restore_article` implemented (transitions `archived` article to `draft`, preserving canonical slug, `published_at`, and draft image path);
+  - [x] Lifecycle RPC `public.delete_article` implemented (permanently deletes never-published draft/archived records where `published_at IS NULL`; strictly rejects deletion of ever-published records to protect permanent URL integrity; cascades reference deletion);
+  - [x] All 6 RPCs configured as `SECURITY INVOKER`, locked `search_path = ''`, protected by `private.is_admin()`, revoked from `PUBLIC` and `anon`, granted to `authenticated`;
+  - [x] Comprehensive pgTAP test suite created with 75 subtests covering security invoker configuration, anonymous/non-admin denial, publication, canonical slug validation, collision retry handling, single-path state transitions, unpublishing, republishing slug freeze, archiving, restoring, deletion safety, and public leakage defense.
+- **Local Quality Gates (Phase 8A):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all migrations)
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures; 75 tests in Stage-8 suite)
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier code style verified)
+  - `npm run build`: PASS (Next.js production build successful)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Phase 8B status:** COMPLETE / LOCAL GATE PASS
+- **Phase 8C status:** NOT AUTHORIZED
+
+## Stage-8 progress record — Phase 8B (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8B — Server Actions & Storage Asset Promotion
+- **Owner authorization:** Explicit continuation authorization for Phase 8B (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Implementation commit SHA:** `fd73417c83d876c0872a348ca6488b578d6caa43`
+- **Phase 8B files created/modified:**
+  - `src/lib/admin/publishing.ts` (canonical slug generator, NFKD accent stripping, truncation <= 80 chars, validation, provisional pattern check)
+  - `src/app/admin/articles/actions.ts` (lifecycle Server Actions: `publishArticleAction`, `updatePublishedArticleAction`, `unpublishArticleAction`, `archiveArticleAction`, `restoreArticleAction`, `deleteArticleAction`, `saveDraftAction`)
+  - `tests/publishing-slug.test.mjs` (unit tests for canonical slug utilities)
+  - `tests/stage8-phase8b-actions.test.mjs` (unit & integration tests for actions, storage promotion/demotion, failure compensation, cleanup)
+- **Phase 8B deliverables completed:**
+  - [x] Application-layer bridge implemented for all 6 lifecycle database RPCs with strict `await requireAdmin()` security gates;
+  - [x] Server-side storage asset promotion from `draft-assets` to `public-assets` via native `@supabase/storage-js` authenticated cross-bucket `.copy()` with unique destination paths;
+  - [x] Server-side storage asset demotion from `public-assets` to `draft-assets` on unpublish and archive transitions;
+  - [x] Compensating transaction rollback: automatically removes newly copied destination assets if subsequent database RPC encounters an error;
+  - [x] Post-success source asset cleanup: removes private draft source upon publication and removes superseded public asset upon published image replacement;
+  - [x] Deletion safety invariant enforced: hard deletion permitted strictly when `status IN ('draft', 'archived') AND published_at IS NULL`; ever-published deletion strictly rejected;
+  - [x] Surgical cache revalidation executed across all affected public routes (`/`, `/blog`, `/blog/[slug]`, `/topics/[slug]`, `/portfolio`) and admin workspaces (`/admin/articles`, `/admin/articles/[id]`);
+  - [x] Comprehensive test coverage added: 14/14 automated tests passing (slug generation, NFKD normalization, 80-char truncation, provisional slug rejection, promotion/demotion path scoping, failure rollback compensation, post-success cleanup, and permalink safety).
+- **Local Quality Gates (Phase 8B):**
+  - `npx supabase db reset`: PASS
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures)
+  - `node --test tests/*.test.mjs`: PASS (14 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified)
+  - `npm run build`: PASS (Next.js production build verified)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Phase 8C status:** COMPLETE / LOCAL GATE PASS
+
+## Stage-8 progress record — Phase 8C (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8C — Publishing UI + Preview Workspace
+- **Owner authorization:** Explicit continuation authorization for Phase 8C (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Implementation commit SHA:** `02fbd452c855a059e6455797871596e3be96871e`
+- **Phase 8C files created/modified:**
+  - `src/components/admin/editor/article-preview-modal.tsx` (Evidence Folio in-memory preview workspace, responsive desktop/tablet/mobile viewport switcher, signed draft asset previews, live reading time, secure private admin containment);
+  - `src/components/admin/editor/publish-modal.tsx` (first publication candidate slug customization with live kebab preview, republishing permanent slug freeze indicator, publication summary grid, in-flight action locks, error banner);
+  - `src/components/admin/editor/lifecycle-modals.tsx` (dedicated accessible confirmation dialogs for Unpublish, Archive, Restore, and Delete with ever-published deletion block);
+  - `src/components/admin/editor/article-editor.tsx` (state-aware lifecycle workspace supporting Draft, Published, and Archived modes, in-flight status indicators, keyboard shortcuts, clean dirty tracking, toast notifications);
+  - `src/app/admin/articles/[id]/page.tsx` (routes all valid article statuses into the complete Stage 8 `ArticleEditor`);
+  - `src/app/admin/articles/page.tsx` (articles dashboard with state-aware table/card action buttons and direct "Live Post" external links);
+  - `tests/stage8-phase8c-ui-lifecycle.test.mjs` (automated test suite covering UI state machine action availability, slug immutability rules, ever-published deletion guards, and in-flight operation locks);
+  - `tests/stage8-phase8c-e2e.test.mjs` (automated end-to-end publishing lifecycle test suite executing complete 8-step lifecycle against local database).
+- **Phase 8C deliverables completed:**
+  - [x] Evidence Folio Admin Preview Modal implemented reusing genuine public presentation components (`ArticleHeader`, `ArticleTypography`, `ReferenceLedger`, `AuthorBlock`, `MedicalDisclaimer`) while strictly remaining within authenticated admin boundary;
+  - [x] Multi-device viewport switcher implemented (Desktop 100%, Tablet 768px, Mobile 375px) with genuine aspect scaling and typography containment;
+  - [x] First publication flow allows candidate slug customization (<= 80 chars, kebab-case, no draft UUIDs); republishing permanently locks canonical slug;
+  - [x] Complete lifecycle action modals implemented with clear, unambiguous consequence copy;
+  - [x] Ever-published deletion protection enforced in UI: hard deletion disabled with descriptive tooltip for any article where `published_at` is non-null;
+  - [x] Admin article dashboard updated to display state-aware actions and live public post links;
+  - [x] Comprehensive test suites added: 21/21 automated node tests passing across 4 test suites + 199/199 database pgTAP tests passing.
+- **Local Quality Gates (Phase 8C):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all migrations)
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures; 75 tests in Stage-8 suite)
+  - `node --test tests/*.test.mjs`: PASS (4 test files, 21 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Stage 8 Implementation Status:** COMPLETE / ALL PHASES (8A, 8B, 8C) VERIFIED / READY FOR HANDOFF PROTOCOL
+
+## Stage-8 progress record — External Pre-Hosted Review Corrections (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** External Pre-Hosted Review Hardening
+- **Objective:** Apply pre-hosted review hardening corrections to the pending Stage-8 migration, server actions, and UI prior to owner deployment authorization.
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Pending migration modified in place:** `supabase/migrations/20260825232024_stage8_publishing_lifecycle.sql`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Pre-hosted review corrections completed:**
+  - [x] **Meaningful Content Validation (PostgreSQL & TypeScript):** Native `jsonb_path_exists(p_content_json, '$.** ? (@.type == "text" && @.text like_regex "\\S")')` added to both `public.publish_article` and `public.update_published_article`; shared helper `hasMeaningfulArticleContent(content)` added to `src/lib/admin/publishing.ts` and enforced in `publishArticleAction` and `updatePublishedArticleAction`. Empty ProseMirror docs, empty paragraphs, and whitespace-only text nodes are strictly rejected upon publication/update.
+  - [x] **Deterministic Slug Fallback:** Restored D030 contract `generateCanonicalSlug(title, articleId)` yielding `article-${articleId.slice(0,8)}` when title normalization produces an empty string. Callers updated in actions, modals, and test suites.
+  - [x] **Elimination of Ambiguous Storage List Probe:** Removed `draft-assets.list()` probe from publish/update workflows. Draft images are strictly treated as private objects residing in `draft-assets` and promoted via cross-bucket copy to unique paths in `public-assets`. If private source does not exist or copy fails, publication is aborted.
+  - [x] **Storage Remove Result Checking & UI Warning Propagation:** Every `storage.from(...).remove(...)` invocation across publish, update, unpublish, archive, and delete now inspects the returned error. On DB failure, compensation cleanup is performed (surfacing double-faults if compensation fails). On transition success with asset cleanup failure, cleanups return a structured `warning` property surfaced visibly in the Evidence Folio `ArticleEditor` warning banner.
+  - [x] **Hardened RPC Image Validation:** `unpublish_article` and `archive_article` strictly reject non-empty `p_private_image_path` when the source article has no featured image, and draft archiving strictly rejects private destination path mutations.
+  - [x] **Defense-in-Depth Republish Slug Invariant:** `publish_article` on republish defensively rejects ever-published articles whose slug matches provisional draft UUID patterns.
+  - [x] **Real Local Storage Integration Test Suite:** Added `tests/stage8-storage-lifecycle-e2e.test.mjs` verifying real local Supabase (`http://127.0.0.1:54321`) storage upload, anon denial, cross-bucket copy, publication, private cleanup, public availability, unpublish demotion, public raw object invalidation, and replacement flows with synthetic PNG buffers.
+  - [x] **Compensation Failure & Error Testing:** Expanded `tests/stage8-phase8b-actions.test.mjs` with double-fault error handling and cleanup warning verification.
+- **Local Quality Gates (Pre-Hosted Correction):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all 4 migrations)
+  - `npx supabase test db`: PASS (10 files, 210 tests, 0 failures; 86 tests in Stage-8 suite)
+  - `node --test tests/*.test.mjs`: PASS (5 test files, 27 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
+
+## Stage-8 progress record — Final Pre-Hosted Draft-Save Regression Fix (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Final Pre-Hosted Draft Persistence Regression Fix
+- **Objective:** Correct the application-layer RPC invocation in `saveDraftAction` to restore the established Stage-7 database RPC `public.save_article_draft` with its exact parameter contract including `p_provisional_slug: provisionalSlug`.
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Application file modified:** `src/app/admin/articles/actions.ts`
+- **Regression test file updated:** `tests/stage8-phase8b-actions.test.mjs` (added source contract & RPC parameter regression check)
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Restored Stage-7 RPC Invocation:** `saveDraftAction` in `src/app/admin/articles/actions.ts` updated to call `save_article_draft` supplying all required parameters: `p_article_id`, `p_provisional_slug`, `p_title`, `p_excerpt`, `p_content_json`, `p_category_id`, `p_featured_image_path`, `p_featured_image_alt`, `p_seo_title`, `p_seo_description`, `p_references`.
+  - [x] **Zero Incorrect References:** Verified zero occurrences of `save_draft_article` across the entire codebase.
+  - [x] **Automated Action Contract Regression Test:** Added regression test in `tests/stage8-phase8b-actions.test.mjs` that continuously asserts zero occurrences of `save_draft_article` and validates the presence of `save_article_draft` with `p_provisional_slug: provisionalSlug`.
+  - [x] **Real Writer Workflow Verification:** Executed full end-to-end admin writer workflow: initial save creates draft record with `slug = draft-<full UUID>`, `status = 'draft'`, `published_at = null`; second save updates the existing row in place with 0 duplicate rows created; reload/persistence confirmed.
+- **Local Quality Gates (Final Pre-Hosted Gate):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all 4 migrations)
+  - `npx supabase test db`: PASS (10 files, 210 tests, 0 failures; 86 tests in Stage-8 suite)
+  - `node --test tests/*.test.mjs`: PASS (5 test files, 28 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
+- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 
 ## Stage transition rule
 

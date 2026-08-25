@@ -265,6 +265,119 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 
 ---
 
+## ACTIVE — D030 — Stage-8 publishing lifecycle architecture
+
+**Date:** 2026-08-26
+
+**Decision:**
+Implement the Stage-8 publishing lifecycle for Marie Medical Blog under the Evidence Folio design system according to the following architecture:
+1. **Admin-Local Preview:** Stage 8 implements an interactive full-fidelity reading preview inside the private `ArticleEditor` workspace using unsaved client state and existing presentational components (`ArticleTypography`, `ReferenceLedger`). No public preview route, Next.js Draft Mode, preview tokens, or cookie bypass mechanisms are introduced. Public article queries remain unchanged and leak-proof.
+2. **Canonical Slug Contract:** Canonical slugs are generated from the article title upon first publication (with manual candidate refinement permitted in the confirmation modal before first publish), normalized to lowercase kebab-case, limited to <= 80 characters, and validated to reject internal provisional UUID patterns (`^draft-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`). The database `UNIQUE` constraint on `public.articles.slug` is the ultimate collision authority; collisions are resolved deterministically inside the publication RPC with bounded retry suffixes (`-2`, `-3`, etc.) while dynamically truncating the base to preserve the <= 80 character limit. Once published, the canonical slug is permanently frozen for the lifetime of the article row across updates, unpublishing, archiving, restoring, and republishing.
+3. **Publication Timestamps:** `published_at` records the truthful original first-publication timestamp. It is set upon first publication (`published_at = coalesce(published_at, now())`) and strictly preserved forever across subsequent content updates, unpublishing, archiving, restoring, and republishing. `updated_at` tracks all subsequent mutation and republishing activity.
+4. **Lifecycle RPCs:** Implement six focused `SECURITY INVOKER` functions with locked `search_path = ''` enforcing `private.is_admin() = true`: `public.publish_article`, `public.update_published_article`, `public.unpublish_article`, `public.archive_article`, `public.restore_article`, and `public.delete_article`. `publish_article` accepts source status `draft` ONLY (archived content must restore to `draft` before republishing). Permissions are revoked from `public, anon` and granted to `authenticated`. Table RLS remains active.
+5. **Delete Safety:** Hard deletion is permitted strictly for never-published articles (`status IN ('draft', 'archived') AND published_at IS NULL`). Articles that have ever been published cannot be hard-deleted from the database; retiring previously public content is accomplished via `Archive` to preserve canonical URL ownership, prevent slug reuse, and avoid breaking historical citations.
+6. **Storage Invariant & Native Cross-Bucket Copy:** Enforce that featured images for `published` articles reside in `public-assets` while images for `draft` and `archived` articles reside in `draft-assets`. Promotion (`draft-assets` -> `public-assets`) and demotion (`public-assets` -> `draft-assets`) use authenticated native Supabase cross-bucket `copy()` (`destinationBucket`) with newly generated unique destination paths (`upsert: false`). Storage coordination executes copy-first -> database transaction -> source cleanup. Compensating deletion on database failure removes only the newly created destination object without deleting prior valid assets. `move()` is not used as the primary lifecycle operation.
+7. **Targeted Revalidation:** Apply surgical Next.js `revalidatePath` calls during Phase 8B on affected public routes (`/`, `/blog`, `/blog/[slug]`, `/topics/[slug]`, `/portfolio`) and administrative indices (`/admin/articles`, `/admin/articles/[id]`), including both old and new category paths on category changes.
+8. **Public Data Defense:** Every public article query reading `public.articles` for article content in `src/lib/public-articles.ts` continues strictly enforcing `status = 'published'`. Category-only queries do not query `public.articles`.
+
+**Reason:** Provides a secure, robust, and simple single-author publishing workflow for Marie Medical Blog without introducing revision/versioning complexity, token-preview risks, service-role client access, or enterprise CMS overhead.
+
+**Alternatives considered:** Next.js Draft Mode with preview tokens, direct table lifecycle mutations from client, monolithic `SECURITY DEFINER` RPC, mutable public slugs with redirect tables, hard-deleting ever-published records, Storage `move()` before database confirmation, server byte download/re-upload as primary promotion, and full revision/version-control subsystem.
+
+**Impact:** Authorizes Stage-8 publishing implementation under the frozen design, including Phase 8A lifecycle migration/tests and later approved within-stage phases. Does NOT authorize hosted deployment automatically and does NOT authorize Stage 9.
+
+**Approved by:** project owner — explicit approval on 2026-08-26.
+
+**Status:** ACTIVE / FROZEN FOR STAGE 8 IMPLEMENTATION.
+
+## ACTIVE — D031 — Stage-8 controlled hosted migration deployment and verification
+
+**Date:** 2026-08-26
+
+**Decision:**
+The project owner explicitly authorizes deployment of exactly:
+`supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`
+to Supabase project:
+`eoexnnhqzrkurbqgbtnx`
+
+Deployment rules:
+1. Only the reviewed Stage-8 migration may be applied.
+2. Verify the hosted migration baseline before any write.
+3. Standard Supabase CLI migration transport is preferred if available and preserves the reviewed migration history cleanly.
+4. If CLI/session transport is unavailable, the already configured temporary project-scoped Supabase MCP write connection may apply the exact reviewed SQL once.
+5. Do not deploy seed data.
+6. Do not change Auth.
+7. Do not change Storage policies/buckets.
+8. Do not run arbitrary corrective production SQL after migration failure.
+9. If the write attempt fails with zero mutation, STOP and report.
+10. Do not silently retry.
+11. If MCP records a different hosted migration version, reconcile the local migration filename/history to the hosted version with SQL contents byte-for-byte unchanged, then rerun all local gates.
+12. Hosted verification must use synthetic data only and must not modify real content.
+13. Prefer transaction-scoped verification followed by ROLLBACK.
+14. Stage-8 merge remains separately owner-gated.
+15. Stage 9 remains unauthorized.
+
+**Reason:**
+Stage 8 passed final architecture review, local database/security testing, real local Storage lifecycle verification, pre-hosted hardening, and the Stage-7 draft-persistence regression gate.
+
+**Approved by:**
+project owner — explicit hosted-deployment authorization on 2026-08-26.
+
+**Status:**
+ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
+
+### D031 Execution Addendum — First Hosted Apply Attempt & Blocker Record
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The first D031-authorized Stage-8 `apply_migration` invocation targeting project `eoexnnhqzrkurbqgbtnx` was attempted with migration `supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`.
+2. The invocation was rejected because the active MCP runtime session remained in read-only mode (`"Cannot apply migration in read-only mode."`).
+3. Immediate post-attempt inspection confirmed **ZERO hosted mutations** occurred:
+   - Hosted applied migrations remained unchanged: `20260825054917`, `20260825081012`, `20260825200129`.
+   - Stage-8 lifecycle RPC count remained 0/6 (`publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, `delete_article` all absent).
+   - `public.save_article_draft` remained intact and unaffected.
+   - Storage buckets (`draft-assets` private, `public-assets` public) and Auth configuration remained unchanged.
+4. The first authorized write attempt is **CONSUMED**.
+5. The next gate was write-channel runtime recovery, dual-namespace configuration isolation (`supabase` read-only vs `supabase_stage8_write` write-capable), runtime reload, and read-only inspection proof.
+
+### D031 Execution Addendum 2 — Owner Authorization of Replacement Migration Attempt
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The first D031 `apply_migration` attempt failed safely because the active runtime was in read-only mode (`"Cannot apply migration in read-only mode."`).
+2. Zero hosted database mutations were verified.
+3. Dedicated write namespace recovery subsequently passed: `supabase_stage8_write` is now active, authenticated through normal MCP flow, connected to project `eoexnnhqzrkurbqgbtnx`, verified to list the expected three hosted migrations, and properly exposing `apply_migration`.
+4. Migration SHA-256 was verified as:
+   `0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`
+5. The project owner explicitly stated:
+   *"I authorize exactly one replacement Stage-8 `apply_migration` attempt through the verified `supabase_stage8_write` connection for project `eoexnnhqzrkurbqgbtnx`, using only `20260825212334_stage8_publishing_lifecycle.sql`."*
+6. If this replacement attempt fails, **NO automatic retry is authorized**.
+7. Stage-8 merge remains unauthorized; Stage 9 remains unauthorized.
+
+### D031 Execution Addendum 3 — Hosted Migration Deployment & Verification Pass
+
+**Date:** 2026-08-26
+
+**Execution record:**
+1. Exactly one replacement `apply_migration` invocation was executed via `supabase_stage8_write` on project `eoexnnhqzrkurbqgbtnx` using the reviewed SQL (`0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`).
+2. The migration succeeded with `{"success": true}` and was recorded on hosted Supabase as version `20260825232024`.
+3. Local migration filename was reconciled from `20260825212334_stage8_publishing_lifecycle.sql` to `20260825232024_stage8_publishing_lifecycle.sql` with byte-for-byte SHA-256 integrity preserved (`0dd86f9c1e790eda1495f9e11f56d979d2fa92fd4dc69678eea7a61870d42770`).
+4. All 6 Stage-8 publishing lifecycle RPCs (`publish_article`, `update_published_article`, `unpublish_article`, `archive_article`, `restore_article`, `delete_article`) are confirmed present on hosted Supabase with:
+   - `SECURITY INVOKER` (`prosecdef = false`)
+   - `search_path = ''`
+   - Execution revoked from `public` and `anon`, granted to `authenticated`
+   - Explicit `private.is_admin()` administrative protection
+5. RLS remains active and enforced on `public.articles` and `public.article_references`.
+6. `public.save_article_draft` remains intact, unaltered, and admin-protected.
+7. Storage buckets (`draft-assets` private, `public-assets` public) and Auth configuration remain unchanged with zero drift.
+8. Synthetic hosted lifecycle verification passed across all lifecycle operations (draft -> publish -> update published -> unpublish -> republish -> archive -> restore -> delete rejection) with zero persistent synthetic rows.
+9. All local quality gates passed (210/210 pgTAP tests, 28/28 Node tests, TypeScript, ESLint, Prettier, production build).
+10. Stage 8 merge remains separately owner-gated; Stage 9 remains unauthorized.
+
+---
+
 ## New decision template
 
 ### ACTIVE/REPLACED — DXXX — Title
