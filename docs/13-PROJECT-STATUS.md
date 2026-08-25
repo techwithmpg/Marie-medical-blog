@@ -4,17 +4,14 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 3 — Supabase Database & Security Foundation — COMPLETE / MERGED
+- **Current stage:** Stage 4 — Authentication & Admin Access — ACTIVE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
-- **Stage-3 implementation status:** COMPLETE
-- **Stage-3 gate status:** PASS
-- **Stage-3 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
-- **Stage-3 merge commit:** `12ac9f446969179355871de3ce99fcf2f1bce162`
-- **Stage-3 merge parents:**
-  - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
-  - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Active working branch:** `main`
+- **Stage-3 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+- **Application coding authorized:** YES — STAGE 4 SCOPE ONLY
+- **Gate status:** IN PROGRESS
+- **Active working branch:** `stage/04-auth-admin`
+- **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
 - **Stage-0 merge commit:** `bca3483d844e3e931f3de300e20dd5670fa2c5ee` — `merge: complete stage 0 governance`
@@ -37,7 +34,12 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 deployment & reconciliation commit:** `652f483637e24778ae5437b8e561f5b41231def1`
 - **Stage-3 gate closeout commit:** `026f1685e770344b65532b693f4374f208d902cf`
 - **Stage-3 reference correction commit:** `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 4 — Authentication & Admin Access — NOT AUTHORIZED
+- **Stage-3 merge commit:** `12ac9f446969179355871de3ce99fcf2f1bce162`
+- **Stage-3 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-3 merge parents:**
+  - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
+  - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
+- **Next implementation stage:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -192,13 +194,35 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 3 — Supabase Database & Security Foundation is COMPLETE and MERGED into main.**
+**Stage 4 — Authentication & Admin Access is AUTHORIZED and ACTIVE.**
 
-Stage 3 implementation, automated pgTAP verification, database linting, project regression gates, hosted deployment, version reconciliation, and owner-approved merge are fully finished.
+Owner authorization was given on **2026-08-25** in ChatGPT after Stage 3 was fully merged, synchronized, and verified on `main`.
 
-No new development stage is currently active.
+Stage 4 may implement only:
 
-Stage 4 (Authentication & Admin Access) and all subsequent development stages remain strictly **NOT AUTHORIZED** until explicitly approved by the project owner.
+- Marie sign-in UI at `/admin/login`;
+- Next.js cookie-based Supabase SSR client architecture;
+- Next.js session refresh proxy/middleware;
+- server-side single-admin authorization helper `requireAdmin()`;
+- authenticated boolean RPC `public.is_admin()` for allowlist evaluation against `private.admin_users`;
+- protected admin routing for `/admin` and sub-routes;
+- logout / session termination handling;
+- unauthorized redirection and non-admin access denial;
+- automated and integration tests for authentication and route protection boundaries;
+- documentation and decision records for Stage-4 architecture.
+
+Stage 4 must NOT implement:
+
+- public signup forms or workflows;
+- reader accounts or authentication;
+- multi-author roles, permissions, or enterprise RBAC;
+- Stage 5 public static/identity pages (Homepage, About, Contact page UI, Disclaimer page UI, Portfolio page UI);
+- Tiptap rich-text editor or article creation/editing UI;
+- publishing, preview, or draft persistence workflows;
+- comments or contact inbox management UI;
+- later-stage product features.
+
+Stage 5 remains NOT AUTHORIZED.
 
 ## Stage-1 start record
 
@@ -315,7 +339,27 @@ Stage 3 implementation and verification record:
   - Hosted admin allowlist remains unprovisioned pending Stage 4
   - Auth configuration NOT modified
   - Edge Functions NOT modified
-  - Stage 4 remains NOT AUTHORIZED
+  - Stage 4 authorized separately
+
+## Stage-4 start record
+
+Stage 4 began from verified canonical base:
+
+`main @ bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+
+Start conditions verified:
+
+1. Stage 3 was fully completed, verified, merged into `main` (`12ac9f446969179355871de3ce99fcf2f1bce162`), and synchronized on `main` at `bd35efcbb3541579b63fc50e6797ab551a7a05b9`;
+2. working tree was clean;
+3. Node.js `v24.19.0` was active;
+4. npm `11.17.0` was available;
+5. Git `2.53.0.windows.2` was available;
+6. canonical GitHub/local `main` was verified at `bd35efcbb3541579b63fc50e6797ab551a7a05b9`;
+7. project owner explicitly authorized Stage 4 in ChatGPT on 2026-08-25;
+8. `stage/04-auth-admin` was created from that exact canonical `main`;
+9. this authorization commit contains governance only;
+10. no application code or package installation occurred in this commit;
+11. Stage 5 remains NOT AUTHORIZED.
 
 ## Stage transition rule
 
