@@ -4,12 +4,14 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / PRE-IMPLEMENTATION DESIGN
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / DESIGN APPROVED / DESIGN FREEZE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** FROZEN PENDING STAGE-7 DESIGN REVIEW
-- **Gate status:** IN PROGRESS — PRE-IMPLEMENTATION DESIGN
+- **Application coding authorized:** FROZEN PENDING FINAL EXTERNAL REVIEW OF DESIGN HARDENING
+- **Gate status:** IN PROGRESS — DESIGN FREEZE
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -70,7 +72,6 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 merge parents:**
   - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
   - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -552,12 +553,14 @@ Stage 6 — Article Reading & Discovery:
 
 Stage 7 — Writer Dashboard & Tiptap Editor:
 
-- **Stage status:** ACTIVE / PRE-IMPLEMENTATION DESIGN
+- **Stage status:** ACTIVE / DESIGN APPROVED / DESIGN FREEZE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
+- **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
+- **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** FROZEN PENDING STAGE-7 DESIGN REVIEW
-- **Gate status:** IN PROGRESS — PRE-IMPLEMENTATION DESIGN
+- **Application coding authorized:** FROZEN PENDING FINAL EXTERNAL REVIEW OF DESIGN HARDENING
+- **Gate status:** IN PROGRESS — DESIGN FREEZE
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 

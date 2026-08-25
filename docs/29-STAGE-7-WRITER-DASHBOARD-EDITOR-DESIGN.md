@@ -1,17 +1,18 @@
 # 29 — Stage 7: Writer Dashboard & Tiptap Editor Design
 
-> **Stage 7 Status:** ACTIVE / PRE-IMPLEMENTATION DESIGN FREEZE  
+> **Stage 7 Status:** ACTIVE / DESIGN APPROVED / DESIGN FREEZE  
 > **Authority:** AUTHORIZED BY PROJECT OWNER — 2026-08-25  
 > **Canonical Base:** `927412a054ccf15bbb1caa23a54a48d761731a04`  
 > **Branch:** `stage/07-writer-dashboard-editor`  
-> **Application Implementation:** FROZEN PENDING EXTERNAL DESIGN REVIEW  
+> **Application Implementation:** FROZEN PENDING FINAL EXTERNAL REVIEW OF DESIGN HARDENING  
+> **Governing Architecture Decision:** D028 (`docs/11-DECISION-LOG.md`)  
 > **Subsequent Stage (Stage 8):** NOT AUTHORIZED  
 
 ---
 
 ## 1. Objective
 
-Deliver the administrative writing and draft-management workspace for Marie Medere under the **Evidence Folio** design system. Stage 7 provides a secure, single-author editorial environment where Marie can create, edit, save, and reliably reopen article drafts with structured editorial metadata, a custom Tiptap rich-text editor, category assignments, featured image references, structured academic/evidence citations, and search engine optimization fields without risking data loss or public exposure.
+Deliver the administrative writing and draft-management workspace for Marie Medere under the **Evidence Folio** design system. Stage 7 provides a secure, single-author editorial environment where Marie can compose, edit, save, and reliably reopen article drafts with structured editorial metadata, a custom Tiptap rich-text editor, category assignments, private draft featured image references, structured academic/evidence citations, and search engine optimization fields without risking data loss or public exposure.
 
 ---
 
@@ -22,12 +23,12 @@ Deliver the administrative writing and draft-management workspace for Marie Mede
    - Status filtering support via URL query parameter (e.g. `/admin/articles?status=draft`).
    - "New Article" action directing to `/admin/articles/new`.
    - Direct edit access to draft articles (`/admin/articles/[id]`).
-   - Read-only representation of published and archived rows (Stage 7 does not permit editing or mutating non-draft records).
+   - Read-only representation of published and archived rows (Stage 7 does not permit editing, unpublishing, deleting, or mutating non-draft records).
 
-2. **`/admin/articles/new` (New Draft Creation):**
-   - Editorial workspace initializing a new article draft record.
-   - Immediate allocation of a collision-safe internal provisional draft slug.
-   - Redirect to the persistent draft editor route `/admin/articles/[id]`.
+2. **`/admin/articles/new` (New Draft Composition):**
+   - Editorial workspace initializing a clean, unsaved editor state locally.
+   - No database article row is inserted merely by loading this route.
+   - The first explicit "Save Draft" operation generates a server-side cryptographic UUID, derives an internal provisional slug (`draft-<uuid>`), creates the article and references atomically via RPC, and redirects to `/admin/articles/[id]`.
 
 3. **`/admin/articles/[id]` (Article Draft Editor):**
    - Full Evidence Folio editorial workspace.
@@ -35,7 +36,7 @@ Deliver the administrative writing and draft-management workspace for Marie Mede
    - Tiptap WYSIWYG rich-text editor producing clean ProseMirror JSON.
    - Category selector loading active categories from `public.categories`.
    - Excerpt field for editorial teasers.
-   - Featured image upload and path/alt input backed by `public-assets` Supabase storage.
+   - Private featured image upload and path/alt management backed by the new private `draft-assets` storage bucket.
    - Structured Reference Ledger manager for academic citations.
    - SEO Title and SEO Description inputs.
    - Explicit "Save Draft" action with visual dirty tracking and timestamped confirmation.
@@ -51,7 +52,7 @@ The following capabilities are explicitly deferred to later stages or excluded f
 - **Reader Comment Moderation (Stage 9):** Comment approval, rejection, deletion, and public comment submission.
 - **Contact Inbox Administration (Stage 9):** Reading, triaging, and responding to contact form submissions.
 - **Portfolio Curation UI (Stage 9):** Specialized portfolio project creation and arrangement.
-- **Multi-Author / Granular RBAC:** Multiple authors, editorial review workflows, or permission tiers (frozen as single-author per D008).
+- **Multi-Author / Granular RBAC:** Multiple authors, editorial review workflows, or permission tiers (frozen as single-author per D005).
 - **Automated AI Writing / Synthetic Advice:** AI text generation, automated medical summaries, or hallucinated claims (strictly prohibited by `AI_CONTEXT.md`).
 - **Reader Analytics / Social Trackers:** Page view counters, tracking pixels, or third-party analytics dashboards.
 
@@ -94,21 +95,22 @@ The following capabilities are explicitly deferred to later stages or excluded f
   - `citation_details` (text, nullable)
   - `sort_order` (integer, `NOT NULL`, default `0`, check `sort_order >= 0`)
 
-- **Storage Bucket (`storage.buckets` / `storage.objects`):**
-  - Bucket name: `public-assets` (public read, 10MB file size limit)
-  - Allowed MIME types: `image/jpeg`, `image/png`, `image/webp`, `image/avif`, `application/pdf`
+- **Existing Storage Bucket (`public-assets`):**
+  - Public bucket (`public = true`), 10MB file limit, for published public assets.
 
-### 4.2 Verified RLS Policies (VERIFIED FACT)
+### 4.2 Verified RLS Policies & Security (VERIFIED FACT)
 
-- Authenticated admin (checked via `private.is_admin()`) holds full `SELECT`, `INSERT`, `UPDATE`, and `DELETE` permissions on `public.articles`, `public.categories`, `public.article_references`, and `storage.objects` (`bucket_id = 'public-assets'`).
+- Authenticated admin (evaluated via `private.is_admin()`) holds full `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on all application tables.
 - Anonymous and non-admin callers are strictly limited to `status = 'published'` articles and their associated references.
-- Schema modifications or RLS changes are **NOT** required for Stage 7.
+- Stage-7 introduces a migration during implementation for:
+  1. A new private storage bucket: `draft-assets`.
+  2. An atomic persistence function: `public.save_article_draft`.
 
 ---
 
-## 5. Official Tiptap v3 Research & Audit
+## 5. Official Tiptap v3 Research & Package Selection
 
-An inspection of current stable npm package metadata reveals that the official Tiptap suite is on the **v3 series** (`3.30.3`):
+Inspection of current stable npm metadata confirms Tiptap is on **v3** (`3.30.3`):
 
 - **Next.js App Router Integration Requirements:**
   - The editor must be rendered within a React Client Component (`"use client"`).
@@ -117,31 +119,20 @@ An inspection of current stable npm package metadata reveals that the official T
 - **Persistence Model:**
   - Stored format: Pure ProseMirror JSON structure obtained via `editor.getJSON()`.
   - Canonical database target: `public.articles.content_json` (jsonb).
-  - Direct JSON storage guarantees 100% round-trip fidelity between writer input and the Stage-6 public renderer.
+- **Package Selection (Exact Dependencies):**
+  - `@tiptap/react@3.30.3`
+  - `@tiptap/pm@3.30.3`
+  - `@tiptap/starter-kit@3.30.3`
+  - `@tiptap/extension-placeholder@3.30.3`
+- **Important Configuration Notes:**
+  - Do NOT install a separate `@tiptap/extension-link` package. StarterKit v3 includes Link built-in.
+  - Tiptap StarterKit v3 includes Underline; explicitly configure `underline: false` because the public renderer does not support underline formatting.
+  - Do NOT install `@tiptap/extension-image` (inline body images are not enabled in Stage 7).
+  - Do NOT install `TableKit`, `CharacterCount`, `TextAlign`, or collaboration extensions. Character counts for form UX are computed directly from normal field state.
 
 ---
 
-## 6. Proposed Dependency Set
-
-The following exact packages are identified for Stage 7:
-
-| Package | Version | Purpose | Justification |
-| :--- | :--- | :--- | :--- |
-| `@tiptap/react` | `3.30.3` | Core React editor bindings & hooks | Essential for React integration (`useEditor`, `EditorContent`) |
-| `@tiptap/pm` | `3.30.3` | ProseMirror packages bundled by Tiptap v3 | Required peer dependency for Tiptap v3 core |
-| `@tiptap/starter-kit` | `3.30.3` | Baseline editorial extensions bundle | Headings, lists, bold, italic, blockquote, codeblock, etc. |
-| `@tiptap/extension-link` | `3.30.3` | Hyperlinks in rich text | Reference linking and external academic citations |
-| `@tiptap/extension-placeholder` | `3.30.3` | Visual editor placeholder | Clear UI affordance when the editor canvas is empty |
-
-### Explicitly Excluded / Disallowed Extensions:
-- `@tiptap/extension-underline` (Not supported in public renderer; avoid schema mismatch)
-- `@tiptap/extension-collaboration` (Single-author project; unnecessary complexity)
-- `@tiptap/extension-table` / `TableKit` (Not required for V1 article drafting; deferred)
-- AI / Auto-generation plugins (Prohibited under scope freeze and AI guidelines)
-
----
-
-## 7. Server / Client Architecture
+## 6. Server / Client Architecture
 
 ```mermaid
 flowchart TD
@@ -153,17 +144,17 @@ flowchart TD
 
     subgraph Client_Boundary ["Client Component Boundary"]
         Form["ArticleEditorForm ('use client')"]
-        MetaFields["Title, Excerpt, Category, Image, SEO"]
+        MetaFields["Title, Excerpt, Category, SEO"]
         TiptapEditor["Tiptap Rich-Text Canvas (useEditor)"]
         RefLedger["Reference Ledger Manager"]
-        DirtyTracker["Dirty State & Autosave Notice"]
+        ImageUploader["Draft Image Uploader (draft-assets)"]
+        DirtyTracker["Dirty State Tracker"]
     end
 
     subgraph Mutation_Boundary ["Server Actions Boundary"]
-        SaveAction["saveDraftAction(formData / payload)"]
+        SaveAction["saveDraftAction(payload)"]
         AuthVerify["requireAdmin() (Re-verification)"]
-        DraftGuard["Verify status === 'draft'"]
-        DBUpdate["Supabase UPDATE public.articles & references"]
+        RPC["public.save_article_draft (Atomic RPC)"]
     end
 
     Page --> AuthGate
@@ -172,32 +163,33 @@ flowchart TD
     Form --> MetaFields
     Form --> TiptapEditor
     Form --> RefLedger
+    Form --> ImageUploader
     Form --> DirtyTracker
     Form -->|Explicit Save Draft| SaveAction
     SaveAction --> AuthVerify
-    AuthVerify --> DraftGuard
-    DraftGuard --> DBUpdate
+    AuthVerify --> RPC
 ```
 
 1. **Server Components:**
    - Execute route authorization via `await requireAdmin()`.
    - Retrieve article draft, category options, and reference records on the server.
-   - Pass strongly typed, plain JavaScript data objects as initial props to the client editor.
+   - Pass plain JavaScript data objects as initial props to the client editor.
 
 2. **Client Components:**
    - Manage local form state, validation feedback, and Tiptap editor instance.
-   - Provide interactive Reference Ledger manipulation (add, edit, remove, reorder).
-   - Coordinate image file selection and client-to-storage upload feedback.
+   - Provide interactive Reference Ledger manipulation (add, edit, remove, move up/down).
+   - Coordinate image file selection and client-to-storage upload to `draft-assets` using the existing authenticated browser client (`src/lib/supabase/client.ts`).
    - Track unsaved changes (`isDirty`) to alert Marie before accidental tab closure.
 
 3. **Server Actions (`src/app/admin/articles/actions.ts`):**
-   - Privileged backend mutation handlers (`createDraftAction`, `saveDraftAction`).
+   - Privileged backend mutation handlers (`saveDraftAction`).
    - Every action independently executes `await requireAdmin()`.
-   - Validates that target records hold `status = 'draft'`.
+   - Validates input and delegates persistence to `public.save_article_draft`.
+   - Revalidates admin paths (`/admin/articles`, `/admin/articles/[id]`). Does NOT revalidate public routes (`/blog`, `/portfolio`, `/topics`).
 
 ---
 
-## 8. Data Loading Architecture
+## 7. Data Loading Architecture
 
 1. **Articles Index (`/admin/articles`):**
    - Server query using Supabase SSR client:
@@ -218,56 +210,29 @@ flowchart TD
 
 ---
 
-## 9. Mutation Architecture
+## 8. Draft-Slug Strategy (D028 / DG-01: OWNER APPROVED)
 
-All draft mutations use Next.js Server Actions with strict input validation:
-
-1. **`createDraftAction()`:**
-   - Verifies admin authentication.
-   - Generates provisional title (default: `"Untitled Draft"`) and unique draft slug (`draft-<short-uuid>`).
-   - Inserts record into `public.articles` with `status = 'draft'`, `published_at = null`.
-   - Redirects to `/admin/articles/[id]`.
-
-2. **`saveDraftAction(payload)`:**
-   - Verifies admin authentication.
-   - Validates target article exists and `status === 'draft'`.
-   - Updates fields in `public.articles`: `title`, `excerpt`, `content_json`, `category_id`, `featured_image_path`, `featured_image_alt`, `seo_title`, `seo_description`.
-   - Replaces `public.article_references` in an atomic sequence (deleting prior references for the article and inserting updated references with sequential `sort_order` indices).
-   - Revalidates admin and public article paths.
-   - Returns `{ success: true, updated_at: string }` or structured validation errors.
-
----
-
-## 10. Draft-Slug Strategy (DECISION GATE)
-
-> [!IMPORTANT]
-> **DECISION GATE: Draft Slug Allocation**  
-> **Status:** PROPOSED DIRECTION FOR EXTERNAL REVIEW  
-> **Constraint:** `public.articles.slug` is `NOT NULL`, `UNIQUE`, and must match regex `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Stage 8 owns canonical public publishing slug rules.
-
-### Recommended Approach: Internal Provisional Draft Slug
-- When an article draft is created, allocate an internal provisional slug formatted as:
+- **Owner Decision (D028):** When a draft is first saved, generate a platform cryptographic UUID server-side and derive the provisional slug as:
   ```
-  draft-<12-character-nanoid-or-uuid-prefix>
+  draft-<uuid>
   ```
-  *(e.g., `draft-8f3a1b2c4d5e`)*
-- **Rationale:**
-  1. Guarantees 100% compliance with existing database check constraints and uniqueness without requiring database schema migrations or nullable columns.
+  *(e.g., `draft-8f3a1b2c-4d5e-4b6a-9a7c-1e2f3a4b5c6d` or `draft-8f3a1b2c4d5e`)*
+- **Rationale & Guardrails:**
+  1. Guarantees 100% compliance with existing database check constraints (`chk_articles_slug_format`) and uniqueness without requiring database schema migrations or nullable columns.
   2. Prevents title-based slug collisions during drafting.
   3. Clearly demarcates provisional status.
-  4. Remains invisible to public visitors because public queries enforce `status = 'published'`.
-  5. Leaves Stage 8 entirely free to compute and assign Marie's final publication slug.
+  4. Remains completely hidden from public visitors because public queries enforce `status = 'published'`.
+  5. Leaves Stage 8 entirely free to assign Marie's final canonical publication slug upon publishing.
 
 ---
 
-## 11. Tiptap JSON Schema & Extensions
+## 9. Tiptap JSON Schema & Extensions (D028 / DG-02: OWNER APPROVED)
 
-The Tiptap editor configuration will be configured as follows:
+The Tiptap editor configuration will be:
 
 ```typescript
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 
 const editor = useEditor({
@@ -277,19 +242,20 @@ const editor = useEditor({
       heading: {
         levels: [2, 3], // Strictly restrict to H2 and H3; H1 is reserved for article title
       },
+      underline: false, // Underline disabled (unsupported in public renderer)
+      link: {
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: {
+          class: "text-oxide-link underline underline-offset-2",
+          rel: "noopener noreferrer",
+        },
+      },
       codeBlock: {
-        HTMLAttributes: { class: "rounded border bg-subtle-field p-4 font-mono text-sm" },
+        HTMLAttributes: { class: "rounded border border-subtle-divider bg-subtle-field p-4 font-mono text-sm text-ink" },
       },
       blockquote: {
-        HTMLAttributes: { class: "border-l-2 border-brand-oxide pl-4 italic" },
-      },
-    }),
-    Link.configure({
-      openOnClick: false,
-      autolink: true,
-      HTMLAttributes: {
-        class: "text-inline-link underline underline-offset-2",
-        rel: "noopener noreferrer",
+        HTMLAttributes: { class: "border-l-2 border-oxide pl-4 italic text-ink-muted" },
       },
     }),
     Placeholder.configure({
@@ -305,53 +271,110 @@ const editor = useEditor({
 
 ---
 
-## 12. Public-Renderer Compatibility Audit
+## 10. Public-Renderer Compatibility Audit
 
-| Tiptap Editor Node / Mark | Supported in Public Renderer (`article-typography.tsx`) | Handling Strategy |
+The frozen editor schema is intentionally constrained to nodes and marks supported by the current public renderer. Round-trip fidelity must be verified at the Stage-7 gate.
+
+| Tiptap Editor Node / Mark | Supported in Public Renderer (`article-typography.tsx`) | Status in Editor |
 | :--- | :--- | :--- |
-| `doc` | YES (`div.article-body`) | Direct 1:1 render |
-| `paragraph` | YES (`p`) | Direct 1:1 render |
-| `heading` (level 2, 3) | YES (`h2`, `h3`) | Direct 1:1 render (H1 disallowed in editor) |
-| `bulletList` / `listItem` | YES (`ul` / `li`) | Direct 1:1 render |
-| `orderedList` / `listItem` | YES (`ol` / `li`) | Direct 1:1 render |
-| `blockquote` | YES (`blockquote`) | Direct 1:1 render |
-| `codeBlock` | YES (`pre > code`) | Direct 1:1 render |
-| `horizontalRule` | YES (`hr`) | Direct 1:1 render |
-| `hardBreak` | YES (`br`) | Direct 1:1 render |
-| `bold` mark | YES (`strong`) | Direct 1:1 render |
-| `italic` mark | YES (`em`) | Direct 1:1 render |
-| `strike` mark | YES (`s`) | Direct 1:1 render |
-| `code` mark | YES (`code`) | Direct 1:1 render |
-| `link` mark | YES (`a` with protocol validation) | Direct 1:1 render |
-
-**Compatibility Verdict:** 100% schema alignment. The editor schema produces only nodes and marks that are fully rendered by the Stage-6 public typography system.
+| `doc` | YES (`div.article-body`) | Enabled |
+| `paragraph` | YES (`p`) | Enabled |
+| `heading` (level 2, 3) | YES (`h2`, `h3`) | Enabled (H1 disallowed) |
+| `bulletList` / `listItem` | YES (`ul` / `li`) | Enabled |
+| `orderedList` / `listItem` | YES (`ol` / `li`) | Enabled |
+| `blockquote` | YES (`blockquote`) | Enabled |
+| `codeBlock` | YES (`pre > code`) | Enabled |
+| `horizontalRule` | YES (`hr`) | Enabled |
+| `hardBreak` | YES (`br`) | Enabled |
+| `text` | YES (text nodes) | Enabled |
+| `bold` mark | YES (`strong`) | Enabled |
+| `italic` mark | YES (`em`) | Enabled |
+| `strike` mark | YES (`s`) | Enabled |
+| `code` mark | YES (`code`) | Enabled |
+| `link` mark | YES (`a` with protocol validation) | Enabled (via StarterKit) |
+| `underline` mark | NO | **DISABLED** |
+| `image` node | NO (Inline images not enabled in Stage 7) | **NOT ENABLED** |
+| `table` nodes | NO | **NOT ENABLED** |
 
 ---
 
-## 13. Article Form Model
+## 11. Private Draft Media Architecture (D028 / DG-03: OWNER APPROVED)
 
-The form payload submitted on Save Draft comprises:
+- **Storage Separation:**
+  - `public-assets`: PUBLIC bucket for published articles and public site assets.
+  - `draft-assets`: **PRIVATE** bucket introduced in Stage 7 for unpublished draft featured images.
+- **`draft-assets` Storage Constraints:**
+  - `public = false`
+  - Max file size = 5 MB
+  - Allowed MIME: `image/jpeg`, `image/png`, `image/webp`, `image/avif`
+- **Storage RLS:**
+  - `SELECT`, `INSERT`, `UPDATE`, `DELETE` permitted to authenticated admin only (`private.is_admin()`).
+  - Anonymous and non-admin access is denied.
+  - No public URL access (`getPublicUrl()` is prohibited for `draft-assets`).
+  - Draft image preview in admin editor uses authenticated access or short-lived signed URLs.
+- **Workflow & Stage-8 Promotion:**
+  - `public.articles.featured_image_path` stores the bucket-relative path within `draft-assets` while the article is a draft.
+  - Stage 8 owns the promotion/copying of the selected image from `draft-assets` to `public-assets` upon publication.
+- **No `public.media` table:** Direct storage path management in `draft-assets` is sufficient for single-author needs.
 
-```typescript
-interface ArticleDraftFormData {
-  id: string; // Target article UUID
-  title: string; // Article title (max 200 chars)
-  excerpt: string | null; // Teaser excerpt (max 500 chars)
-  categoryId: string | null; // Selected category UUID
-  contentJson: Record<string, unknown>; // Tiptap ProseMirror document
-  featuredImagePath: string | null; // Storage path in public-assets
-  featuredImageAlt: string | null; // Mandatory if featuredImagePath is set
-  seoTitle: string | null; // Custom SEO title override
-  seoDescription: string | null; // Custom meta description
-  references: Array<{
-    id?: string;
-    title: string;
-    sourceName: string;
-    url?: string | null;
-    citationDetails?: string | null;
-    sortOrder: number;
-  }>;
-}
+---
+
+## 12. Featured-Image Authoring Lifecycle
+
+1. **Brand-New Unsaved Article (`/admin/articles/new`):**
+   - Featured image upload control is disabled until the first Save Draft succeeds.
+   - Displays clear helper text: *"Save the draft once before adding a featured image."*
+   - Reason: Avoids orphaned private storage objects with no persistent database record.
+2. **Saved Draft (`/admin/articles/[id]`):**
+   - Featured image upload is enabled.
+   - Upload path: `articles/{articleId}/featured/{timestamp}-{sanitizedFilename}`.
+   - Client executes upload directly via authenticated browser client (`src/lib/supabase/client.ts`).
+   - Image preview is displayed with input for mandatory `featured_image_alt`.
+   - Option to remove or replace the attached image.
+
+---
+
+## 13. Atomic Draft Persistence RPC (D028 / DG-04: OWNER APPROVED)
+
+To guarantee that article updates and structured reference replacements succeed or fail together as a single atomic database transaction, Stage 7 introduces a reviewed PostgreSQL function:
+
+```sql
+-- Conceptual signature for public.save_article_draft
+create or replace function public.save_article_draft(
+  p_article_id uuid,
+  p_provisional_slug text,
+  p_title text,
+  p_excerpt text default null,
+  p_content_json jsonb default '{"type": "doc", "content": []}'::jsonb,
+  p_category_id uuid default null,
+  p_featured_image_path text default null,
+  p_featured_image_alt text default null,
+  p_seo_title text default null,
+  p_seo_description text default null,
+  p_references jsonb default '[]'::jsonb
+)
+returns table (
+  article_id uuid,
+  slug text,
+  updated_at timestamptz
+)
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+-- Transaction logic:
+-- 1. Check private.is_admin(). If false, raise exception.
+-- 2. If article does not exist:
+--      INSERT INTO public.articles (id, slug, title, excerpt, content_json, category_id, featured_image_path, featured_image_alt, seo_title, seo_description, status, published_at, is_featured, is_portfolio_featured)
+--      VALUES (p_article_id, p_provisional_slug, p_title, p_excerpt, p_content_json, p_category_id, p_featured_image_path, p_featured_image_alt, p_seo_title, p_seo_description, 'draft', null, false, false);
+-- 3. If article exists:
+--      Verify status = 'draft'. If not, raise exception 'Cannot mutate non-draft article'.
+--      UPDATE public.articles SET title = p_title, excerpt = p_excerpt, content_json = p_content_json, category_id = p_category_id, featured_image_path = p_featured_image_path, featured_image_alt = p_featured_image_alt, seo_title = p_seo_title, seo_description = p_seo_description
+--      WHERE id = p_article_id;
+-- 4. DELETE FROM public.article_references WHERE article_id = p_article_id;
+-- 5. INSERT INTO public.article_references (...) from parsed p_references with sequential sort_order.
+-- 6. RETURN QUERY SELECT id, slug, updated_at FROM public.articles WHERE id = p_article_id;
+$$;
 ```
 
 ---
@@ -360,12 +383,14 @@ interface ArticleDraftFormData {
 
 1. **Initial Clean State:** Form loads initial values from server props. `isDirty` is `false`.
 2. **User Edits:** Any keystroke in form fields or Tiptap editor marks `isDirty = true`.
-3. **Save Action:** Marie clicks **"Save Draft"** (or presses `Ctrl+S` / `Cmd+S` shortcut):
-   - Button enters `Saving...` disabled state with spinner.
-   - Client sends full validated payload to `saveDraftAction`.
+3. **Explicit Save Action:** Marie clicks **"Save Draft"** (or `Ctrl+S` / `Cmd+S`):
+   - Button enters `Saving...` state with spinner.
+   - Client sends validated payload to `saveDraftAction`.
+   - Server Action verifies admin authentication, invokes `public.save_article_draft`.
    - On success: Server returns updated timestamp; UI displays `"Saved at HH:MM:SS"`; `isDirty` resets to `false`.
-   - On validation/network error: UI displays inline error banner with field-level highlights; `isDirty` remains `true`.
-4. **Navigation Guard:** If `isDirty` is true and user attempts browser navigation, triggers native `beforeunload` warning.
+   - If first save on `/admin/articles/new`: client is redirected to `/admin/articles/[id]`.
+   - On error: UI displays inline error banner; form state and editor contents are preserved; `isDirty` remains `true`.
+4. **Navigation Guard:** If `isDirty` is true and user attempts browser navigation, triggers native `beforeunload` confirmation.
 
 ---
 
@@ -373,129 +398,89 @@ interface ArticleDraftFormData {
 
 - **Dedicated Reference Ledger Card:** Rendered below the main editor canvas.
 - **Item Fields:**
-  - `Title` (Required, e.g. *"Primary Prevention of Cardiovascular Disease"*)
-  - `Source / Journal` (Required, e.g. *"New England Journal of Medicine"*)
+  - `Title` (Required)
+  - `Source / Journal` (Required)
   - `URL` (Optional, validated for `http:`, `https:`)
-  - `Citation Details` (Optional, e.g. *"2024; 390:1234-1245. DOI: 10.1056/NEJM..."*)
+  - `Citation Details` (Optional)
 - **Controls:**
   - **"Add Reference"** button appends an empty reference item.
   - **"Move Up" / "Move Down"** buttons adjust relative positioning without external drag-and-drop dependencies.
   - **"Remove"** button removes the entry from the draft.
-- **Persistence:** Saved atomically with the article draft into `public.article_references`.
+- **Persistence:** Persisted atomically via `public.save_article_draft` with deterministic sequential `sort_order` (0, 1, 2...).
 
 ---
 
-## 16. Media & Image Insertion Lifecycle
+## 16. Admin Shell Navigation & Layout Refinement
 
-- **Storage Target:** Supabase Storage bucket `public-assets`.
-- **Upload Path:** `articles/{articleId}/{timestamp}-{sanitizedFilename}`.
-- **Validation:**
-  - Accepted MIME types: `image/jpeg`, `image/png`, `image/webp`, `image/avif`.
-  - Max file size: 5 MB.
-- **Alt Text Requirement:** Mandatory `featured_image_alt` text field when a featured image is attached.
-- **Storage Direct vs. Upload Action:** Uploads execute via Supabase SSR authenticated client on the server or authenticated client SDK.
+To ensure proper breadcrumb and navigation feedback:
+- `/admin` => Header title: `Dashboard`, Active module: `dashboard`
+- `/admin/articles` => Header title: `Articles`, Active module: `articles`
+- `/admin/articles/new` => Header title: `New Article Draft`, Active module: `articles`
+- `/admin/articles/[id]` => Header title: `Edit Article Draft`, Active module: `articles`
+- `/admin/articles?status=draft` => Header title: `Draft Articles`, Active module: `drafts`
 
----
-
-## 17. Validation Contract
-
-| Field | Rule | Error Message |
-| :--- | :--- | :--- |
-| `title` | Non-empty after trim, max 200 chars | *"Article title is required."* |
-| `content_json` | Must be a valid ProseMirror doc object | *"Invalid article content format."* |
-| `category_id` | Must be a valid UUID or null | *"Please select a valid category."* |
-| `featured_image_alt` | Required if `featured_image_path` is present | *"Alternative text is required when a featured image is set."* |
-| `reference.title` | Required for each reference row | *"Reference title cannot be blank."* |
-| `reference.source_name` | Required for each reference row | *"Reference source name cannot be blank."* |
-| `reference.url` | Must be valid HTTP/HTTPS URL if present | *"Reference URL must begin with http:// or https://"* |
+*Note: No `/admin/drafts` route will be created; drafts filtering is managed cleanly via `/admin/articles?status=draft`.*
 
 ---
 
-## 18. Error States & User Feedback
+## 17. Design System Tokens & Utility Alignment
 
-1. **Authentication Failure:** Server Action / RSC immediately redirects to `/admin/login`.
-2. **Draft Not Found:** Displays restrained Evidence Folio empty state with link back to `/admin/articles`.
-3. **Immutable Record Protection:** If a user navigates to `/admin/articles/[id]` for a published or archived article, the editor renders in **View-Only Mode** with a notice: *"This article is published. Content editing is locked in Stage 7."*
-4. **Network / Database Error:** Non-destructive toast/banner reporting the error while retaining all client form content and Tiptap state in memory so no writing is lost.
+All Stage-7 UI components will strictly adhere to canonical Tailwind tokens defined in `src/app/globals.css`:
 
----
+- Backgrounds: `bg-paper` (`#FFFDF9`), `bg-parchment` (`#F6F1E8`), `bg-subtle-field` (`#E8E2D7`)
+- Text: `text-ink` (`#242321`), `text-ink-muted` (`#5E5953`), `text-oxide-link` (`#7B3F35`)
+- Borders: `border-control-border` (`#918579`), `border-subtle-divider` (`#D2C9BC`), `border-oxide` (`#7B3F35`)
+- Badges & Accents: `bg-sage` (`#3F5E52`), `ring-focus-slate` (`#265D7A`)
 
-## 19. Accessibility Contract (a11y)
-
-- All inputs feature persistent, associated `<label>` elements.
-- Tiptap editor canvas exposes `role="textbox"` and `aria-label="Article content"`.
-- Toolbar buttons include descriptive `aria-label` attributes and visible focus rings (`ring-2 ring-[#265D7A]`).
-- Minimum touch target height of 44px on all interactive buttons and inputs.
-- High-contrast text tokens (`#242321` ink on `#FFFDF9` paper and `#F6F1E8` canvas).
+*Invented class names (e.g. `bg-reading-surface`, `border-brand-oxide`, `text-inline-link`) are strictly disallowed.*
 
 ---
 
-## 20. Responsive Admin Behavior
+## 18. Accessibility & Responsive Targets
 
-- **Desktop (1440px):** Two-column editorial layout (main canvas 720px measure; metadata sidebar for category, SEO, and featured image).
-- **Tablet (1024px) & Mobile (390px / 320px):** Single-column stacked layout with collapsible metadata sections.
-- Verified 0px horizontal overflow across all viewports.
-
----
-
-## 21. Security & RLS Enforcement
-
-- Every public route continues to enforce `status = 'published'`. Drafts created in Stage 7 remain strictly inaccessible to anonymous visitors.
-- Every Server Action independently checks `private.is_admin()` using the authenticated request context.
-- Zero service-role credentials are used or exposed in client bundles.
+- **Accessibility Contract:**
+  - All form controls feature explicit, associated `<label>` elements.
+  - Tiptap editor canvas exposes `role="textbox"` and `aria-label="Article content"`.
+  - All toolbar and reference action buttons include `aria-label` attributes, visible focus rings (`focus-visible:ring-2 focus-visible:ring-focus-slate`), and meet the 44px minimum touch target height.
+- **Responsive Target:**
+  - Required Stage-7 gate target: 0px horizontal overflow across tested Desktop (1440x900), Tablet (1024x768), Mobile (390x844), and Narrow Mobile (320x640) viewports.
 
 ---
 
-## 22. Quality & Security Testing Plan
+## 19. Quality & Security Testing Plan
 
-Before closing Stage 7, the following automated and manual tests must pass:
+Before closing Stage 7, the following automated tests and verifications must pass:
 
 1. **Authentication & Authorization Gates:**
    - Anonymous request to `/admin/articles` redirects to `/admin/login`.
    - Authenticated non-admin request to `/admin/articles` is denied.
    - Authenticated admin loads articles list and draft editor.
 2. **Draft Create / Save / Reopen Lifecycle:**
-   - Create new draft -> allocated unique provisional slug -> redirected to editor.
-   - Populate title, excerpt, Tiptap body, category, featured image, SEO fields, and 3 references.
-   - Click Save Draft -> verified saved to database.
-   - Reload page (`/admin/articles/[id]`) -> verify 100% data round-trip fidelity.
-3. **Mutation Boundary Tests:**
-   - Attempting to mutate a published or archived article via Stage-7 actions returns an explicit rejection error.
+   - First Save Draft creates row with provisional slug `draft-<uuid>` and redirects to `/admin/articles/[id]`.
+   - Populate title, excerpt, Tiptap body, category, featured image, SEO fields, and references.
+   - Subsequent Save Draft updates article and references atomically.
+   - Reopening `/admin/articles/[id]` verifies 100% data round-trip fidelity.
+3. **Atomicity & Rollback Regression Tests (pgTAP):**
+   - Successful draft create: article + references persist together.
+   - Successful draft update: article + reordered references persist together.
+   - Failed reference validation: entire RPC transaction rolls back, preserving pre-save state.
+   - Published/archived mutation attempts via RPC: rejected with exception.
+   - Non-admin and anonymous RPC calls: denied.
 4. **Code Quality Gates:**
    - `npm run typecheck` (0 errors)
    - `npm run lint` (0 errors)
    - `npm run format:check` (PASS)
    - `npm run build` (PASS)
    - `git diff --check` (0 whitespace errors)
-   - `npx supabase test db` (All database pgTAP tests pass)
+   - `npx supabase test db` (All pgTAP tests pass)
 
 ---
 
-## 23. Stage-7 Gate Criteria
+## 20. Decision Gate Summary (All Owner-Approved)
 
-The Stage-7 gate will pass when:
-1. Marie can create a new article draft, write rich text with headings, lists, quotes, and links in Tiptap, assign metadata and references, and save the draft.
-2. Reopening the draft completely restores all text, marks, references, and metadata.
-3. Draft content remains strictly hidden from public pages and public search.
-4. All quality gates, linting, build, and responsive checks pass with zero errors.
-
----
-
-## 24. Stage-8 Handoff Boundary
-
-Upon Stage-7 gate approval, Stage 8 will take ownership of:
-- Assigning canonical publishing slugs (`slug`).
-- Setting `status = 'published'`, `published_at = now()`.
-- Updating live published content.
-- Unpublishing, archiving, and deleting articles.
-- Tokenized public preview workflows.
-
----
-
-## 25. Unresolved Decision Gates
-
-| Decision Gate | Options | Proposed Recommendation | Status |
-| :--- | :--- | :--- | :--- |
-| **DG-01: Draft Slug Allocation** | A) Nullable slug column<br>B) Provisional slug (`draft-<short-uuid>`) | **Option B:** Provisional unique kebab-case slug satisfies existing schema constraint without migration. | **PENDING REVIEW** |
-| **DG-02: Tiptap Extension Set** | A) Minimal 5-package set<br>B) Include TableKit & Underline | **Option A:** Minimal set matching public renderer with 0 schema mismatch. | **PENDING REVIEW** |
-| **DG-03: Media Management Model** | A) Direct storage upload paths<br>B) Add `public.media` database table | **Option A:** Direct storage paths in `public-assets` satisfy V1 single-author needs without schema changes. | **PENDING REVIEW** |
+| Decision Gate | Status | Resolution |
+| :--- | :--- | :--- |
+| **DG-01: Draft Slug Allocation** | **OWNER APPROVED (D028)** | First Save Draft creates internal provisional slug `draft-<uuid>`. |
+| **DG-02: Tiptap Extension Set** | **OWNER APPROVED (D028)** | Exact 4 packages (`react`, `pm`, `starter-kit`, `placeholder`), StarterKit Link used, Underline disabled. |
+| **DG-03: Media Management Model** | **OWNER APPROVED (D028)** | Private `draft-assets` bucket for draft images; Stage 8 promotes to `public-assets`. |
+| **DG-04: Atomic Draft Persistence** | **OWNER APPROVED (D028)** | `public.save_article_draft` PostgreSQL RPC ensures atomic article + reference persistence. |
