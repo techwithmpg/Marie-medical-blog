@@ -609,6 +609,36 @@ Stage 7 is complete, verified, and merged into `main`:
   - [x] Local quality gates re-verified after reconciliation: `npx supabase db reset`, pgTAP (9 files, 124 tests, 0 failures), typecheck, lint, format check, and production build PASS;
   - [x] Stage-7 handoff documentation completed in `docs/30-STAGE-7-HANDOFF.md`.
 
+## Stage-8 progress record — Phase 8A (2026-08-26)
+
+- **Stage:** Stage 8 — Publishing Workflow
+- **Phase:** Phase 8A — Database Publishing Lifecycle Foundation
+- **Owner authorization:** D030 APPROVED + STAGE-8 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
+- **Active working branch:** `stage/08-publishing-workflow`
+- **Design specification:** `docs/31-STAGE-8-PUBLISHING-WORKFLOW-DESIGN.md`
+- **Phase 8A migration:** `supabase/migrations/20260825212334_stage8_publishing_lifecycle.sql`
+- **Phase 8A test suite:** `supabase/tests/database/10_stage8_publishing_workflow.test.sql`
+- **Phase 8A deliverables completed:**
+  - [x] Lifecycle RPC `public.publish_article` implemented (single-path from `draft`, canonical kebab slug validation, provisional draft slug pattern rejection, dynamic base truncation with unique collision suffix loop <=80 chars, first-time timestamp assignment `published_at = now()`, atomic reference replacement);
+  - [x] Lifecycle RPC `public.update_published_article` implemented (updates published article content and references while strictly preserving slug, status, published_at, and featured flags);
+  - [x] Lifecycle RPC `public.unpublish_article` implemented (transitions published article to `draft`, clears featured flags, demotes image path to `draft-assets`, preserves canonical slug and original `published_at`);
+  - [x] Lifecycle RPC `public.archive_article` implemented (transitions `draft` or `published` article to `archived`, clears featured flags, demotes image to private bucket if published, preserves canonical slug and `published_at`);
+  - [x] Lifecycle RPC `public.restore_article` implemented (transitions `archived` article to `draft`, preserving canonical slug, `published_at`, and draft image path);
+  - [x] Lifecycle RPC `public.delete_article` implemented (permanently deletes never-published draft/archived records where `published_at IS NULL`; strictly rejects deletion of ever-published records to protect permanent URL integrity; cascades reference deletion);
+  - [x] All 6 RPCs configured as `SECURITY INVOKER`, locked `search_path = ''`, protected by `private.is_admin()`, revoked from `PUBLIC` and `anon`, granted to `authenticated`;
+  - [x] Comprehensive pgTAP test suite created with 75 subtests covering security invoker configuration, anonymous/non-admin denial, publication, canonical slug validation, collision retry handling, single-path state transitions, unpublishing, republishing slug freeze, archiving, restoring, deletion safety, and public leakage defense.
+- **Local Quality Gates (Phase 8A):**
+  - `npx supabase db reset`: PASS (clean reset from zero across all migrations)
+  - `npx supabase test db`: PASS (10 files, 199 tests, 0 failures; 75 tests in Stage-8 suite)
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier code style verified)
+  - `npm run build`: PASS (Next.js production build successful)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-8 deployment:** NOT AUTHORIZED
+- **Phase 8B / Phase 8C status:** NOT AUTHORIZED
+
 ## Stage transition rule
 
 A future stage transition requires all of the following:
