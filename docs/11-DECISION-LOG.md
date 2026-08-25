@@ -198,6 +198,16 @@ Only record decisions that materially affect product behavior, architecture, sec
 **Approved by:** project owner — explicit approval on 2026-08-25.
 **Status:** ACTIVE / FROZEN FOR STAGE 4.
 
+### D027 execution addendum — one replacement migration attempt
+- **Date:** 2026-08-25
+- The original `apply_migration` invocation was rejected by the stale read-only MCP session with: "Cannot apply migration in read-only mode."
+- Hosted inspection confirmed zero mutation occurred.
+- Project owner explicitly authorizes exactly ONE replacement `apply_migration` invocation through a freshly bound `supabase_stage4_write` connection.
+- No additional retry is authorized.
+- All other D027 restrictions remain unchanged.
+- Marie provisioning remains unauthorized.
+- Stage 5 remains unauthorized.
+
 ---
 
 ## New decision template
