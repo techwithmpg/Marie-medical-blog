@@ -207,7 +207,6 @@ export default async function AboutPage() {
                   <ul className="space-y-1.5">
                     <li>• Evidence-based medical writing</li>
                     <li>• Educational healthcare publications</li>
-                    <li>• Literature synthesis and review</li>
                   </ul>
                 </div>
 

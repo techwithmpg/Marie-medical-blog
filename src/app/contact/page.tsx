@@ -46,8 +46,8 @@ export default function ContactPage() {
                 </span>
                 <p className="text-xs leading-relaxed text-[#5E5953]">
                   This contact channel is intended for professional inquiries
-                  regarding medical writing, publication development, and
-                  editorial collaboration.
+                  regarding Marie Medere&apos;s medical writing portfolio and
+                  educational publication.
                 </p>
 
                 <SplitRule />

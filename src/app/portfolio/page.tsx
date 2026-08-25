@@ -50,9 +50,9 @@ export default function PortfolioPage() {
                 Professional Inquiries
               </h2>
               <p className="text-sm leading-relaxed text-[#5E5953]">
-                For professional medical writing inquiries, editorial
-                consultations, or publication communications, contact Marie
-                Medere.
+                For inquiries about Marie Medere&apos;s medical writing
+                portfolio and educational publication work, use the contact
+                page.
               </p>
               <div className="pt-2">
                 <Link
