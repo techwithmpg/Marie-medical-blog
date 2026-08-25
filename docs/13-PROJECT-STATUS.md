@@ -4,7 +4,7 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 6 — Article Reading & Discovery — ACTIVE / CORRECTIONS COMPLETE / EXTERNAL REVIEW PENDING
+- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-5 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
@@ -22,8 +22,8 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN PENDING EXTERNAL REVIEW
-- **Gate status:** IN PROGRESS — EXTERNAL REVIEW PENDING
+- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
+- **Gate status:** PASS
 - **Active working branch:** `stage/06-article-discovery`
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
@@ -507,7 +507,7 @@ Stage 5 is complete, verified, and merged into `main`:
 
 Stage 6 — Article Reading & Discovery:
 
-- **Stage status:** ACTIVE / CORRECTIONS COMPLETE / EXTERNAL REVIEW PENDING
+- **Stage status:** COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
 - **Active working branch:** `stage/06-article-discovery`
@@ -531,11 +531,13 @@ Stage 6 — Article Reading & Discovery:
   - [x] Next.js image handling via `next/image` with narrow Supabase storage remote patterns and strict `featured_image_alt` check;
   - [x] Heading hierarchy normalized across all article views with single H1 per page;
   - [x] Mobile 44px minimum touch targets and `aria-current="page"` topic filter states;
+  - [x] Visual control colors aligned with canonical `globals.css` tokens (`oxide`, `paper`, `ink-muted`, `control-border`);
   - [x] Security matrix SEC-01 through SEC-10 verified;
   - [x] Quality gates: local db reset, pgTAP (8 files, 95 tests), typecheck, lint, format check, and production build PASS;
-  - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) in `E:\stage6-visual-review-final\` with 0px horizontal overflow.
-- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN PENDING EXTERNAL REVIEW
-- **Gate status:** IN PROGRESS — EXTERNAL REVIEW PENDING (DO NOT MERGE)
+  - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow;
+  - [x] External visual, code, and security reviews: PASS.
+- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
+- **Gate status:** PASS — AWAITING OWNER MERGE APPROVAL (DO NOT MERGE)
 - **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 
 ## Stage transition rule
