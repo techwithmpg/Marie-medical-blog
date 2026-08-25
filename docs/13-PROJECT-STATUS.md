@@ -4,17 +4,18 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / IMPLEMENTATION — PHASE 7A PERSISTENCE FOUNDATION COMPLETE
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — COMPLETE / LOCAL GATE PASS / READY FOR EXTERNAL REVIEW
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
 - **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
 - **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
+- **Stage-7 writer workspace implementation SHA:** `5b07ee28ffbf31a61361c47087e59c049ee254a6`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** AUTHORIZED — STAGE 7 ONLY
-- **Gate status:** IN PROGRESS — UI / AUTHORING WORKSPACE PENDING
+- **Gate status:** PASS — STAGE 7 LOCAL QUALITY GATES COMPLETE & VERIFIED
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -554,21 +555,22 @@ Stage 6 — Article Reading & Discovery:
 - **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
 - **Gate status:** PASS
 
-## Stage-7 start & pre-implementation design record
+## Stage-7 progress & implementation record
 
 Stage 7 — Writer Dashboard & Tiptap Editor:
 
-- **Stage status:** ACTIVE / IMPLEMENTATION — PHASE 7A PERSISTENCE FOUNDATION COMPLETE
+- **Stage status:** COMPLETE / LOCAL GATE PASS / READY FOR EXTERNAL REVIEW
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
 - **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
 - **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
+- **Stage-7 writer workspace implementation SHA:** `5b07ee28ffbf31a61361c47087e59c049ee254a6`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
 - **Application coding authorized:** AUTHORIZED — STAGE 7 ONLY
-- **Gate status:** IN PROGRESS — UI / AUTHORING WORKSPACE PENDING
+- **Gate status:** PASS — STAGE 7 LOCAL QUALITY GATES COMPLETE & VERIFIED
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
 - **Phase 7A deliverables completed:**
@@ -576,6 +578,19 @@ Stage 7 — Writer Dashboard & Tiptap Editor:
   - [x] Private `draft-assets` bucket created (`public = false`, 5MB limit, image MIME types only);
   - [x] Storage RLS policies for `draft-assets` (admin only, anonymous/non-admin denied);
   - [x] Atomic persistence RPC `public.save_article_draft` created as `SECURITY INVOKER` with search_path safety;
+  - [x] Quality gates: local db reset, pgTAP (9 files, 123 tests, 0 failures), typecheck, lint, format check, and production build PASS.
+- **Phase 7B deliverables completed:**
+  - [x] Route `/admin/articles` implemented with status filters (All, Drafts, Published, Archived), responsive table/card layout, empty states, and "New Article" action link;
+  - [x] Route `/admin/articles/new` implemented with clean unsaved initial state (0 database row created on page load);
+  - [x] Route `/admin/articles/[id]` implemented with draft editing workspace for drafts and read-only view for published/archived rows;
+  - [x] Tiptap editorial canvas and accessible formatting toolbar implemented supporting only approved nodes/marks (heading 2/3, bold, italic, strike, code, link, bulletList, orderedList, blockquote, codeBlock, horizontalRule, undo, redo; underline disabled);
+  - [x] Metadata editing implemented for title, excerpt, category selector, SEO title, and SEO description;
+  - [x] Private featured image upload to `draft-assets` bucket implemented with disabled initial state on unsaved draft, authenticated preview via signed URL, 5MB / MIME validation, and mandatory alt text;
+  - [x] Interactive Reference Ledger implemented with title, source, URL, citation details, Add, Remove, Move Up, Move Down, and persistent sequential `sort_order`;
+  - [x] Route-aware AdminShell title and active module mapping implemented via `x-pathname`;
+  - [x] Dirty state tracking, `beforeunload` warning protection, and `Ctrl+S` / `Cmd+S` keyboard save shortcut implemented;
+  - [x] Responsive layout verified across Desktop (1440x900), Tablet (1024x768), Mobile (390x844), and Narrow (320x640) with 0px horizontal overflow;
+  - [x] Security and access restrictions verified (anonymous draft and draft-asset access rejected);
   - [x] Quality gates: local db reset, pgTAP (9 files, 123 tests, 0 failures), typecheck, lint, format check, and production build PASS.
 
 ## Stage transition rule
