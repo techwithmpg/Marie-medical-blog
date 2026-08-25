@@ -4,15 +4,17 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / IMPLEMENTATION AUTHORIZED / PHASE 7A
+- **Current stage:** Stage 7 — Writer Dashboard & Tiptap Editor — ACTIVE / IMPLEMENTATION — PHASE 7A PERSISTENCE FOUNDATION COMPLETE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
+- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
+- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** YES — STAGE 7 ONLY
-- **Gate status:** IN PROGRESS — PERSISTENCE FOUNDATION
+- **Application coding authorized:** AUTHORIZED — STAGE 7 ONLY
+- **Gate status:** IN PROGRESS — UI / AUTHORING WORKSPACE PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
@@ -556,17 +558,25 @@ Stage 6 — Article Reading & Discovery:
 
 Stage 7 — Writer Dashboard & Tiptap Editor:
 
-- **Stage status:** ACTIVE / IMPLEMENTATION AUTHORIZED / PHASE 7A
+- **Stage status:** ACTIVE / IMPLEMENTATION — PHASE 7A PERSISTENCE FOUNDATION COMPLETE
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Canonical Stage-7 base:** `927412a054ccf15bbb1caa23a54a48d761731a04`
 - **Stage-7 initial design commit:** `0c0ceb58fe823f4bfffa3e61020327fe5bd6e7fe`
 - **Stage-7 design-hardening commit:** `d941c2e100bf00965fd27f8c3ecc3c7eefb6d544`
+- **Stage-7 implementation authorization SHA:** `8f6ac82f3c198e5a28b125ae93209b17e68db1df`
+- **Stage-7 persistence foundation SHA:** `da2d2344e57a307e808d5d575bf7ab1132411f37`
 - **Stage-7 owner-approved architecture decision:** D028
 - **Active working branch:** `stage/07-writer-dashboard-editor`
-- **Application coding authorized:** YES — STAGE 7 ONLY
-- **Gate status:** IN PROGRESS — PERSISTENCE FOUNDATION
+- **Application coding authorized:** AUTHORIZED — STAGE 7 ONLY
+- **Gate status:** IN PROGRESS — UI / AUTHORING WORKSPACE PENDING
 - **Next implementation stage:** Stage 8 — Publishing Workflow — NOT AUTHORIZED
 - **Design specification:** `docs/29-STAGE-7-WRITER-DASHBOARD-EDITOR-DESIGN.md`
+- **Phase 7A deliverables completed:**
+  - [x] Exact Tiptap dependencies installed (`@tiptap/react@3.30.3`, `@tiptap/pm@3.30.3`, `@tiptap/starter-kit@3.30.3`, `@tiptap/extension-placeholder@3.30.3`);
+  - [x] Private `draft-assets` bucket created (`public = false`, 5MB limit, image MIME types only);
+  - [x] Storage RLS policies for `draft-assets` (admin only, anonymous/non-admin denied);
+  - [x] Atomic persistence RPC `public.save_article_draft` created as `SECURITY INVOKER` with search_path safety;
+  - [x] Quality gates: local db reset, pgTAP (9 files, 123 tests, 0 failures), typecheck, lint, format check, and production build PASS.
 
 ## Stage transition rule
 
