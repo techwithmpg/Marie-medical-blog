@@ -1,5 +1,5 @@
 -- Seed File: supabase/seed.sql
--- Purpose: Synthetic local development data for Stage-3 testing and development.
+-- Purpose: Synthetic local development data for Stage-3 and Stage-6 testing.
 -- STRICT POLICY: Synthetic fixtures ONLY. Never deploy to production or hosted database.
 
 -- ============================================================================
@@ -99,17 +99,25 @@ insert into public.profiles (
   updated_at
 ) values (
   '00000000-0000-0000-0000-000000000001',
-  'Synthetic Medical Writer',
-  'Medical Communications & Scientific Writing Placeholder',
-  'Synthetic short biography for local development and UI testing.',
-  'Synthetic extended biography providing sample text for testing layout rendering and typography without making real professional or medical claims.',
-  'M.Sc. Biomedical Communications (Synthetic Example)',
-  array['Medical Writing', 'Clinical Trial Documentation', 'Health Literacy', 'Continuing Medical Education'],
-  '[{"platform": "LinkedIn", "url": "https://example.invalid/profile"}, {"platform": "ORCID", "url": "https://orcid.example.invalid/0000-0000-0000-0000"}]'::jsonb,
-  'sample-cv.pdf',
+  'Synthetic Stage 6 Author',
+  'Synthetic local development profile',
+  'Synthetic profile text used only for local Stage 6 layout testing.',
+  'Synthetic extended profile text used exclusively for local Stage 6 development verification and typography rendering without making real medical or professional claims.',
+  null,
+  array['Synthetic Testing', 'Editorial Typography', 'Layout Verification'],
+  '[]'::jsonb,
+  null,
   now(),
   now()
-) on conflict (id) do nothing;
+) on conflict (id) do update set
+  display_name = excluded.display_name,
+  professional_tagline = excluded.professional_tagline,
+  short_bio = excluded.short_bio,
+  long_bio = excluded.long_bio,
+  education_summary = excluded.education_summary,
+  interests = excluded.interests,
+  social_links = excluded.social_links,
+  cv_storage_path = excluded.cv_storage_path;
 
 -- ============================================================================
 -- 4. Synthetic Categories (public.categories)
@@ -124,19 +132,21 @@ insert into public.categories (
   updated_at
 ) values (
   '10000000-0000-0000-0000-000000000001',
-  'Clinical Communications',
+  'Synthetic — Clinical Communications',
   'clinical-communications',
-  'Synthetic category for articles covering medical documentation and healthcare communication standards.',
+  'Synthetic local category fixture for testing clinical communications layouts and article filtering.',
   now(),
   now()
 ), (
   '10000000-0000-0000-0000-000000000002',
-  'Health Literacy & Education',
+  'Synthetic — Health Literacy & Education',
   'health-literacy-education',
-  'Synthetic category for plain-language medical translations and patient education methods.',
+  'Synthetic local category fixture for testing health literacy layouts and article filtering.',
   now(),
   now()
-) on conflict (id) do nothing;
+) on conflict (id) do update set
+  name = excluded.name,
+  description = excluded.description;
 
 -- ============================================================================
 -- 5. Synthetic Articles (public.articles)
@@ -161,26 +171,98 @@ insert into public.articles (
   updated_at
 ) values (
   '20000000-0000-0000-0000-000000000001',
-  'Evaluating Plain Language Standards in Clinical Protocol Summaries',
+  'Synthetic — Evaluating Plain Language Standards in Protocol Summaries',
   'plain-language-clinical-protocol-summaries',
-  'A synthetic sample article analyzing structured methodologies for drafting accessible clinical study summaries for multidisciplinary audiences.',
-  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "This is a synthetic sample article body designed to test content rendering, typography, and database constraints without making authoritative medical claims."}]}]}'::jsonb,
-  'sample-featured-image-1.webp',
-  'Synthetic placeholder illustration of clinical document review ledger',
+  'Synthetic local test excerpt examining layout structures and formatting for protocol summary documents.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "This synthetic development paragraph exists only to test long-form article typography, spacing, lists, and reference rendering without making clinical claims."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": { "level": 2 },
+        "content": [{ "type": "text", "text": "Synthetic Structural Typography Test Heading" }]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "The following list verifies unordered list rendering inside the Evidence Folio reading environment:"
+          }
+        ]
+      },
+      {
+        "type": "bulletList",
+        "content": [
+          {
+            "type": "listItem",
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 01: testing bullet point alignment." }] }]
+          },
+          {
+            "type": "listItem",
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 02: testing typography line-height." }] }]
+          },
+          {
+            "type": "listItem",
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Synthetic list item 03: testing nested paragraph wrapping." }] }]
+          }
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This synthetic blockquote verifies callout styling, border-left accent color, and muted typography measures."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": { "level": 3 },
+        "content": [{ "type": "text", "text": "Synthetic Subheading for Hierarchical Verification" }]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Concluding synthetic paragraph ensuring proper baseline spacing before the Reference Ledger section."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
   '10000000-0000-0000-0000-000000000001',
   'published',
   true,
   true,
-  'Plain Language Standards in Clinical Summaries | Portfolio Sample',
-  'A synthetic sample examining plain language methodologies for clinical protocol summaries.',
-  now() - interval '2 days',
-  now() - interval '2 days',
-  now() - interval '2 days'
+  'Plain Language Standards in Protocol Summaries (Synthetic Fixture)',
+  'Synthetic sample examining layout structures for clinical protocol summaries.',
+  now() - interval '8 days',
+  now() - interval '8 days',
+  now() - interval '8 days'
 ), (
   '20000000-0000-0000-0000-000000000002',
-  'Draft: Best Practices for Regulatory Document Structuring',
+  'Synthetic Draft — Best Practices for Regulatory Document Structuring',
   'draft-regulatory-document-structuring',
-  'A synthetic draft article testing private access restrictions and author draft persistence workflows.',
+  'Synthetic draft article testing private access restrictions and author draft persistence workflows.',
   '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Draft content that must remain hidden from anonymous visitors and non-admin authenticated users."}]}]}'::jsonb,
   null,
   null,
@@ -188,16 +270,16 @@ insert into public.articles (
   'draft',
   false,
   false,
-  'Draft Regulatory Structuring',
+  'Draft Regulatory Structuring (Synthetic Fixture)',
   'Synthetic draft meta description.',
   null,
   now() - interval '1 day',
   now() - interval '1 day'
 ), (
   '20000000-0000-0000-0000-000000000003',
-  'Archived: Historical Overview of 2024 Editorial Guidelines',
+  'Synthetic Archived — Historical Overview of 2024 Editorial Guidelines',
   'archived-historical-editorial-guidelines',
-  'A synthetic archived article verifying that archived content is inaccessible to the public and accessible to admins.',
+  'Synthetic archived article verifying that archived content is inaccessible to the public and accessible to admins.',
   '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Archived content preserved for administrative records."}]}]}'::jsonb,
   null,
   null,
@@ -205,12 +287,235 @@ insert into public.articles (
   'archived',
   false,
   false,
-  'Archived Guidelines',
+  'Archived Guidelines (Synthetic Fixture)',
   'Synthetic archived meta description.',
   now() - interval '30 days',
   now() - interval '30 days',
   now() - interval '10 days'
-) on conflict (id) do nothing;
+), (
+  '20000000-0000-0000-0000-000000000004',
+  'Synthetic — Structured Methods for Patient Education Materials',
+  'patient-education-materials-chronic-care',
+  'Synthetic test article evaluating formatting and layout strategies for patient education guides.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "This synthetic fixture tests layout rendering for health literacy articles without making substantive clinical claims."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000002',
+  'published',
+  false,
+  true,
+  'Patient Education Materials (Synthetic Fixture)',
+  'Synthetic fixture examining patient education layout.',
+  now() - interval '7 days',
+  now() - interval '7 days',
+  now() - interval '7 days'
+), (
+  '20000000-0000-0000-0000-000000000005',
+  'Synthetic — Comparative Analysis of Editorial Consistency in Trial Reports',
+  'editorial-consistency-multi-center-reports',
+  'Synthetic test fixture examining multi-center editorial formatting guidelines.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic test content for multi-center documentation consistency."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000001',
+  'published',
+  false,
+  false,
+  'Editorial Consistency (Synthetic Fixture)',
+  'Synthetic test fixture for trial reporting consistency.',
+  now() - interval '6 days',
+  now() - interval '6 days',
+  now() - interval '6 days'
+), (
+  '20000000-0000-0000-0000-000000000006',
+  'Synthetic — Visual Hierarchy and Readability in Public Health Notices',
+  'visual-hierarchy-readability-public-health',
+  'Synthetic test fixture analyzing typographic hierarchy in public notices.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic fixture paragraph evaluating visual hierarchy in public communication."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000002',
+  'published',
+  false,
+  false,
+  'Visual Hierarchy (Synthetic Fixture)',
+  'Synthetic fixture on visual hierarchy.',
+  now() - interval '5 days',
+  now() - interval '5 days',
+  now() - interval '5 days'
+), (
+  '20000000-0000-0000-0000-000000000007',
+  'Synthetic — Syntax and Terminology Standardization in Documentation',
+  'syntax-standardization-investigator-documents',
+  'Synthetic fixture evaluating terminology control methodologies in documentation packages.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic content evaluating terminology standardization."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000001',
+  'published',
+  false,
+  false,
+  'Syntax Standardization (Synthetic Fixture)',
+  'Synthetic fixture on syntax standardization.',
+  now() - interval '4 days',
+  now() - interval '4 days',
+  now() - interval '4 days'
+), (
+  '20000000-0000-0000-0000-000000000008',
+  'Synthetic — Designing Contextual Glossaries in Clinical Documentation',
+  'accessible-informed-consent-glossaries',
+  'Synthetic fixture analyzing glossary structuring in clinical trial documentation.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic fixture testing glossary formatting."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000002',
+  'published',
+  false,
+  false,
+  'Consent Glossaries (Synthetic Fixture)',
+  'Synthetic fixture on consent glossaries.',
+  now() - interval '3 days',
+  now() - interval '3 days',
+  now() - interval '3 days'
+), (
+  '20000000-0000-0000-0000-000000000009',
+  'Synthetic — Structuring Executive Summaries in Technical Healthcare Writing',
+  'executive-summaries-healthcare-technical-writing',
+  'Synthetic fixture exploring summary structures for technical healthcare writing.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic fixture text for executive summary structure."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  '10000000-0000-0000-0000-000000000001',
+  'published',
+  false,
+  false,
+  'Executive Summaries (Synthetic Fixture)',
+  'Synthetic fixture on executive summaries.',
+  now() - interval '2 days',
+  now() - interval '2 days',
+  now() - interval '2 days'
+), (
+  '20000000-0000-0000-0000-000000000010',
+  'Synthetic — Methodologies for Scientific Typography in Editorial Layouts',
+  'scientific-typography-medical-publication-layouts',
+  'Synthetic fixture exploring typographic measures and citation scannability.',
+  '{
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Synthetic fixture text evaluating scientific typography in editorial layouts."
+          }
+        ]
+      }
+    ]
+  }'::jsonb,
+  null,
+  null,
+  null,
+  'published',
+  false,
+  false,
+  'Scientific Typography (Synthetic Fixture)',
+  'Synthetic fixture on typography in editorial layouts.',
+  now() - interval '1 day',
+  now() - interval '1 day',
+  now() - interval '1 day'
+) on conflict (id) do update set
+  title = excluded.title,
+  slug = excluded.slug,
+  excerpt = excluded.excerpt,
+  content_json = excluded.content_json,
+  featured_image_path = excluded.featured_image_path,
+  featured_image_alt = excluded.featured_image_alt,
+  category_id = excluded.category_id,
+  status = excluded.status,
+  is_featured = excluded.is_featured,
+  is_portfolio_featured = excluded.is_portfolio_featured,
+  seo_title = excluded.seo_title,
+  seo_description = excluded.seo_description,
+  published_at = excluded.published_at;
 
 -- ============================================================================
 -- 6. Synthetic Article References (public.article_references)
@@ -228,31 +533,45 @@ insert into public.article_references (
 ) values (
   '30000000-0000-0000-0000-000000000001',
   '20000000-0000-0000-0000-000000000001',
-  'Guidelines for Clear and Concise Medical Writing in Scientific Publications',
+  'Synthetic Reference: Guidelines for Clear Protocol Summaries',
   'Synthetic Journal of Medical Communications',
-  'https://example.invalid/citations/guidelines-2025',
+  'https://example.invalid/citations/synthetic-guidelines-2025',
   'Vol. 14, No. 2, pp. 112–128 (Synthetic Citation)',
   0,
-  now() - interval '2 days'
+  now() - interval '8 days'
 ), (
   '30000000-0000-0000-0000-000000000002',
   '20000000-0000-0000-0000-000000000001',
-  'Standards for Plain Language Communication in Healthcare Documentation',
-  'Health Communication Working Group (Synthetic)',
-  'https://example.invalid/citations/standards-health-comms',
-  'Section 4.1: Readability Metrics and Terminology Glossaries',
+  'Synthetic Reference: Standards for Plain Language Formatting',
+  'Synthetic Health Communication Working Group',
+  'https://example.invalid/citations/synthetic-standards-health-comms',
+  'Section 4.1: Readability Metrics and Terminology (Synthetic)',
   1,
-  now() - interval '2 days'
+  now() - interval '8 days'
 ), (
   '30000000-0000-0000-0000-000000000003',
   '20000000-0000-0000-0000-000000000002',
-  'Draft Reference for Regulatory Guidelines',
-  'Regulatory Science Review (Synthetic)',
-  'https://example.invalid/citations/regulatory-draft-ref',
-  'Unpublished Reference for Draft Article',
+  'Synthetic Draft Reference for Regulatory Guidelines',
+  'Synthetic Regulatory Science Review',
+  'https://example.invalid/citations/synthetic-regulatory-draft-ref',
+  'Unpublished Reference for Draft Article (Synthetic)',
   0,
   now() - interval '1 day'
-) on conflict (id) do nothing;
+), (
+  '30000000-0000-0000-0000-000000000004',
+  '20000000-0000-0000-0000-000000000004',
+  'Synthetic Reference: Patient Education Formatting Framework',
+  'Synthetic Educational Communications Review',
+  'https://example.invalid/citations/synthetic-patient-health-literacy',
+  'Vol. 9, Issue 3, pp. 45–59 (Synthetic Citation)',
+  0,
+  now() - interval '7 days'
+) on conflict (id) do update set
+  title = excluded.title,
+  source_name = excluded.source_name,
+  url = excluded.url,
+  citation_details = excluded.citation_details,
+  sort_order = excluded.sort_order;
 
 -- ============================================================================
 -- 7. Synthetic Comments (public.comments)
@@ -270,18 +589,18 @@ insert into public.comments (
 ) values (
   '40000000-0000-0000-0000-000000000001',
   '20000000-0000-0000-0000-000000000001',
-  'Dr. Alex Morgan (Synthetic Reader)',
+  'Synthetic Reviewer',
   'reader-alex@example.invalid',
-  'Thank you for this clear breakdown of summary methodology. The section on glossary formatting was especially helpful.',
+  'Synthetic approved comment for local typography testing.',
   'approved',
   now() - interval '1 day',
   now() - interval '12 hours'
 ), (
   '40000000-0000-0000-0000-000000000002',
   '20000000-0000-0000-0000-000000000001',
-  'Jordan Lee (Synthetic Reader)',
+  'Synthetic Pending Commenter',
   'reader-jordan@example.invalid',
-  'This is a pending comment submitted for moderation review testing.',
+  'Synthetic pending comment submitted for moderation review testing.',
   'pending',
   now() - interval '3 hours',
   null
@@ -301,10 +620,10 @@ insert into public.contact_messages (
   created_at
 ) values (
   '50000000-0000-0000-0000-000000000001',
-  'Sam Taylor (Synthetic Inquirer)',
+  'Synthetic Inquirer',
   'inquirer-sam@example.invalid',
-  'Inquiry Regarding Medical Writing Collaboration',
-  'Hello, I am reaching out to discuss potential medical writing and editorial support for an upcoming continuing education publication series. This is a synthetic message for local inbox testing.',
+  'Synthetic Inquiry Regarding Medical Writing Collaboration',
+  'Synthetic contact message for local inbox testing.',
   'new',
   now() - interval '4 hours'
 ) on conflict (id) do nothing;
@@ -327,10 +646,10 @@ insert into public.site_settings (
   1,
   'Marie Medere',
   'Medical Writing Portfolio & Educational Blog',
-  'Professional medical writing portfolio and educational blog featuring clear, evidence-based medical communications and clinical writing samples.',
-  '[{"platform": "LinkedIn", "url": "https://example.invalid/profile"}, {"platform": "ORCID", "url": "https://orcid.example.invalid/0000-0000-0000-0000"}]'::jsonb,
+  'Medical Writing Portfolio & Educational Blog by Marie Medere.',
+  '[]'::jsonb,
   'The content published on this website is for educational and informational purposes only and does not constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding medical conditions.',
-  'Welcome to my medical writing portfolio and educational blog. Here you will find peer-referenced articles, clinical writing samples, and resources on medical communications.',
+  'Synthetic Stage 6 homepage introduction used only for local layout and article-discovery verification.',
   now(),
   now()
 ) on conflict (id) do update set

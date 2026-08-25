@@ -8,7 +8,14 @@ import { TopicImprint } from "@/components/evidence/topic-imprint";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
+import { ArticleListItem } from "@/components/public/article-list-item";
+import { FeaturedArticle } from "@/components/public/featured-article";
 import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
+import {
+  getFeaturedPublishedArticle,
+  getLatestPublishedArticles,
+  type PublicArticleSummary,
+} from "@/lib/public-articles";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -17,8 +24,36 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const profile = await getPublicProfile();
-  const settings = await getPublicSiteSettings();
+  const [profile, settings] = await Promise.all([
+    getPublicProfile(),
+    getPublicSiteSettings(),
+  ]);
+
+  let leadArticle: PublicArticleSummary | null = null;
+  let isLeadExplicitlyFeatured = false;
+  let supportingArticles: PublicArticleSummary[] = [];
+  let fetchError = false;
+
+  try {
+    const [fetchedFeatured, fetchedLatest] = await Promise.all([
+      getFeaturedPublishedArticle(),
+      getLatestPublishedArticles(4),
+    ]);
+
+    if (fetchedFeatured) {
+      leadArticle = fetchedFeatured;
+      isLeadExplicitlyFeatured = true;
+      supportingArticles = fetchedLatest
+        .filter((a) => a.id !== fetchedFeatured.id)
+        .slice(0, 3);
+    } else if (fetchedLatest.length > 0) {
+      leadArticle = fetchedLatest[0];
+      isLeadExplicitlyFeatured = false;
+      supportingArticles = fetchedLatest.slice(1, 4);
+    }
+  } catch {
+    fetchError = true;
+  }
 
   const siteTitle =
     settings.site_title || profile.display_name || "Marie Medere";
@@ -30,6 +65,8 @@ export default async function HomePage() {
     settings.homepage_intro ||
     profile.short_bio ||
     "A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication.";
+
+  const hasPublishedContent = Boolean(leadArticle);
 
   return (
     <PublicShell>
@@ -56,10 +93,16 @@ export default async function HomePage() {
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
-              href="/portfolio"
+              href="/blog"
               className={cn(buttonVariants({ variant: "default", size: "lg" }))}
             >
-              Explore Selected Writing
+              Explore Articles
+            </Link>
+            <Link
+              href="/portfolio"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+            >
+              Selected Writing
             </Link>
             <Link
               href="/about"
@@ -129,7 +172,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Section 03: Selected Writing Overview (Editorial Layout, No 3-card grid) */}
+        {/* Section 03: Selected Writing Overview */}
         <section className="space-y-8">
           <div className="flex items-center gap-3">
             <FolioMarker number={3} label="Selected Writing" />
@@ -139,27 +182,53 @@ export default async function HomePage() {
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div className="space-y-2">
               <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-                Selected Writing &amp; Publications
+                Recent Writing
               </h2>
               <p className="max-w-xl text-base leading-relaxed text-[#5E5953]">
-                Curated medical writing entries and educational publications.
+                Published writing and educational articles.
               </p>
             </div>
             <Link
-              href="/portfolio"
+              href="/blog"
               className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
-              View Portfolio Overview →
+              Browse All Articles →
             </Link>
           </div>
 
-          <EmptyEditorialState
-            title="Selected Writing"
-            description="Published articles and selected medical writing entries will appear here as publications are released."
-            topicLabel="Publication Archive"
-            actionHref="/portfolio"
-            actionLabel="View Portfolio Overview"
-          />
+          {fetchError ? (
+            <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+              Unable to load published writing at this time. Please try again
+              later.
+            </div>
+          ) : hasPublishedContent && leadArticle ? (
+            <div className="space-y-6">
+              <FeaturedArticle
+                article={leadArticle}
+                isExplicitlyFeatured={isLeadExplicitlyFeatured}
+                headingLevel="h3"
+              />
+              {supportingArticles.length > 0 && (
+                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {supportingArticles.map((article, index) => (
+                    <ArticleListItem
+                      key={article.id}
+                      article={article}
+                      index={index + 1}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <EmptyEditorialState
+              title="Selected Writing"
+              description="Published articles and selected medical writing entries will appear here as publications are released."
+              topicLabel="Publication Archive"
+              actionHref="/blog"
+              actionLabel="View Article Archive"
+            />
+          )}
         </section>
 
         {/* Section 04: About Marie Bridge */}

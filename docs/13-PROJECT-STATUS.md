@@ -4,7 +4,8 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 5 — Public Static / Identity Pages — COMPLETE / MERGED / GATE PASS
+- **Current stage:** Stage 6 — Article Reading & Discovery — COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
 - **Stage-5 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-5 approved branch head:** `adc77b6bf1deb92951879a5746597cbe34e029cd`
 - **Stage-5 merge commit:** `cd1007538a16868deca1f404ae62f54142df308c`
@@ -21,9 +22,16 @@ This file is the authoritative repository record of the currently active develop
   - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
 - **Gate status:** PASS
-- **Active working branch:** `main`
+- **Active working branch:** `stage/06-article-discovery`
+- **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
+- **Stage-6 initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
+- **Stage-6 first review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
+- **Stage-6 final review micro-correction commit:** `e6fdad81f738b3eedacd0b1eb098584bd5fe614f`
+- **Stage-6 governance alignment commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
+- **Stage-6 visual-control correction commit:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
+- **Stage-6 gate-closeout commit:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
 - **Canonical Stage-5 base:** `420a487cf38c991119965c0a0735a46d565be2d6`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
@@ -53,7 +61,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-3 merge parents:**
   - first parent (prior main): `e9480f7e0ae1a945203066aeedf04050112ac154`
   - second parent (approved Stage-3 head): `184e3be6530708bd4d02c30d2fb2f38ff2399e6a`
-- **Next implementation stage:** Stage 6 — Article Reading & Discovery — NOT AUTHORIZED
+- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 - **Remote:** `origin` → `https://github.com/techwithmpg/Marie-medical-blog.git`
 - **Repository visibility:** public by owner decision
 - **Accepted predevelopment UI contract:** Evidence Folio — `docs/18-UI-IMPLEMENTATION-CONTRACT.md`
@@ -208,35 +216,37 @@ This acceptance defines future implementation requirements only. It does **not**
 
 ## Current authorization boundary
 
-**Stage 4 — Authentication & Admin Access is AUTHORIZED and ACTIVE.**
+**Stage 6 — Article Reading & Discovery is AUTHORIZED and ACTIVE, with
+implementation currently frozen pending external review.**
 
-Owner authorization was given on **2026-08-25** in ChatGPT after Stage 3 was fully merged, synchronized, and verified on `main`.
+Owner authorization was given on **2026-08-25** after Stage 5 was fully
+completed, merged, synchronized, and verified on `main`.
 
-Stage 4 may implement only:
+Stage 6 owns:
 
-- Marie sign-in UI at `/admin/login`;
-- Next.js cookie-based Supabase SSR client architecture;
-- Next.js session refresh proxy/middleware;
-- server-side single-admin authorization helper `requireAdmin()`;
-- authenticated boolean RPC `public.is_admin()` for allowlist evaluation against `private.admin_users`;
-- protected admin routing for `/admin` and sub-routes;
-- logout / session termination handling;
-- unauthorized redirection and non-admin access denial;
-- automated and integration tests for authentication and route protection boundaries;
-- documentation and decision records for Stage-4 architecture.
+- `/blog`;
+- `/blog/[slug]`;
+- `/topics/[slug]`;
+- published article integration into `/`;
+- published portfolio-featured article integration into `/portfolio`;
+- public Articles navigation;
+- public article discovery/search/pagination;
+- Evidence Folio article reading;
+- public article references and related-writing presentation;
+- safe read-only `content_json` rendering.
 
-Stage 4 must NOT implement:
+Stage 6 implementation is now frozen pending external review.
 
-- public signup forms or workflows;
-- reader accounts or authentication;
-- multi-author roles, permissions, or enterprise RBAC;
-- Stage 5 public static/identity pages (Homepage, About, Contact page UI, Disclaimer page UI, Portfolio page UI);
-- Tiptap rich-text editor or article creation/editing UI;
-- publishing, preview, or draft persistence workflows;
-- comments or contact inbox management UI;
-- later-stage product features.
+Stage 6 must NOT implement:
 
-Stage 5 remains NOT AUTHORIZED.
+- writer dashboard/editor;
+- article create/edit/admin workflows;
+- Tiptap editor integration;
+- comments;
+- contact persistence/inbox;
+- Stage-7 or later functionality.
+
+**Stage 7 — Writer Dashboard & Tiptap Editor remains NOT AUTHORIZED.**
 
 ## Stage-1 start record
 
@@ -492,9 +502,45 @@ Stage 5 is complete, verified, and merged into `main`:
 - [x] Responsive overflow verification PASS (0px overflow via true Playwright viewport emulation);
 - [x] Accessibility manual review PASS (semantic headings, skip link, persistent labels, 44px touch targets, contrast);
 - [x] Quality gates: typecheck, lint, format, and production build PASS;
-- [x] Stage-5 gate PASS;
-- [x] Stage 5 merged into `main` at merge commit `cd1007538a16868deca1f404ae62f54142df308c`;
-- [x] Next implementation stage: Stage 6 — Article Reading & Discovery — NOT AUTHORIZED.
+- [x] Stage 5 merged into `main` at merge commit `cd1007538a16868deca1f404ae62f54142df308c`.
+
+## Stage-6 progress & implementation record
+
+Stage 6 — Article Reading & Discovery:
+
+- **Stage status:** COMPLETE / GATE PASS / AWAITING OWNER MERGE APPROVAL
+- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Canonical Stage-6 base:** `7d4af1583473d4851f9bf165e21b0b21e0c53570`
+- **Active working branch:** `stage/06-article-discovery`
+- **Initial implementation commit:** `94dcc614154f107cf271c4a79f9b4872d8a94e02`
+- **First review correction commit:** `b84b4c5e3578952a52008d79b298b9b515d8d8c5`
+- **Final review micro-correction commit:** `e6fdad81f738b3eedacd0b1eb098584bd5fe614f`
+- **Governance alignment commit:** `55c10cc7501b685129cc56d69a5128ac124dc603`
+- **Visual-control correction commit:** `dd12e1c527c757aef1b4127905caaa1dbac5062a`
+- **Gate-closeout commit:** `18a624be0b2c00e31248fcb4fc3d3b0672cd468f`
+- **Implementation scope & review corrections:**
+  - [x] `/blog` (Published article discovery, lead story hero, topic filtering, sanitized search, strict positive-integer pagination, lead deduplication across all pages);
+  - [x] `/blog/[slug]` (Evidence Folio long-form article view, Reference Ledger with data preservation, author context, medical disclaimer, category-based related writing);
+  - [x] `/topics/[slug]` (Topic/category article discovery, strict positive-integer pagination, truthful empty states);
+  - [x] PublicShell layout integration (`src/app/blog/layout.tsx` and `src/app/topics/layout.tsx`) preserving single `<main id="main-content">`, skip links, and gutters;
+  - [x] Homepage (`/`) and Selected Writing (`/portfolio`) published article integration with neutral section semantics ("Recent Writing", "Published writing and educational articles");
+  - [x] SiteHeader, MobileNav, and SiteFooter navigation integration with "Articles" (`/blog`);
+  - [x] Server-side public article data access layer (`src/lib/public-articles.ts`) with explicit `status = 'published'` enforcement;
+  - [x] Safe Tiptap/ProseMirror JSON read-only renderer (`src/components/public/article-typography.tsx`) with native React elements, 0 `dangerouslySetInnerHTML`, mark rendering, and URL protocol validation;
+  - [x] Deterministic multi-column ordering and reading time calculation;
+  - [x] Local synthetic test fixtures in `supabase/seed.sql` with neutral `site_settings` and `Synthetic Stage 6 Author` profile;
+  - [x] Database failures vs truthful empty states separated with controlled unavailable notices and route error boundaries (`src/app/blog/error.tsx`, `src/app/topics/error.tsx`);
+  - [x] Next.js image handling via `next/image` with narrow Supabase storage remote patterns and strict `featured_image_alt` check;
+  - [x] Heading hierarchy normalized across all article views with single H1 per page;
+  - [x] Mobile 44px minimum touch targets and `aria-current="page"` topic filter states;
+  - [x] Visual control colors aligned with canonical `globals.css` tokens (`oxide`, `paper`, `ink-muted`, `control-border`);
+  - [x] Security matrix SEC-01 through SEC-10 verified;
+  - [x] Quality gates: local db reset, pgTAP (8 files, 95 tests), typecheck, lint, format check, and production build PASS;
+  - [x] Responsive screenshots captured (1440x900, 1024x768, 390x844, 320x640) with 0px horizontal overflow;
+  - [x] External visual, code, and security reviews: PASS.
+- **Application coding authorized:** NO — STAGE 6 IMPLEMENTATION FROZEN
+- **Gate status:** PASS — AWAITING OWNER MERGE APPROVAL (DO NOT MERGE)
+- **Next implementation stage:** Stage 7 — Writer Dashboard & Tiptap Editor — NOT AUTHORIZED
 
 ## Stage transition rule
 

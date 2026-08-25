@@ -5,8 +5,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { PageIntro } from "@/components/public/page-intro";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
+import { ArticleListItem } from "@/components/public/article-list-item";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { SplitRule } from "@/components/evidence/split-rule";
+import { getPortfolioPublishedArticles } from "@/lib/public-articles";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -15,7 +17,18 @@ export const metadata = {
     "Selected Writing portfolio and educational publication index by Marie Medere.",
 };
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  let portfolioArticles: Awaited<
+    ReturnType<typeof getPortfolioPublishedArticles>
+  > = [];
+  let fetchError = false;
+
+  try {
+    portfolioArticles = await getPortfolioPublishedArticles();
+  } catch {
+    fetchError = true;
+  }
+
   return (
     <PublicShell>
       <div className="space-y-16 sm:space-y-20">
@@ -35,13 +48,42 @@ export default function PortfolioPage() {
           <div className="space-y-12 lg:col-span-8">
             {/* Selected Articles / Curated Writing Shell */}
             <section className="space-y-6">
-              <EmptyEditorialState
-                title="Selected Writing"
-                description="Published medical writing entries and educational publications will appear here as entries are released."
-                topicLabel="Publication Archive"
-                actionHref="/contact"
-                actionLabel="Contact the Author"
-              />
+              {fetchError ? (
+                <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
+                  Unable to load published writing at this time. Please try
+                  again later.
+                </div>
+              ) : portfolioArticles.length > 0 ? (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-[#D2C9BC] pb-3">
+                    <h2 className="font-serif text-lg font-medium text-[#242321]">
+                      Curated Publications
+                    </h2>
+                    <span className="text-xs text-[#5E5953]">
+                      {portfolioArticles.length} Selected{" "}
+                      {portfolioArticles.length === 1 ? "Work" : "Works"}
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {portfolioArticles.map((article, index) => (
+                      <ArticleListItem
+                        key={article.id}
+                        article={article}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <EmptyEditorialState
+                  title="Selected Writing"
+                  description="Published medical writing entries and educational publications will appear here as entries are released."
+                  topicLabel="Publication Archive"
+                  actionHref="/blog"
+                  actionLabel="Browse All Articles"
+                />
+              )}
             </section>
 
             {/* Inquiries Bridge */}
@@ -87,10 +129,10 @@ export default function PortfolioPage() {
 
                 <div className="pt-1">
                   <Link
-                    href="/about"
+                    href="/blog"
                     className="inline-flex items-center text-xs font-semibold tracking-wider text-[#7B3F35] uppercase hover:underline"
                   >
-                    Read about the publication →
+                    Browse publication archive →
                   </Link>
                 </div>
               </div>

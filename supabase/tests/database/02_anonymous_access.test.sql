@@ -12,7 +12,7 @@ set local "request.jwt.claim.sub" = '';
 -- 1. Anonymous can select published articles
 select results_eq(
   'select count(*)::integer from public.articles where status = ''published''',
-  array[1],
+  array[8],
   'Anon can view published articles'
 );
 
