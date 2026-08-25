@@ -243,6 +243,15 @@ D. ATOMIC DRAFT SAVE: Stage 7 uses one reviewed PostgreSQL SECURITY INVOKER RPC 
 **Approved by:** project owner — explicit authorization on 2026-08-26.
 **Status:** ACTIVE / FROZEN FOR STAGE 7 HOSTED DEPLOYMENT.
 
+### D029 execution addendum — one replacement migration attempt
+- **Date:** 2026-08-26
+- The initial `apply_migration` invocation failed because the active MCP session was read-only.
+- Post-failure inspection confirmed ZERO hosted mutation.
+- Project owner explicitly authorized exactly ONE replacement `apply_migration` invocation on 2026-08-26.
+- The replacement must use a freshly verified project-scoped MCP write connection (`eoexnnhqzrkurbqgbtnx`).
+- No additional retry is authorized.
+- All other D029 restrictions remain unchanged.
+
 ---
 
 ## New decision template
