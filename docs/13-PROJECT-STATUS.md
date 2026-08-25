@@ -4,14 +4,20 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 4 — Authentication & Admin Access — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
+- **Current stage:** Stage 4 — Authentication & Admin Access — COMPLETE / MERGED / GATE PASS
 - **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-25
+- **Stage-4 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-4 approved branch head:** `daf172e574eebe05b164f988455cd7d69d418d4f`
+- **Stage-4 merge commit:** `f88b84e65b1e7f30d133fdb7bd61d30f2059223b`
+- **Stage-4 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **Stage-4 merge parents:**
+  - first parent (prior main): `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+  - second parent (approved Stage-4 head): `daf172e574eebe05b164f988455cd7d69d418d4f`
 - **Stage-3 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-3 final canonical main:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
-- **Application coding authorized:** COMPLETE — STAGE 4 SCOPE ONLY
-- **Gate status:** PASS / READY FOR OWNER MERGE REVIEW
-- **Stage-4 merge status:** NOT YET AUTHORIZED
-- **Active working branch:** `stage/04-auth-admin`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Gate status:** PASS
+- **Active working branch:** `main`
 - **Canonical Stage-4 base:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
 - **Canonical Stage-3 base:** `e9480f7e0ae1a945203066aeedf04050112ac154`
 - **Canonical Stage-1 main:** `4da2ff7adb0f7d46d3f5f1ff249f69cfb996f717`
@@ -362,11 +368,21 @@ Start conditions verified:
 10. no application code or package installation occurred in this commit;
 11. Stage 5 remains NOT AUTHORIZED.
 
-## Stage-4 final gate
+## Stage-4 final gate & merge record
 
 STAGE 4 — AUTHENTICATION & ADMIN ACCESS
 
 - **IMPLEMENTATION:** COMPLETE
+- **GATE STATUS:** PASS
+- **STAGE-4 MERGE:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-25
+- **STAGE-4 APPROVED BRANCH HEAD:** `daf172e574eebe05b164f988455cd7d69d418d4f`
+- **STAGE-4 MERGE COMMIT:** `f88b84e65b1e7f30d133fdb7bd61d30f2059223b`
+- **STAGE-4 MERGE FIRST PARENT:** `bd35efcbb3541579b63fc50e6797ab551a7a05b9`
+- **STAGE-4 MERGE SECOND PARENT:** `daf172e574eebe05b164f988455cd7d69d418d4f`
+- **ACTIVE WORKING BRANCH:** `main`
+- **APPLICATION CODING AUTHORIZED:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **NEXT STAGE:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
+- **STAGE-4 HANDOFF:** `docs/25-STAGE-4-HANDOFF.md`
 - **D026:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 single-admin authentication & route protection architecture)
 - **D027:** ACTIVE / FROZEN FOR STAGE 4 (Stage-4 controlled MCP migration deployment and version reconciliation)
 - **LOCAL DATABASE / SECURITY GATE:** PASS
@@ -393,10 +409,6 @@ STAGE 4 — AUTHENTICATION & ADMIN ACCESS
 - **LINT:** PASS (0 errors, 0 warnings)
 - **FORMAT:** PASS (All files match Prettier style)
 - **BUILD:** PASS (Production build successful)
-- **STAGE-4 GATE:** PASS / READY FOR OWNER MERGE REVIEW
-- **STAGE-4 MERGE:** NOT YET AUTHORIZED
-- **ACTIVE WORKING BRANCH:** `stage/04-auth-admin`
-- **NEXT STAGE:** Stage 5 — Public Static / Identity Pages — NOT AUTHORIZED
 
 ### Stage 4 detailed technical and provenance record
 
