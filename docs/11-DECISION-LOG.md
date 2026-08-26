@@ -710,6 +710,51 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 
 **Status:** ACTIVE / REPLACEMENT ATTEMPT CONSUMED / HOSTED DEPLOYMENT COMPLETE.
 
+### PROPOSED — D034 — Stage-10 SEO, social discovery & analytics architecture
+**Date:** 2026-08-26
+
+**Decision:**
+
+Subject to explicit owner approval, Stage 10 will use the architecture frozen in `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`:
+
+1. One server-only site URL authority will supply `metadataBase`, canonical URLs, social URLs, JSON-LD URLs, sitemap URLs, and the robots sitemap reference.
+2. A future owner-approved `SITE_URL` may represent the verified Stage-12 custom domain. Otherwise hosted builds prefer `VERCEL_PROJECT_PRODUCTION_URL`; local development/tests use deterministic `http://localhost:3000`. `VERCEL_URL` and `VERCEL_BRANCH_URL` never supply canonical authority. Preview deployments emit `noindex, nofollow` and never become canonical.
+3. Public routes will use the native Next.js App Router Metadata API: root `generateMetadata` uses safe public `site_title`, `tagline`, and `default_seo_description` settings; static `metadata` covers static route facts; and route `generateMetadata` covers query-dependent or public database-backed facts. Every indexable page receives accurate title, description, self-canonical, Open Graph, and Twitter metadata.
+4. Clean public routes are canonical. `/blog` search/filter/pagination variants and topic query/pagination variants will canonicalize to their clean routes and emit `noindex, follow`; they remain absent from the sitemap.
+5. Social previews will use a valid public article featured image when available, otherwise one framework-native 1200×630 Evidence Folio fallback. Social metadata and imagery may contain verified repository/public facts only.
+6. `src/app/sitemap.ts` will include canonical static public routes, published articles, and valid non-empty topics only. It will exclude admin/auth, drafts, archived/private data, preview hosts, and query duplicates.
+7. `src/app/robots.ts` will allow production public crawling, disallow `/admin`, and reference the canonical sitemap. Preview robots will disallow `/` and omit the sitemap. Robots guidance, `noindex`, canonical tags, and sitemap omission are not security controls.
+8. Published article pages may emit safely serialized `BlogPosting` JSON-LD from visible public facts. Unverified credentials, affiliations, publisher facts, claims, and medical schema types are prohibited.
+9. The only proposed Stage-10 dependency is the official `@vercel/analytics` package. Its Next.js integration must use supported `beforeSend` filtering that returns `null` for admin, private, draft, or unclassifiable routes. V1 has no custom events, Google Analytics, Tag Manager, ads, pixels, replay, or alternative tracking.
+10. Local Analytics integration and Vercel dashboard activation are separate boundaries. Hosted activation requires new explicit owner authorization and verified project identity.
+11. Search Console setup follows the documented runbook: verified owner-approved property/domain, sitemap submission, representative URL Inspection, Rich Results validation, and monitoring. Property creation, ownership verification, DNS/tag/file mutation, sitemap submission, and indexing requests require separate hosted authorization.
+12. Public discovery must reuse published-public data boundaries, preserve RLS/service-role secrecy, keep article content server-rendered/indexable, and never expose admin, draft, contact, comment-private, or private-settings data.
+13. No SEO, sitemap, robots, schema, social-card, Analytics-alternative, tracking, or UI library is authorized. Native Next.js APIs and existing public data helpers remain the default.
+14. Stage 10 does not implement Categories or the Media Library and does not finalize or fabricate the production custom domain.
+15. Phase 10A is documentation-only. Application implementation may begin only after this decision is explicitly owner-approved and made ACTIVE. Vercel hosted mutation and Search Console mutation remain separately owner-gated even after local implementation authorization.
+
+**Reason:**
+
+The accepted repository has basic public-route titles/descriptions and published-public data boundaries but no centralized canonical origin, complete social metadata, sitemap, robots route, article JSON-LD, branded fallback card, or Analytics integration. Freezing these contracts first prevents preview-domain canonical drift, duplicate query indexing, draft/private discovery, unverified structured facts, tracking sprawl, and Evidence Folio visual drift.
+
+**Alternatives considered:**
+
+- Hardcoding a guessed production/custom domain (rejected: Stage 12 owns final domain acceptance and no current domain is verified).
+- Using `VERCEL_URL` for canonical generation (rejected: it is deployment-specific and can make previews canonical).
+- Adding a general SEO/sitemap/schema library (rejected: native Next.js APIs cover the V1 requirement with less dependency and abstraction risk).
+- Indexing search/filter combinations (rejected: creates competing query variants without a V1 search-landing-page strategy).
+- Adding Google Analytics, Tag Manager, custom events, or tracking pixels (rejected: outside V1 and unnecessary for the Stage-10 outcome).
+- Treating `robots.txt` as privacy/security enforcement (rejected: it is voluntary crawl guidance).
+- Emitting richer medical/professional schema by inference (rejected: risks fabricated or misleading claims).
+
+**Impact:**
+
+If approved, D034 authorizes the architecture for a later explicitly opened local implementation phase within the exact design boundary. It does not itself authorize application coding, dependency installation, Vercel hosted changes, Search Console changes, final domain configuration, Categories, Media Library, Stage-10 merge, or Stage 11.
+
+**Approved by:** PENDING PROJECT-OWNER REVIEW.
+
+**Status:** PROPOSED / OWNER REVIEW REQUIRED / NOT ACTIVE.
+
 ---
 
 ## New decision template
