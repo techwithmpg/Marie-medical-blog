@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
 - **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
-- **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9F — CONTROLLED HOSTED SUPABASE DEPLOYMENT & VERIFICATION (COMPLETE)
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Current implementation phase:** 9G — STAGE CLOSEOUT & HANDOFF (COMPLETE)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -34,8 +34,9 @@ This file is the authoritative repository record of the currently active develop
 - **Local-only guard:** `http://127.0.0.1:54321` or `http://localhost:54321` ONLY (Port 54321 strictly enforced)
 - **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Handoff document:** `docs/34-STAGE-9-HANDOFF.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED; PHASE 9G COMPLETE / STAGE CLOSEOUT
 - **Hosted project:** `eoexnnhqzrkurbqgbtnx`
 - **Hosted Stage-9 migration:** DEPLOYED / VERIFIED — 2026-08-26
 - **Hosted Stage-9 migration version:** `20260826142425`
@@ -44,10 +45,10 @@ This file is the authoritative repository record of the currently active develop
 - **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
 - **Replacement hosted attempt:** CONSUMED / SUCCEEDED
 - **Hosted Supabase mutation:** Stage-9 objects deployed (constraints 10/10, indexes 5/5, triggers 2/2, functions 3/3)
-- **Vercel production/WAF mutation:** NOT AUTHORIZED IN 9F
+- **Vercel production/WAF mutation:** NOT AUTHORIZED IN STAGE 9
 - **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
-- **Phase 9G status:** NOT STARTED
-- **Stage-9 merge:** NOT AUTHORIZED
+- **Phase 9G status:** COMPLETE / STAGE CLOSEOUT & HANDOFF
+- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
 - **Stage 10:** NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
@@ -1062,6 +1063,24 @@ Stage 7 is complete, verified, and merged into `main`:
   - `git diff --check`: PASS
 - **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9G Closeout & Handoff (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9G — Stage Closeout & Handoff
+- **Starting HEAD:** `baf26631371cf9694cbab7fb0993c744c4948978`
+- **Branch:** `stage/09-comments-contact-settings`
+- **Starting state:** clean working tree, up to date with `origin/stage/09-comments-contact-settings`
+- **Files changed in Phase 9G:**
+  - `docs/34-STAGE-9-HANDOFF.md` [NEW] — Stage-9 handoff document per `docs/10-HANDOFF-PROTOCOL.md`
+  - `docs/13-PROJECT-STATUS.md` [UPDATED] — Current status updated to COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW; Phase-9G progress record appended
+- **No hosted Supabase mutation in Phase 9G:** confirmed; no `apply_migration`, no corrective SQL, no Auth/Storage mutation, no Vercel/WAF mutation
+- **No second Stage-9 migration attempt:** confirmed
+- **Verification:** `git diff --check` PASS; `npm run format:check` PASS; diff limited to Phase-9G documentation files only
+- **Phase 9G commit:** see git closeout (see git log)
+- **Phase 9G status:** COMPLETE
+- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
 - **Stage 10:** NOT AUTHORIZED
 
 ## Stage transition rule
