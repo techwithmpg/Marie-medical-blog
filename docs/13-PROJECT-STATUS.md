@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9F HOSTED SUPABASE DEPLOYMENT
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9F — CONTROLLED HOSTED SUPABASE DEPLOYMENT & VERIFICATION (ACTIVE / OWNER AUTHORIZED)
+- **Current implementation phase:** 9F — CONTROLLED HOSTED SUPABASE DEPLOYMENT & VERIFICATION (COMPLETE)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -35,17 +35,17 @@ This file is the authoritative repository record of the currently active develop
 - **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F ACTIVE / REPLACEMENT ATTEMPT OWNER AUTHORIZED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Hosted project:** `eoexnnhqzrkurbqgbtnx`
-- **Hosted Stage-9 migration:** NOT YET APPLIED
-- **Previous attempt:** CONSUMED / ZERO HOSTED MUTATION
-- **Replacement hosted attempt:** AUTHORIZED / NOT YET INVOKED
-- **Replacement preconditions:** WRITE TRANSPORT + PRIVACY GRANTS MUST PASS
+- **Hosted Stage-9 migration:** DEPLOYED / VERIFIED — 2026-08-26
+- **Hosted Stage-9 migration version:** `20260826142425`
+- **Hosted Stage-9 migration name:** `stage9_submission_security_and_feature_controls`
 - **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
-- **Hosted Supabase mutation:** NONE (Zero drift verified; Stage-8 baseline intact: 4 migrations, 0 Stage-9 objects)
+- **Replacement hosted attempt:** CONSUMED / SUCCEEDED
+- **Hosted Supabase mutation:** Stage-9 objects deployed (constraints 10/10, indexes 5/5, triggers 2/2, functions 3/3)
 - **Vercel production/WAF mutation:** NOT AUTHORIZED IN 9F
-- **Phase 9F status:** ACTIVE / REPLACEMENT ATTEMPT OWNER AUTHORIZED
+- **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Phase 9G status:** NOT STARTED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
@@ -1019,6 +1019,48 @@ Stage 7 is complete, verified, and merged into `main`:
   - `git diff --check`: PASS (clean diff)
 - **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
 - **Phase 9F status:** NOT STARTED / OWNER AUTHORIZATION REQUIRED
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9F Hosted Supabase Deployment (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9F — Controlled Hosted Supabase Deployment & Verification
+- **Owner authorization:** D033 REPLACEMENT ATTEMPT AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Current HEAD:** `c88136eaba1724e53d90ae3d58ca7dc2a0c2d245`
+- **MCP write transport:** `supabase_stage9_write` (dedicated authenticated write session)
+- **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (locally verified)
+- **Pre-flight checks (all PASS before apply_migration invoked):**
+  - `list_migrations`: 4 Stage-8 baseline migrations confirmed; Stage-9 absent. ✅
+  - Privacy grants: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`. ✅
+  - RLS enabled: `articles`, `comments`, `contact_messages`, `site_settings` all `rowsecurity=true`. ✅
+  - Stage-9 objects pre-migration: `constraints=0`, `indexes=0`, `triggers=0`, `functions=0`. ✅
+- **`apply_migration` invocation:** ONCE / `{"success":true}` / NO RETRY
+- **Hosted migration version:** `20260826142425`
+- **Post-migration verification (all PASS):**
+  - `list_migrations`: 5 migrations confirmed; `20260826142425 / stage9_submission_security_and_feature_controls` present. ✅
+  - Object counts: `constraints=10/10`, `indexes=5/5`, `triggers=2/2`, `functions=3/3`. ✅
+  - `private.guard_comment_submission`: `SECURITY DEFINER`, `search_path=""`, EXECUTE denied to public/anon/authenticated. ✅
+  - `private.guard_contact_submission`: `SECURITY DEFINER`, `search_path=""`, EXECUTE denied to public/anon/authenticated. ✅
+  - `public.set_featured_article`: `SECURITY INVOKER`, `search_path=""`, anon EXECUTE denied, authenticated EXECUTE granted. ✅
+  - RLS post-migration: all 4 tables `rowsecurity=true`. ✅
+  - Privacy grants post-migration: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`. ✅
+  - Persistent rows: `comments=0`, `contact_messages=0`, `site_settings=0`, `articles=1` (expected Stage-4 admin article). ✅
+  - Security advisor: 0 security errors; 1 INFO (`private.admin_users` RLS no-policy — by design); 1 WARN (`auth_leaked_password_protection` — pre-existing). ✅
+  - Performance advisor: 0 performance errors; 8 INFO `unused_index` (expected on pre-production instance). ✅
+- **Local regression gate (Phase 9F — full PASS):**
+  - `npx supabase db reset`: PASS (all 5 migrations applied cleanly)
+  - `npx supabase test db` (pgTAP): PASS — 323/323 tests (11 files, 0 failures)
+  - `node --test tests/*.test.mjs`: PASS — 67/67 tests (0 failures)
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 errors, 0 warnings)
+  - `npm run format:check`: PASS
+  - `npm run build`: PASS (18 routes compiled cleanly)
+  - `git diff --check`: PASS
+- **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 

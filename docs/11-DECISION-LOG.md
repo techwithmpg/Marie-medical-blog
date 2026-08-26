@@ -677,6 +677,39 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 
 **Status:** ACTIVE / ONE REPLACEMENT ATTEMPT AUTHORIZED.
 
+### D033 Execution Addendum 3 — Replacement Hosted Migration Deployed & Verified
+**Date:** 2026-08-26
+
+**Execution record:**
+1. All D033 Addendum 2 preconditions were verified via `supabase_stage9_write` (write-capable MCP transport confirmed functional).
+2. Pre-migration `list_migrations` confirmed exact Stage-8 baseline (4 migrations: `20260825054917`, `20260825081012`, `20260825200129`, `20260825232024`; Stage-9 absent).
+3. Privacy grants verified pre-migration: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`.
+4. RLS verified pre-migration: `articles`, `comments`, `contact_messages`, `site_settings` all `rowsecurity=true`.
+5. Stage-9 objects absent pre-migration: `constraints=0`, `indexes=0`, `triggers=0`, `functions=0`.
+6. Migration SHA-256 locally verified: `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (100% match).
+7. `supabase_stage9_write/apply_migration` invoked ONCE with name `stage9_submission_security_and_feature_controls` and exact authorized SQL. Result: `{"success":true}`.
+8. Hosted migration version captured via `list_migrations`: `20260826142425` (`stage9_submission_security_and_feature_controls`).
+9. Post-migration object counts verified: `constraints=10/10`, `indexes=5/5`, `triggers=2/2`, `functions=3/3`.
+10. Function security verified: `private.guard_comment_submission` and `private.guard_contact_submission` — `SECURITY DEFINER`, `search_path=""`, EXECUTE denied to public/anon/authenticated. `public.set_featured_article` — `SECURITY INVOKER`, `search_path=""`, anon EXECUTE denied, authenticated EXECUTE granted.
+11. RLS verified post-migration: all 4 tables still `rowsecurity=true`.
+12. Privacy grants verified post-migration: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`.
+13. Persistent synthetic rows: `comments=0`, `contact_messages=0`, `site_settings=0`, `articles=1` (expected: single admin-provisioned article row from Stage 4).
+14. Security advisor: 1 INFO (`rls_enabled_no_policy` on `private.admin_users` — by design), 1 WARN (`auth_leaked_password_protection` — pre-existing Auth dashboard setting); 0 security errors.
+15. Performance advisor: 8 INFO `unused_index` notices (expected on pre-production instance); 0 performance errors.
+16. Local regression gate passed completely:
+    - `npx supabase db reset`: PASS (all 5 migrations applied cleanly).
+    - `npx supabase test db` (pgTAP): PASS — 323/323 tests (11 files, 0 failures).
+    - `node --test tests/*.test.mjs`: PASS — 67/67 tests (0 failures).
+    - `npm run typecheck`: PASS (0 errors).
+    - `npm run lint`: PASS (0 errors, 0 warnings).
+    - `npm run format:check`: PASS.
+    - `npm run build`: PASS (18 routes compiled).
+    - `git diff --check`: PASS.
+17. The single authorized replacement attempt is CONSUMED. No retry is authorized.
+18. Stage-9 merge remains unauthorized. Stage 10 remains unauthorized.
+
+**Status:** ACTIVE / REPLACEMENT ATTEMPT CONSUMED / HOSTED DEPLOYMENT COMPLETE.
+
 ---
 
 ## New decision template
