@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9C ADMIN MODERATION & INBOX LOCAL GATE PASS
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9D SETTINGS & PORTFOLIO FEATURING
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9C — ADMIN COMMENT MODERATION & CONTACT INBOX (COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW)
+- **Current implementation phase:** 9D — SITE SETTINGS & PORTFOLIO FEATURING (ACTIVE)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -17,11 +17,14 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 9B status:** COMPLETE / FINAL EXTERNAL PASS
 - **Phase 9B final reviewed head:** `d43d4c2bba1ed389cf772952daed3ed560a8c3e7`
 - **Phase 9B native browser automation:** DEFERRED TO PHASE 9E (Reason: Playwright driver retrieval failed from upstream CDN during 9B; HTTP/SSR, database, build, and automated application gates passed cleanly)
-- **Phase 9C status:** COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW
-- **Phase 9D status:** NOT STARTED
+- **Phase 9C status:** COMPLETE / EXTERNAL PASS
+- **Phase 9C final reviewed head:** `f2b5527c8cb35052be365c9afc6d50031af28cff`
+- **Phase 9D status:** ACTIVE
+- **D032 social-link addendum:** APPROVED / { label, url }[] / HTTPS ONLY
+- **Phase 9E status:** NOT STARTED
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
-- **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW; PHASE 9D NOT STARTED
+- **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links)
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D ACTIVE; PHASE 9E NOT STARTED
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE

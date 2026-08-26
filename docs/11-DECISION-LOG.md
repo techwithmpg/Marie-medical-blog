@@ -519,6 +519,61 @@ Authorizes Stage-9 implementation within this architecture. Does NOT authorize h
 
 ---
 
+### D032 ADDENDUM — Structured Site Social Links
+Date: 2026-08-26
+
+Decision:
+
+`public.site_settings.social_links` remains the existing JSONB array field and
+uses the following application-level persistent structure:
+
+```json
+[
+  {
+    "label": "LinkedIn",
+    "url": "https://example.invalid"
+  }
+]
+```
+
+Rules:
+
+- each saved item consists of a user-visible `label` and HTTPS `url`;
+- no provider/platform enum is persisted;
+- no icon identifier is persisted;
+- no provider-specific columns are introduced;
+- no separate social-link table is introduced;
+- completely blank rows are omitted;
+- partially populated rows are rejected;
+- only valid HTTPS URLs are accepted by Stage-9 application validation;
+- public rendering defensively ignores malformed stored entries;
+- actual client social URLs remain Stage-12 approved content and must not be
+  invented during development.
+
+Reason:
+
+This preserves a typed, portable social-link structure without expanding the
+small singleton settings model into an arbitrary or platform-specific CMS.
+
+Alternatives considered:
+
+- fixed LinkedIn/ResearchGate fields;
+- platform enum + icon identifiers;
+- separate social-links table;
+- arbitrary untyped JSON objects.
+
+Approved by:
+
+project owner — explicit approval:
+"I approve the D032 social-link structure `{ label, url }` and authorize
+Phase 9D."
+
+Status:
+
+ACTIVE / FROZEN UNDER D032.
+
+---
+
 ## New decision template
 
 ### ACTIVE/REPLACED — DXXX — Title

@@ -68,6 +68,17 @@ Stage 9 builds upon the foundational schema established in Stage 3 (`supabase/mi
 * `disclaimer_text` (`text`, nullable, check `disclaimer_text IS NULL OR length(disclaimer_text) <= 1500`)
 * `default_seo_description` (`text`, nullable, check `default_seo_description IS NULL OR length(default_seo_description) <= 320`)
 * `social_links` (`jsonb`, NOT NULL, default `'[]'::jsonb`, check `jsonb_typeof(social_links) = 'array'`)
+  * **Application-level Persistent Structure (D032 Addendum):**
+    ```typescript
+    type SiteSocialLink = {
+      label: string;
+      url: string;
+    };
+    ```
+  * Persisted representation: `SiteSocialLink[]` stored as a JSONB array.
+  * Validation: HTTPS only, non-empty label (<= 80 chars), blank rows omitted, partial rows rejected.
+  * No provider/platform enum, no icon identifier, no separate social table, array order preserved.
+  * Real production URLs remain Stage-12 content.
 * `updated_at` (`timestamptz`, default `now()`)
 
 ### 2.4. Article Featuring Constraints (`public.articles`)
