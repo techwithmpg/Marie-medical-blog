@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
 export interface PublicProfile {
@@ -80,7 +81,7 @@ export async function getPublicProfile(): Promise<PublicProfile> {
   }
 }
 
-export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
+async function getPublicSiteSettingsUncached(): Promise<PublicSiteSettings> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -130,6 +131,8 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
     return DEFAULT_SITE_SETTINGS;
   }
 }
+
+export const getPublicSiteSettings = cache(getPublicSiteSettingsUncached);
 
 export async function getPublicAssetUrl(
   path: string | null | undefined,

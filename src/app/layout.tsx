@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Source_Sans_3 } from "next/font/google";
+import { getPublicSiteSettings } from "@/lib/public-data";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -16,10 +18,23 @@ const sourceSans3 = Source_Sans_3({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Marie Medere — Medical Writing Portfolio & Educational Blog",
-  description: "Medical Writing Portfolio & Educational Blog",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+
+  const siteTitle = settings.site_title.trim() || "Marie Medere";
+  const tagline = settings.tagline?.trim() || null;
+  const description =
+    settings.default_seo_description?.trim() ||
+    tagline ||
+    "Medical Writing Portfolio & Educational Blog by Marie Medere.";
+
+  return {
+    metadataBase: getSiteUrl(),
+    title: siteTitle,
+    description,
+    applicationName: siteTitle,
+  };
+}
 
 export default function RootLayout({
   children,
