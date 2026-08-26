@@ -50,17 +50,22 @@ import {
 } from "./lifecycle-modals";
 import { formatAdminDate, cn } from "@/lib/utils";
 import type { PublicCategory } from "@/lib/public-articles";
+import type { PublicProfile } from "@/lib/public-data";
 
 interface ArticleEditorProps {
   article: AdminArticleDetail | null;
   initialCategories: AdminCategoryOption[];
   initialReferences?: AdminArticleReference[];
+  previewProfile: PublicProfile;
+  previewDisclaimerText: string | null;
 }
 
 export function ArticleEditor({
   article,
   initialCategories,
   initialReferences = [],
+  previewProfile,
+  previewDisclaimerText,
 }: ArticleEditorProps) {
   const router = useRouter();
 
@@ -1139,6 +1144,8 @@ export function ArticleEditor({
         publishedAt={publishedAt}
         updatedAt={lastSavedAt}
         slug={slug}
+        profile={previewProfile}
+        disclaimerText={previewDisclaimerText}
       />
 
       {/* Publish Confirmation Modal */}

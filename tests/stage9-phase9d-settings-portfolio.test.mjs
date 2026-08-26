@@ -647,7 +647,7 @@ test("N. Character counters start at 0 when settings are empty or null", async (
   );
 });
 
-test("O. Disclaimer propagation across all public pages while /disclaimer remains independent", async () => {
+test("O. Disclaimer propagation across all public pages and admin preview while /disclaimer remains independent", async () => {
   const publicPageFiles = [
     "src/app/page.tsx",
     "src/app/blog/[slug]/page.tsx",
@@ -678,6 +678,75 @@ test("O. Disclaimer propagation across all public pages while /disclaimer remain
     !disclaimerContent.includes("<MedicalDisclaimer"),
     "The full /disclaimer page must remain independent and not render MedicalDisclaimer component",
   );
+
+  // Verify admin preview modal receives and uses dynamic disclaimerText
+  const previewModalPath = path.join(
+    ROOT,
+    "src/components/admin/editor/article-preview-modal.tsx",
+  );
+  assert.ok(
+    fs.existsSync(previewModalPath),
+    "src/components/admin/editor/article-preview-modal.tsx must exist",
+  );
+  const previewModalContent = fs.readFileSync(previewModalPath, "utf8");
+  assert.ok(
+    previewModalContent.includes("disclaimerText"),
+    "ArticlePreviewModal must accept disclaimerText prop",
+  );
+  assert.ok(
+    previewModalContent.includes(
+      "<MedicalDisclaimer disclaimerText={disclaimerText}",
+    ),
+    "ArticlePreviewModal must render MedicalDisclaimer with disclaimerText prop",
+  );
+
+  // Verify article-editor passes previewDisclaimerText into ArticlePreviewModal
+  const editorPath = path.join(
+    ROOT,
+    "src/components/admin/editor/article-editor.tsx",
+  );
+  const editorContent = fs.readFileSync(editorPath, "utf8");
+  assert.ok(
+    editorContent.includes("previewDisclaimerText"),
+    "ArticleEditor must accept previewDisclaimerText prop",
+  );
+  assert.ok(
+    editorContent.includes("disclaimerText={previewDisclaimerText}"),
+    "ArticleEditor must pass disclaimerText={previewDisclaimerText} to ArticlePreviewModal",
+  );
+
+  // Verify BOTH admin article server pages load settings and pass previewDisclaimerText
+  const adminNewPagePath = path.join(
+    ROOT,
+    "src/app/admin/articles/new/page.tsx",
+  );
+  const adminIdPagePath = path.join(
+    ROOT,
+    "src/app/admin/articles/[id]/page.tsx",
+  );
+
+  const adminNewContent = fs.readFileSync(adminNewPagePath, "utf8");
+  const adminIdContent = fs.readFileSync(adminIdPagePath, "utf8");
+
+  assert.ok(
+    adminNewContent.includes("getPublicSiteSettings"),
+    "New article admin page must call getPublicSiteSettings()",
+  );
+  assert.ok(
+    adminNewContent.includes(
+      "previewDisclaimerText={settings.disclaimer_text}",
+    ),
+    "New article admin page must pass previewDisclaimerText to ArticleEditor",
+  );
+
+  assert.ok(
+    adminIdContent.includes("getPublicSiteSettings"),
+    "Edit article admin page must call getPublicSiteSettings()",
+  );
+  assert.ok(
+    adminIdContent.includes("previewDisclaimerText={settings.disclaimer_text}"),
+    "Edit article admin page must pass previewDisclaimerText to ArticleEditor",
+  );
 });
 
 test("P. Stage-9D test fixture guard: no invented client URLs in test suites", async () => {
@@ -698,5 +767,116 @@ test("P. Stage-9D test fixture guard: no invented client URLs in test suites", a
   assert.ok(
     !suitesContent.includes(forbiddenPrefix2),
     "Must not use invented client ResearchGate URL as test fixture in test suites",
+  );
+});
+
+test("Q. Admin article preview profile fidelity and elimination of fabricated credentials", async () => {
+  const previewModalPath = path.join(
+    ROOT,
+    "src/components/admin/editor/article-preview-modal.tsx",
+  );
+  const previewModalContent = fs.readFileSync(previewModalPath, "utf8");
+
+  // Verify preview modal accepts and uses PublicProfile prop
+  assert.ok(
+    previewModalContent.includes("profile: PublicProfile"),
+    "ArticlePreviewModal must accept profile: PublicProfile in ArticlePreviewProps",
+  );
+  assert.ok(
+    previewModalContent.includes("<AuthorBlock profile={profile}"),
+    "ArticlePreviewModal must pass profile prop to AuthorBlock",
+  );
+
+  // Verify hardcoded defaultProfile is completely removed
+  assert.ok(
+    !previewModalContent.includes("defaultProfile"),
+    "ArticlePreviewModal must not define or use defaultProfile",
+  );
+
+  // Verify no fabricated clinical credentials / profile strings
+  const forbiddenTokens = [
+    "Clinical " + "pharmacist",
+    "specializing in " + "evidence-based medicine",
+    "pharmac" + "ology",
+    "clinical research " + "synthesis",
+  ];
+  for (const token of forbiddenTokens) {
+    assert.ok(
+      !previewModalContent.includes(token),
+      `ArticlePreviewModal must not contain fabricated string: ${token}`,
+    );
+  }
+
+  // Verify ArticleEditor receives and passes previewProfile
+  const editorPath = path.join(
+    ROOT,
+    "src/components/admin/editor/article-editor.tsx",
+  );
+  const editorContent = fs.readFileSync(editorPath, "utf8");
+  assert.ok(
+    editorContent.includes("previewProfile: PublicProfile"),
+    "ArticleEditor must accept previewProfile prop",
+  );
+  assert.ok(
+    editorContent.includes("profile={previewProfile}"),
+    "ArticleEditor must pass profile={previewProfile} to ArticlePreviewModal",
+  );
+
+  // Verify BOTH admin article pages load public profile server-side and pass to ArticleEditor
+  const adminNewPagePath = path.join(
+    ROOT,
+    "src/app/admin/articles/new/page.tsx",
+  );
+  const adminIdPagePath = path.join(
+    ROOT,
+    "src/app/admin/articles/[id]/page.tsx",
+  );
+
+  const adminNewContent = fs.readFileSync(adminNewPagePath, "utf8");
+  const adminIdContent = fs.readFileSync(adminIdPagePath, "utf8");
+
+  assert.ok(
+    adminNewContent.includes("getPublicProfile"),
+    "New article admin page must call getPublicProfile()",
+  );
+  assert.ok(
+    adminNewContent.includes("previewProfile={profile}"),
+    "New article admin page must pass previewProfile={profile} to ArticleEditor",
+  );
+
+  assert.ok(
+    adminIdContent.includes("getPublicProfile"),
+    "Edit article admin page must call getPublicProfile()",
+  );
+  assert.ok(
+    adminIdContent.includes("previewProfile={profile}"),
+    "Edit article admin page must pass previewProfile={profile} to ArticleEditor",
+  );
+});
+
+test("R. Client-boundary regression: preview modal does not query database for profile/settings", async () => {
+  const previewModalPath = path.join(
+    ROOT,
+    "src/components/admin/editor/article-preview-modal.tsx",
+  );
+  const previewModalContent = fs.readFileSync(previewModalPath, "utf8");
+
+  // Must not import server data loaders in client component
+  assert.ok(
+    !previewModalContent.includes("getPublicProfile") &&
+      !previewModalContent.includes("getPublicSiteSettings"),
+    "ArticlePreviewModal client component must not import server data fetching functions",
+  );
+
+  // Must not perform client database queries against profiles or site_settings
+  assert.ok(
+    !previewModalContent.includes('.from("profiles")') &&
+      !previewModalContent.includes(".from('profiles')"),
+    "ArticlePreviewModal must not query profiles table directly from browser",
+  );
+  assert.ok(
+    !previewModalContent.includes('.from("site_settings")') &&
+      !previewModalContent.includes(".from('site_settings')"),
+    "ArticlePreviewModal must not query site_settings table directly from browser",
   );
 });

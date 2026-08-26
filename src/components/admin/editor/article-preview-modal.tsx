@@ -36,6 +36,8 @@ export interface ArticlePreviewProps {
   publishedAt?: string | null;
   updatedAt?: string | null;
   slug?: string | null;
+  profile: PublicProfile;
+  disclaimerText: string | null;
 }
 
 type ViewportMode = "desktop" | "tablet" | "mobile";
@@ -54,24 +56,13 @@ export function ArticlePreviewModal({
   publishedAt,
   updatedAt,
   slug,
+  profile,
+  disclaimerText,
 }: ArticlePreviewProps) {
   const [viewport, setViewport] = React.useState<ViewportMode>("desktop");
   const [resolvedImageUrl, setResolvedImageUrl] = React.useState<string | null>(
     null,
   );
-
-  // Default author profile for preview
-  const defaultProfile: PublicProfile = {
-    display_name: "Marie Medere",
-    professional_tagline: "Medical Writing Portfolio & Educational Blog",
-    short_bio:
-      "Clinical pharmacist and medical writer specializing in evidence-based medicine, pharmacology, and clinical research synthesis.",
-    long_bio: null,
-    education_summary: null,
-    interests: null,
-    social_links: null,
-    cv_storage_path: null,
-  };
 
   // Estimate reading time from ProseMirror JSON
   const estimatedReadingTime = React.useMemo(() => {
@@ -286,12 +277,12 @@ export function ArticlePreviewModal({
 
                 {/* Author Block */}
                 <div className="border-t border-subtle-divider pt-10">
-                  <AuthorBlock profile={defaultProfile} />
+                  <AuthorBlock profile={profile} />
                 </div>
 
                 {/* Medical Disclaimer */}
                 <div className="border-t border-subtle-divider pt-8">
-                  <MedicalDisclaimer />
+                  <MedicalDisclaimer disclaimerText={disclaimerText} />
                 </div>
               </article>
             </div>
