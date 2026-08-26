@@ -4,22 +4,24 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — PHASE 9B LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9C ADMIN MODERATION & INBOX
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9B — PUBLIC COMMENTS & CONTACT SUBMISSIONS (LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW)
-- **Phase 9A status:** COMPLETE / LOCAL + EXTERNAL GATE PASS
+- **Current implementation phase:** 9C — ADMIN COMMENT MODERATION & CONTACT INBOX (ACTIVE)
+- **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
-- **Phase 9B status:** COMPLETE / LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
-- **Phase 9C status:** NOT STARTED / AWAITING PHASE 9B EXTERNAL PASS
+- **Phase 9B status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9B final reviewed head:** `d43d4c2bba1ed389cf772952daed3ed560a8c3e7`
+- **Phase 9B native browser automation:** DEFERRED TO PHASE 9E (Reason: Playwright driver retrieval failed from upstream CDN during 9B; HTTP/SSR, database, build, and automated application gates passed cleanly)
+- **Phase 9C status:** ACTIVE
 - **Phase 9D status:** NOT STARTED
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A COMPLETE / LOCAL + EXTERNAL GATE PASS; PHASE 9B LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW; PHASE 9C NOT STARTED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C ACTIVE; PHASE 9D NOT STARTED
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
