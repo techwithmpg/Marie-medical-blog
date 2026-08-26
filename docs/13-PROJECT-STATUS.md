@@ -4,9 +4,52 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 8 — Publishing Workflow — COMPLETE / MERGED / GATE PASS
-- **Stage authorization:** AUTHORIZED BY PROJECT OWNER — 2026-08-26
-- **Hosted deployment:** DEPLOYED / VERIFIED — 2026-08-26
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
+- **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
+- **Current implementation phase:** 9G — STAGE CLOSEOUT & HANDOFF (COMPLETE)
+- **Phase 9A status:** COMPLETE / EXTERNAL PASS
+- **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+- **Phase 9B status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9B final reviewed head:** `d43d4c2bba1ed389cf772952daed3ed560a8c3e7`
+- **Phase 9C status:** COMPLETE / EXTERNAL PASS
+- **Phase 9C final reviewed head:** `f2b5527c8cb35052be365c9afc6d50031af28cff`
+- **Phase 9D status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9D final reviewed head:** `2fad9ae5b2b4af04634866e08c22671e10e83789`
+- **Phase 9D final preview-fidelity correction:** PASS (Reusable disclaimer propagation: COMPLETE INCLUDING ADMIN-LOCAL ARTICLE PREVIEW; Admin-local preview profile: VERIFIED PUBLIC PROFILE / NO FABRICATED PROFESSIONAL CREDENTIALS; Client profile/settings reads in preview: NONE)
+- **D032 social-link addendum:** APPROVED / { label, url }[] / HTTPS ONLY
+- **Phase 9E status:** COMPLETE / FULL EXTERNAL PASS
+- **Phase 9E final reviewed head:** `93a26e03e15d0bf4c42b7694c02db4b058c51f7f`
+- **Playwright resolved version:** `1.62.1`
+- **axe-core Playwright resolved version:** `4.13.0`
+- **WCAG automated rules:** 2.0 / 2.1 / 2.2 AA supplemental coverage
+- **axe serious violations:** 0
+- **axe critical violations:** 0
+- **Admin keyboard / focus:** PASS (Settings Space/Enter activation, Comments Tab reachability, Messages activation, Article Preview Space/Escape/focus return)
+- **Representative visual review:** PASS (9 screenshots reviewed; Evidence Folio drift: NONE)
+- **Local-only guard:** `http://127.0.0.1:54321` or `http://localhost:54321` ONLY (Port 54321 strictly enforced)
+- **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Handoff document:** `docs/34-STAGE-9-HANDOFF.md`
+- **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED; PHASE 9G COMPLETE / STAGE CLOSEOUT
+- **Hosted project:** `eoexnnhqzrkurbqgbtnx`
+- **Hosted Stage-9 migration:** DEPLOYED / VERIFIED — 2026-08-26
+- **Hosted Stage-9 migration version:** `20260826142425`
+- **Hosted Stage-9 migration name:** `stage9_submission_security_and_feature_controls`
+- **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+- **Replacement hosted attempt:** CONSUMED / SUCCEEDED
+- **Hosted Supabase mutation:** Stage-9 objects deployed (constraints 10/10, indexes 5/5, triggers 2/2, functions 3/3)
+- **Vercel production/WAF mutation:** NOT AUTHORIZED IN STAGE 9
+- **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
+- **Phase 9G status:** COMPLETE / STAGE CLOSEOUT & HANDOFF
+- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
+- **Stage 10:** NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -14,26 +57,11 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-8 merge parents:**
   - first parent: `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
   - second parent: `fa06f386d2b69f64d9762120b95408226fea6b2c`
-- **Active working branch:** `main`
-- **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Gate status:** PASS (210/210 DATABASE TESTS, 28/28 NODE TESTS, PRODUCTION BUILD VERIFIED)
+- **Hosted Stage-8 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Hosted Stage-8 migration:** `20260825232024_stage8_publishing_lifecycle.sql`
 - **Hosted migration version:** `20260825232024`
 - **Canonical Stage-8 base:** `25a3ac5489703a6ca2e28413f8d6046c52f55dd4`
-- **Stage-8 final design SHA:** `f460c32814a81e3f2089b61d6112562e9e33e2c7`
-- **Owner-approved architecture decisions:** D030 (Architecture), D031 (Hosted Deployment + Addenda)
-- **Draft persistence regression:** FIXED / VERIFIED
-- **Stage-7 draft RPC compatibility:** PASS
-- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-7 status:** COMPLETE / MERGED / GATE PASS
-- **Stage-7 approved branch head:** `1fd848d60aa223d53589e6eea598399085ca7157`
-- **Stage-7 merge commit:** `e8ab70f730bea656b421a4bbb0ea6afd30073141`
-- **Stage-7 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
-- **Stage-7 merge parents:**
-  - first parent (prior main): `927412a054ccf15bbb1caa23a54a48d761731a04`
-  - second parent (approved Stage-7 head): `1fd848d60aa223d53589e6eea598399085ca7157`
-- **Hosted Stage-7 deployment:** DEPLOYED / VERIFIED — 2026-08-26
-- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
 - **Stage-6 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-6 approved branch head:** `b31233eb644182cb84cad64642c824846cac9761`
 - **Stage-6 merge commit:** `e28665e550dbc9150829351d9e06cafa26c5a577`
@@ -775,8 +803,285 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run format:check`: PASS (Prettier verified across entire codebase)
   - `npm run build`: PASS (Next.js production build verified cleanly)
   - `git diff --check`: PASS (clean diff)
-- **Hosted Stage-8 deployment:** NOT AUTHORIZED — AWAITING EXPLICIT OWNER DEPLOYMENT APPROVAL
-- **Next implementation stage:** Stage 9 — Comments, Contact Inbox & Settings — NOT AUTHORIZED
+- **Hosted Stage-8 deployment:** DEPLOYED / VERIFIED — 2026-08-26
+- **Stage-8 final status:** COMPLETE / MERGED / GATE PASS
+
+## Stage-9 progress record — Phase 9A & Review Corrections (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9A — Database / Public-Submission Security Foundation
+- **Owner authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+- **Phase 9A test suite:** `supabase/tests/database/11_stage9_comments_contact_settings.test.sql`
+- **External Phase-9A review:** CORRECTIONS APPLIED / LOCAL GATE PASS
+- **Phase 9A final boundary-test correction:** PASS
+- **Exact global limits verified:**
+  - Comments: 99 qualifying in rolling hour -> 100th allowed; >100 rejected (`Comment system is currently busy. Please try again later.`)
+  - Contact messages: 29 qualifying in rolling hour -> 30th allowed; >30 rejected (`Contact service is currently experiencing high volume. Please try again later.`)
+- **Phase 9A deliverables completed & hardened:**
+  - [x] **Comment Moderation Consistency Check:** Added constraint `comments_moderation_consistency_check` enforcing `(status = 'pending' AND moderated_at IS NULL) OR (status IN ('approved', 'hidden') AND moderated_at IS NOT NULL)`.
+  - [x] **Feature Flag Publication Checks & Lead Uniqueness:** Added constraints `articles_is_featured_published_check` and `articles_is_portfolio_featured_published_check` enforcing that only published articles can be featured; created partial unique index `idx_articles_single_featured` ensuring at most one lead featured article site-wide.
+  - [x] **Site Settings Singleton Invariants:** Added constraints on `public.site_settings` enforcing `id = 1`, title length (1-120 chars, trimmed), tagline <=200 chars, homepage intro <=1200 chars, disclaimer <=1500 chars, SEO description <=320 chars, and JSON array type for `social_links`.
+  - [x] **Rate-Limit Supporting Indexes:** Created indexes on `public.comments (commenter_email, created_at DESC)`, `public.comments (created_at DESC)`, `public.contact_messages (email, created_at DESC)`, and `public.contact_messages (created_at DESC)`.
+  - [x] **Private Comment Submission Guard (`private.guard_comment_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Forces system fields (`id := extensions.gen_random_uuid()`, `created_at := pg_catalog.now()`, `status := 'pending'`, `moderated_at := NULL`), trims name/email/body, and applies transaction-locked rate limits (3/15m/email+article, 10/24h/email, 100/1h global).
+  - [x] **Private Contact Submission Guard (`private.guard_contact_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Forces system fields (`id := extensions.gen_random_uuid()`, `created_at := pg_catalog.now()`, `status := 'new'`), trims name/email/subject/message, and applies transaction-locked rate limits (3/1h/email, 5/24h/email, 30/1h global).
+  - [x] **Admin Lead-Feature RPC (`public.set_featured_article`):** Implemented `public.set_featured_article(p_article_id uuid)` as `SECURITY INVOKER`, empty `search_path`, protected by `private.is_admin()`, revoked from `PUBLIC` and `anon`, granted to `authenticated`. Atomically sets or clears lead featured article.
+  - [x] **Hardened Authenticated Non-Admin Regression Tests:** Tested authenticated non-admin comment INSERT (rejected by RLS `42501`) and authenticated non-admin contact INSERT with spoofed client UUID, historical `created_at`, and `status = 'archived'`. Verified that client-supplied ID/timestamp/status are discarded, generated ID and current `created_at` are enforced, and historical timestamps cannot bypass rate limiting.
+  - [x] **Explicit Rate-Limit Boundary Tests:** Verified all 6 rate-limit boundaries:
+    - comment 3/15m: PASS
+    - comment 10/24h: PASS
+    - comment 100/1h global (exact 99 -> 100 allowed -> 101 rejected): PASS
+    - contact 3/1h: PASS
+    - contact 5/24h: PASS
+    - contact 30/1h global (exact 29 -> 30 allowed -> 31 rejected): PASS
+  - [x] **Neutral Synthetic Fixture Cleanup:** Replaced all medical/professional identity claims with neutral synthetic fixtures across test suites and migrations.
+  - [x] **Comprehensive pgTAP Test Suite:** 113 subtests in `supabase/tests/database/11_stage9_comments_contact_settings.test.sql` covering moderation invariants, feature flag constraints, lead uniqueness, site settings constraints, private guard function security, anonymous comment submission normalization, rate limiting boundaries, anonymous contact message normalization, column/table permission denials, authenticated non-admin system-field defense, admin moderation/contact operations, and prior regression integrity.
+- **Local Quality Gates (Phase 9A):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (5 test files, 28 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
+- **Phase 9A status:** COMPLETE / LOCAL + EXTERNAL GATE PASS
+- **Phase 9B status:** COMPLETE / LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9B Public Comments & Contact Submissions (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9B — Public Comments & Contact Submissions
+- **Owner authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **New runtime dependency:** `zod` (`^4.4.3` / `4.4.3`) — authorized by D032
+- **New test suite:** `tests/stage9-phase9b-public-submissions.test.mjs`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Zod Validation Schemas (`src/lib/public-submissions.ts`):** Implemented `commentSubmissionSchema` and `contactSubmissionSchema` aligning with PostgreSQL schema invariants (UUID regex, trim, lowercased email, lengths: comment name 100, email 255, body 2000; contact name 100, email 255, subject 200, message 5000), honeypot check helper `isHoneypotTriggered`, and typed action response `SubmissionActionResult`.
+  - [x] **Safe Public Comments Query Helper (`src/lib/public-comments.ts`):** Implemented `getApprovedCommentsByArticleId(articleId)` which explicitly selects only public columns (`id, article_id, commenter_name, body, created_at`), filters `status = 'approved'`, and orders `created_at ASC`. Never selects `commenter_email` or `moderated_at`.
+  - [x] **Comment Server Action (`src/app/blog/[slug]/actions.ts`):** Implemented `submitCommentAction` using standard server client (`createClient()`), checking honeypot, validating with Zod schema, inserting only allowed columns (`article_id, commenter_name, commenter_email, body`), and returning safe generic messages without leaking SQL internals.
+  - [x] **Contact Server Action (`src/app/contact/actions.ts`):** Implemented `submitContactAction` using standard server client (`createClient()`), checking honeypot, validating with Zod schema, inserting only allowed columns (`name, email, subject, message`), and returning safe generic messages without leaking SQL internals.
+  - [x] **Accessible Comment Form Component (`src/components/public/comment-form.tsx`):** Created Client Component using React `useActionState(submitCommentAction)`, off-screen honeypot input, accessible labels, aria-invalid/aria-describedby error states, email privacy note, moderation review notice, and 44px submit button.
+  - [x] **Comment Section Server Component (`src/components/public/comment-section.tsx`):** Implemented Server Component with section header, `SplitRule`, comment count `TopicImprint`, approved comment list, and embedded `CommentForm`. Integrated into `src/app/blog/[slug]/page.tsx` directly after Related Writing.
+  - [x] **Active Contact Form Component (`src/components/public/contact-form-shell.tsx`):** Activated the contact form with `useActionState(submitContactAction)`, live character counters for subject (current / 200) and message (current / 5000), off-screen honeypot, accessible error alerts, and preserved Evidence Folio styling and medical disclaimer.
+  - [x] **Automated Application Test Suite (`tests/stage9-phase9b-public-submissions.test.mjs`):** 11 tests covering validation contracts, whitespace normalization, length boundaries, Server Action source constraints (createClient, narrow insert columns, no service-role, safe errors), public comment query privacy invariants, UI contracts (contact form active, counters present, comment notices present), and scope drift guards (zero reader auth, captcha, email providers, or client writes).
+  - [x] **Real Database E2E Verification:** Verified comment insertion (default pending), pending comment invisibility against anon queries, contact insertion (default unread), and anon read confidentiality against contact table.
+- **Local Quality Gates (Phase 9B Initial & External Corrections):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (6 test files, 39 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 12 routes)
+  - `git diff --check`: PASS (clean diff)
+- **Phase 9B External Review Corrections (2026-08-26):**
+  - [x] **Contact Form Repeated-Use Counter Fix:** Updated `src/components/public/contact-form-shell.tsx` to synchronize `subjectLen(0)` and `messageLen(0)` during render when action state transitions to success, and render live counters `{subjectLen} / 200` and `{messageLen} / 5000` without gating on `state.success`. Typing a second inquiry updates counters immediately.
+  - [x] **Stale Submission Feedback Clear on Edit:** Implemented `hasEditedSinceResult` tracking on both `contact-form-shell.tsx` and `comment-form.tsx` via `onInput` on `<form>`. As soon as the user starts editing after a submission, prior success/error banners are immediately hidden from display.
+  - [x] **Strengthened Server Action Source Contract Tests:** Enhanced `tests/stage9-phase9b-public-submissions.test.mjs` with explicit regex assertions verifying that comment insert does NOT supply `id, created_at, status, moderated_at`, and contact insert does NOT supply `id, created_at, status`.
+  - [x] **Form Reset & Stale Feedback Regression Tests:** Added assertions in `tests/stage9-phase9b-public-submissions.test.mjs` verifying live counter rendering, reset on success, and feedback hiding on edit.
+  - [x] **Local Browser / HTTP Verification Gate:**
+    - Contact desktop rendered & verified via HTTP/SSR contract tests: PASS
+    - Contact mobile width layout & responsive styling: PASS
+    - Article comments approved-only display, email exclusion, and discussion section: PASS
+    - Playwright native driver browser session: NOT RUN (Playwright CDN driver install returned 404 from upstream endpoints; documented for owner review)
+- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
+- **Hosted Supabase mutation:** NONE
+- **Phase 9C status:** COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Phase 9D status:** NOT STARTED
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9C Admin Comment Moderation & Contact Inbox (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9C — Admin Comment Moderation & Contact Inbox
+- **Owner authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **New test suite:** `tests/stage9-phase9c-admin-moderation-inbox.test.mjs`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Admin Comments Data Helper (`src/lib/admin/comments.ts`):** Implemented `getAdminComments(statusFilter)` and `getAdminCommentById(id)` with explicit column selection (`id, article_id, commenter_name, commenter_email, body, status, created_at, moderated_at`), mapped article title/slug/status, descending sort, and zero service-role usage.
+  - [x] **Admin Comment Moderation Server Action (`src/app/admin/comments/actions.ts`):** Implemented `moderateCommentAction` with `requireAdmin()`, UUID validation, allowlist (`approve`, `hide`, `delete`), setting `status = 'approved'`/`'hidden'` with `moderated_at = now()` on approval/hide, executing hard delete on delete, and targeted revalidation of `/admin/comments` and `/blog/<slug>`.
+  - [x] **Admin Comments Workspace Page (`src/app/admin/comments/page.tsx`):** Implemented Server Component with noindex/nofollow metadata, `requireAdmin()`, filter tabs (Pending Review default, Approved, Hidden, All Comments), clear moderation status badges, private email indicator, article context links, plain-text comment formatting (`whitespace-pre-wrap`, no `dangerouslySetInnerHTML`), and permitted action forms (Approve, Hide, Delete).
+  - [x] **Admin Contact Messages Data Helper (`src/lib/admin/messages.ts`):** Implemented `getAdminContactMessages(statusFilter)` and `getAdminContactMessageById(id)` with explicit column selection (`id, name, email, subject, message, status, created_at`), descending sort, side-effect free reads, and zero service-role usage.
+  - [x] **Admin Contact Message Status Server Action (`src/app/admin/messages/actions.ts`):** Implemented `updateContactMessageStatusAction` with `requireAdmin()`, UUID validation, allowlist (`read`, `archive`, `restore`), revalidation of `/admin/messages`, and strict omission of destructive delete controls.
+  - [x] **Admin Contact Inbox Workspace Page (`src/app/admin/messages/page.tsx`):** Implemented same-page inbox workspace (left message list + right reader pane) with `requireAdmin()`, filter tabs (New Inquiries default, Read, Archived, All Messages), private email display, plain-text message formatting, and lifecycle action forms (Mark Read, Archive, Restore to Read; no Delete/Reply/Forward).
+  - [x] **Automated Application Test Suite (`tests/stage9-phase9c-admin-moderation-inbox.test.mjs`):** 10 test suites covering admin comment helper contracts, moderation action security, targeted revalidation, comments page UI contract, message data helper contracts, message action security, GET-side-effect guards, inbox page same-page reader contract, private data confidentiality boundaries, and scope drift guards.
+- **Local Quality Gates (Phase 9C):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (7 test files, 49 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 14 routes)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
+- **Phase 9C status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9D status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9E status:** COMPLETE / LOCAL & NATIVE BROWSER QUALITY GATE PASS
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9D Site Settings & Portfolio Featuring (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9D — Site Settings & Portfolio Featuring
+- **Owner authorization:** D032 APPROVED + D032 SOCIAL-LINK ADDENDUM APPROVED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **New test suite:** `tests/stage9-phase9d-settings-portfolio.test.mjs`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Site Settings Validation & Zod Schema (`src/lib/admin/settings-validation.ts`):** Implemented `siteSettingsSchema` validating `site_title` (required, trimmed, max 120), `tagline` (nullable, max 200), `homepage_intro` (nullable, max 1200), `disclaimer_text` (nullable, max 1500), `default_seo_description` (nullable, max 320), and structured `social_links` (`{ label, url }[]`, label max 80, HTTPS only, blank rows omitted, partial rows rejected).
+  - [x] **Admin Site Settings Data Helper (`src/lib/admin/settings.ts`):** Implemented `getAdminSiteSettings()` with explicit single row extraction from `site_settings`.
+  - [x] **Site Settings Server Action (`src/app/admin/settings/actions.ts`):** Implemented `updateSiteSettingsAction` with `requireAdmin()`, Zod validation, updating only business fields (`site_title, tagline, homepage_intro, disclaimer_text, default_seo_description, social_links`), trigger-owned `updated_at`, and revalidating public layout.
+  - [x] **Admin Site Settings Form (`src/components/admin/site-settings-form.tsx`):** Implemented interactive form with live character counters, dynamic social link rows (Add/Remove), nullish value preservation, accessible error states, and Evidence Folio design tokens.
+  - [x] **Public Site Settings & Disclaimer Propagation:** Public shell (`public-shell.tsx`), header (`site-header.tsx`), footer (`site-footer.tsx`), and reusable `MedicalDisclaimer` consume live settings. Admin-local article preview (`article-preview-modal.tsx`) consumes verified author profile and saved site disclaimer text.
+  - [x] **Portfolio Admin Data Helper & Actions (`src/lib/admin/portfolio.ts`, `src/app/admin/portfolio/actions.ts`):** Implemented `getAdminPortfolioArticles()` (published articles only), `togglePortfolioFeaturedAction`, and `updateLeadFeaturedArticleAction` with generic error messages and targeted cache revalidation.
+  - [x] **Admin Portfolio Workspace (`src/app/admin/portfolio/page.tsx`):** Implemented workspace for managing explicit lead article selection (with fallback to newest published) and curated Selected Writing portfolio entries.
+  - [x] **Automated Application Test Suite (`tests/stage9-phase9d-settings-portfolio.test.mjs`):** 18 test suites covering validation contracts, social link invariants, Server Action security, trigger-owned timestamps, disclaimer propagation, preview fidelity, and scope drift guards.
+- **Local Quality Gates (Phase 9D):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (8 test files, 67 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 16 routes)
+  - `git diff --check`: PASS (clean diff)
+
+## Stage-9 progress record — Phase 9E Full Local & Native Browser Quality Gate (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9E — Full Local / Native Browser Quality Verification & External-Review Correction
+- **Owner authorization:** D032 APPROVED + D020 PLAYWRIGHT & AXE TOOLING SCOPE (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **Testing Tooling (Resolved Versions):** `@playwright/test` (`1.62.1`), `@axe-core/playwright` (`4.13.0`)
+- **Native Browser Environment:** Chromium Desktop, Local Supabase API (`http://127.0.0.1:54321` / `http://localhost:54321`), Local Next.js dev server (`http://localhost:3000`), Single Worker (Serial execution).
+- **Safety Invariant:** Local-only guard (`tests/e2e/helpers/local-only.ts`) strictly enforces port 54321 and halts if target is non-local; Synthetic credentials only (`synthetic-admin@example.invalid`).
+- **Native Browser Test Matrix (15 Tests Passed):**
+  - [x] **Suite 1: Accessibility, Responsive & Runtime Verification (`tests/e2e/stage9-accessibility-responsive.spec.ts`):**
+    - Test 1: Responsive matrix across Desktop (1440px), Tablet (768px), and Mobile (390px) with zero horizontal scroll overflow (`scrollWidth <= clientWidth + 1`). (PASS)
+    - Test 2: Keyboard navigation and focus flow in public contact and comment forms. (PASS)
+    - Test 3: Keyboard navigation and focus flow across admin surfaces (Settings fields/Add Link/Remove/Save, Comments moderation actions, Messages list/reader/actions, and Article Preview open via Space/Escape close/focus return). (PASS)
+    - Test 4: Automated WCAG 2.0, 2.1, and 2.2 Level A and AA accessibility scans with Axe-core across representative public (`/`, `/about`, `/contact`, `/portfolio`, `/blog`, `/blog/[slug]`, `/disclaimer`) and admin surfaces (`/admin`, `/admin/comments`, `/admin/messages`, `/admin/settings`, `/admin/portfolio`). Zero serious and zero critical violations. (PASS)
+    - Test 5: Runtime error and unhandled exception guard. Zero uncaught errors or console errors. (PASS)
+  - [x] **Suite 2: Admin Moderation & Inbox Workflows (`tests/e2e/stage9-admin-workflows.spec.ts`):**
+    - Test 6: Comment moderation lifecycle: Public submission -> Admin Pending filter -> Approve -> Public verified -> Admin Hide -> Public hidden -> Admin Delete -> Database hard delete verified. (PASS)
+    - Test 7: Contact inbox lifecycle: Public submission -> Admin New filter -> Private reader inspection -> Mark Read -> Archive -> Restore to Read. (PASS)
+  - [x] **Suite 3: Public Submissions & Privacy Boundaries (`tests/e2e/stage9-public-submissions.spec.ts`):**
+    - Test 8: Public comment reading, submission, moderation notice, honeypot protection, and private email exclusion from public DOM. (PASS)
+    - Test 9: Public contact form validation, submission, live character counters, and reset behavior on repeat submissions. (PASS)
+  - [x] **Suite 4: Security & Private Data Boundaries (`tests/e2e/stage9-security-boundaries.spec.ts`):**
+    - Test 10: Anonymous visitors cannot access admin workspace routes (redirects to `/admin/login`). (PASS)
+    - Test 11: Public draft and archived articles return 404 and do not leak content. (PASS)
+    - Test 12: Private emails and contact messages are never present in public DOM (public exclusion verified in browser; backend confidentiality verified via pgTAP security tests). (PASS)
+  - [x] **Suite 5: Settings & Portfolio Curation (`tests/e2e/stage9-settings-portfolio.spec.ts`):**
+    - Test 13: Site settings validation, saving, and public site propagation across header, footer, and disclaimer. (PASS)
+    - Test 14: Admin article preview fidelity with verified public profile (`Synthetic Stage 6 Author`) and site disclaimer text. (PASS)
+    - Test 15: Selected Writing portfolio curation and explicit lead article selection / automatic fallback lifecycle. (PASS)
+- **Representative Visual Screenshot Review:**
+  - 9 representative screenshots captured & reviewed against `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`: Public Desktop `/`, Public Mobile `/`, Article Desktop `/blog/plain-language-clinical-protocol-summaries`, Article Mobile, Contact Mobile `/contact`, Admin Comments Desktop `/admin/comments`, Admin Messages Mobile `/admin/messages`, Admin Settings Desktop `/admin/settings`, Admin Portfolio Mobile `/admin/portfolio`.
+  - Evidence Folio meaningful drift: `NONE` (Evidence Rail, Topic Imprints, Split Rules, Reference Ledger, Newsreader / Source Sans typography, parchment / paper / oxide palette, public/admin visual distinction, readable mobile measures, zero clipped controls).
+- **Local Quality Gates (Phase 9E):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures)
+  - `node --test tests/*.test.mjs`: PASS (8 test files, 67 tests, 0 failures)
+  - `npx playwright test`: PASS (15 tests across 5 suites, 0 failures, 100% pass)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 16 routes)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Phase 9F status:** NOT STARTED / OWNER AUTHORIZATION REQUIRED
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9F Hosted Supabase Deployment (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9F — Controlled Hosted Supabase Deployment & Verification
+- **Owner authorization:** D033 REPLACEMENT ATTEMPT AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Current HEAD:** `c88136eaba1724e53d90ae3d58ca7dc2a0c2d245`
+- **MCP write transport:** `supabase_stage9_write` (dedicated authenticated write session)
+- **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (locally verified)
+- **Pre-flight checks (all PASS before apply_migration invoked):**
+  - `list_migrations`: 4 Stage-8 baseline migrations confirmed; Stage-9 absent. ✅
+  - Privacy grants: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`. ✅
+  - RLS enabled: `articles`, `comments`, `contact_messages`, `site_settings` all `rowsecurity=true`. ✅
+  - Stage-9 objects pre-migration: `constraints=0`, `indexes=0`, `triggers=0`, `functions=0`. ✅
+- **`apply_migration` invocation:** ONCE / `{"success":true}` / NO RETRY
+- **Hosted migration version:** `20260826142425`
+- **Post-migration verification (all PASS):**
+  - `list_migrations`: 5 migrations confirmed; `20260826142425 / stage9_submission_security_and_feature_controls` present. ✅
+  - Object counts: `constraints=10/10`, `indexes=5/5`, `triggers=2/2`, `functions=3/3`. ✅
+  - `private.guard_comment_submission`: `SECURITY DEFINER`, `search_path=""`, EXECUTE denied to public/anon/authenticated. ✅
+  - `private.guard_contact_submission`: `SECURITY DEFINER`, `search_path=""`, EXECUTE denied to public/anon/authenticated. ✅
+  - `public.set_featured_article`: `SECURITY INVOKER`, `search_path=""`, anon EXECUTE denied, authenticated EXECUTE granted. ✅
+  - RLS post-migration: all 4 tables `rowsecurity=true`. ✅
+  - Privacy grants post-migration: `anon_commenter_email_select=false`, `anon_contact_messages_select=false`, `anon_comment_body_select=true`. ✅
+  - Persistent rows: `comments=0`, `contact_messages=0`, `site_settings=0`, `articles=1` (expected Stage-4 admin article). ✅
+  - Security advisor: 0 security errors; 1 INFO (`private.admin_users` RLS no-policy — by design); 1 WARN (`auth_leaked_password_protection` — pre-existing). ✅
+  - Performance advisor: 0 performance errors; 8 INFO `unused_index` (expected on pre-production instance). ✅
+- **Local regression gate (Phase 9F — full PASS):**
+  - `npx supabase db reset`: PASS (all 5 migrations applied cleanly)
+  - `npx supabase test db` (pgTAP): PASS — 323/323 tests (11 files, 0 failures)
+  - `node --test tests/*.test.mjs`: PASS — 67/67 tests (0 failures)
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 errors, 0 warnings)
+  - `npm run format:check`: PASS
+  - `npm run build`: PASS (18 routes compiled cleanly)
+  - `git diff --check`: PASS
+- **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9G Closeout & Handoff (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9G — Stage Closeout & Handoff
+- **Starting HEAD:** `baf26631371cf9694cbab7fb0993c744c4948978`
+- **Branch:** `stage/09-comments-contact-settings`
+- **Starting state:** clean working tree, up to date with `origin/stage/09-comments-contact-settings`
+- **Files changed in Phase 9G:**
+  - `docs/34-STAGE-9-HANDOFF.md` [NEW] — Stage-9 handoff document per `docs/10-HANDOFF-PROTOCOL.md`
+  - `docs/13-PROJECT-STATUS.md` [UPDATED] — Current status updated to COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW; Phase-9G progress record appended
+- **No hosted Supabase mutation in Phase 9G:** confirmed; no `apply_migration`, no corrective SQL, no Auth/Storage mutation, no Vercel/WAF mutation
+- **No second Stage-9 migration attempt:** confirmed
+- **Verification:** `git diff --check` PASS; `npm run format:check` PASS; diff limited to Phase-9G documentation files only
+- **Phase 9G commit:** see git closeout (see git log)
+- **Phase 9G status:** COMPLETE
+- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
+- **Stage 10:** NOT AUTHORIZED
 
 ## Stage transition rule
 

@@ -5,6 +5,7 @@ import { ContactFormShell } from "@/components/public/contact-form-shell";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
+import { getPublicSiteSettings } from "@/lib/public-data";
 
 export const metadata = {
   title: "Contact — Marie Medere",
@@ -12,9 +13,11 @@ export const metadata = {
     "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getPublicSiteSettings();
+
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-20">
         {/* Page Header */}
         <PageIntro
@@ -68,7 +71,7 @@ export default function ContactPage() {
 
         {/* Medical Disclaimer Banner */}
         <section className="pt-4">
-          <MedicalDisclaimer />
+          <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
         </section>
       </div>
     </PublicShell>

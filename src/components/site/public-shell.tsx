@@ -1,14 +1,25 @@
 import * as React from "react";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import {
+  getPublicSiteSettings,
+  type PublicSiteSettings,
+} from "@/lib/public-data";
 import { cn } from "@/lib/utils";
 
 interface PublicShellProps {
   children: React.ReactNode;
   className?: string;
+  settings?: PublicSiteSettings;
 }
 
-export function PublicShell({ children, className }: PublicShellProps) {
+export async function PublicShell({
+  children,
+  className,
+  settings: providedSettings,
+}: PublicShellProps) {
+  const settings = providedSettings || (await getPublicSiteSettings());
+
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       {/* Accessible skip link */}
@@ -20,7 +31,7 @@ export function PublicShell({ children, className }: PublicShellProps) {
       </a>
 
       {/* Header */}
-      <SiteHeader />
+      <SiteHeader siteTitle={settings.site_title} tagline={settings.tagline} />
 
       {/* Main content container */}
       <main
@@ -35,7 +46,11 @@ export function PublicShell({ children, className }: PublicShellProps) {
       </main>
 
       {/* Footer */}
-      <SiteFooter />
+      <SiteFooter
+        siteTitle={settings.site_title}
+        tagline={settings.tagline}
+        socialLinks={settings.social_links}
+      />
     </div>
   );
 }

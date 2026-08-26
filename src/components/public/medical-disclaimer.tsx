@@ -6,11 +6,13 @@ import { cn } from "@/lib/utils";
 interface MedicalDisclaimerProps {
   className?: string;
   compact?: boolean;
+  disclaimerText?: string | null;
 }
 
 export function MedicalDisclaimer({
   className,
   compact = false,
+  disclaimerText,
 }: MedicalDisclaimerProps) {
   if (compact) {
     return (
@@ -25,8 +27,8 @@ export function MedicalDisclaimer({
           <strong className="font-semibold text-[#242321]">
             Educational Notice:
           </strong>{" "}
-          Content on this platform is for educational purposes only and does not
-          constitute medical advice, diagnosis, or treatment.{" "}
+          {disclaimerText ||
+            "Content on this platform is for educational purposes only and does not constitute medical advice, diagnosis, or treatment."}{" "}
           <Link
             href="/disclaimer"
             className="text-[#704037] underline underline-offset-2 hover:text-[#582A22]"
@@ -55,10 +57,8 @@ export function MedicalDisclaimer({
       </div>
 
       <p className="text-sm leading-relaxed text-[#5E5953] sm:text-base">
-        Content published on this platform is provided strictly for educational
-        and informational purposes. It does not constitute personalized medical
-        advice, clinical diagnosis, or treatment recommendations, and does not
-        replace consultation with a qualified healthcare professional.
+        {disclaimerText ||
+          "Content published on this platform is provided strictly for educational and informational purposes. It does not constitute personalized medical advice, clinical diagnosis, or treatment recommendations, and does not replace consultation with a qualified healthcare professional."}
       </p>
 
       <div className="pt-1">

@@ -8,7 +8,11 @@ import { TopicImprint } from "@/components/evidence/topic-imprint";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
-import { getPublicProfile, getPublicCvUrl } from "@/lib/public-data";
+import {
+  getPublicProfile,
+  getPublicCvUrl,
+  getPublicSiteSettings,
+} from "@/lib/public-data";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -18,7 +22,10 @@ export const metadata = {
 };
 
 export default async function AboutPage() {
-  const profile = await getPublicProfile();
+  const [profile, settings] = await Promise.all([
+    getPublicProfile(),
+    getPublicSiteSettings(),
+  ]);
   const cvUrl = await getPublicCvUrl(profile.cv_storage_path);
 
   const displayName = profile.display_name || "Marie Medere";
@@ -46,7 +53,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-20">
         {/* Page Header */}
         <PageIntro
@@ -231,7 +238,7 @@ export default async function AboutPage() {
 
         {/* Medical Disclaimer Banner */}
         <section className="pt-4">
-          <MedicalDisclaimer />
+          <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
         </section>
       </div>
     </PublicShell>

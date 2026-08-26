@@ -6,6 +6,7 @@ import {
   getAdminCategories,
   getAdminArticleReferences,
 } from "@/lib/admin/articles";
+import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
 import { ArticleEditor } from "@/components/admin/editor/article-editor";
 
 const UUID_REGEX =
@@ -39,12 +40,15 @@ export default async function AdminArticleDetailPage({
     notFound();
   }
 
-  // Concurrent data loading
-  const [article, categories, references] = await Promise.all([
-    getAdminArticleById(articleId),
-    getAdminCategories(),
-    getAdminArticleReferences(articleId),
-  ]);
+  // Concurrent data loading including verified public profile and site settings for preview fidelity
+  const [article, categories, references, profile, settings] =
+    await Promise.all([
+      getAdminArticleById(articleId),
+      getAdminCategories(),
+      getAdminArticleReferences(articleId),
+      getPublicProfile(),
+      getPublicSiteSettings(),
+    ]);
 
   if (!article) {
     notFound();
@@ -56,6 +60,8 @@ export default async function AdminArticleDetailPage({
       article={article}
       initialCategories={categories}
       initialReferences={references}
+      previewProfile={profile}
+      previewDisclaimerText={settings.disclaimer_text}
     />
   );
 }

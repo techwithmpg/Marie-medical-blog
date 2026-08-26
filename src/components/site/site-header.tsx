@@ -17,7 +17,15 @@ const navLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  siteTitle?: string;
+  tagline?: string | null;
+}
+
+export function SiteHeader({
+  siteTitle = "Marie Medere",
+  tagline = "Medical Writing Portfolio & Educational Blog",
+}: SiteHeaderProps) {
   return (
     <header className="w-full border-b border-[#D2C9BC] bg-[#F6F1E8]/90 backdrop-blur-xs">
       <div className="mx-auto flex max-w-[1248px] items-center justify-between px-5 py-4 sm:px-8 lg:px-12">
@@ -27,10 +35,10 @@ export function SiteHeader() {
           className="group flex flex-col rounded-xs focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
         >
           <span className="font-serif text-2xl font-medium tracking-tight text-[#242321] transition-colors group-hover:text-[#7B3F35] sm:text-[1.65rem]">
-            Marie Medere
+            {siteTitle}
           </span>
           <span className="font-sans text-[0.6875rem] font-semibold tracking-widest text-[#5E5953] uppercase sm:text-xs">
-            Medical Writing Portfolio &amp; Educational Blog
+            {tagline || "Medical Writing Portfolio & Educational Blog"}
           </span>
         </Link>
 

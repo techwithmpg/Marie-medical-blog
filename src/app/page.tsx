@@ -69,7 +69,7 @@ export default async function HomePage() {
   const hasPublishedContent = Boolean(leadArticle);
 
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-24">
         {/* Section 01: Professional & Editorial Positioning */}
         <section className="space-y-6">
@@ -286,7 +286,7 @@ export default async function HomePage() {
 
         {/* Section 06: Medical Disclaimer Banner */}
         <section className="pt-4">
-          <MedicalDisclaimer />
+          <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
         </section>
       </div>
     </PublicShell>
