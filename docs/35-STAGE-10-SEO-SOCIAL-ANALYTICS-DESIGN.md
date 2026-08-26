@@ -4,7 +4,7 @@
 
 - **Stage:** Stage 10 — SEO, Social & Analytics
 - **Current phase:** Phase 10A — Governance, Research & Design Freeze
-- **Phase status:** ACTIVE / DOCUMENTATION ONLY
+- **Phase status:** COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING
 - **Owner authorization date:** 2026-08-26
 - **Canonical accepted `main`:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Stage branch:** `stage/10-seo-social-analytics`
@@ -21,9 +21,10 @@ This design is constrained by:
 
 - `AI_CONTEXT.md` and `AGENTS.md`;
 - the frozen V1 scope in `docs/01-SCOPE-FREEZE.md`;
-- the frozen stack and platform boundaries in `docs/03-TECHNICAL-ARCHITECTURE.md`;
+- the frozen stack in `docs/02-TECH-STACK.md` and route/information architecture in `docs/03-INFORMATION-ARCHITECTURE.md`;
+- the SEO and medical-content requirements in `docs/07-SEO-CONTENT-STANDARDS.md`;
 - the Stage-10 outcomes and gate in `docs/08-DEVELOPMENT-STAGES.md`;
-- the security and performance requirements in `docs/09-QUALITY-SECURITY-PERFORMANCE.md`;
+- the testing, SEO, security, accessibility, and performance gate requirements in `docs/09-TESTING-QUALITY-GATES.md`;
 - the handoff, decision, status, branch, and live-context rules in `docs/10-HANDOFF-PROTOCOL.md`, `docs/11-DECISION-LOG.md`, `docs/13-PROJECT-STATUS.md`, `docs/14-BRANCH-STRATEGY.md`, `docs/15-CHATGPT-REPO-SYNC.md`, and `docs/20-CHATGPT-LIVE-CONTEXT-MANIFEST.md`;
 - the accepted Evidence Folio UI contract and reference policy in `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`; and
 - the completed Stage-9 boundary recorded in `docs/34-STAGE-9-HANDOFF.md`.
@@ -82,8 +83,8 @@ The classifications below follow the repository synchronization discipline: offi
 | Classification | Statement | Decision impact |
 | --- | --- | --- |
 | VERIFIED FACT | Next.js App Router supports static `metadata`, dynamic `generateMetadata`, `metadataBase`, metadata file conventions, `app/sitemap.ts`, `app/robots.ts`, and generated OG images. Metadata exports are Server Component APIs. | Use framework-native features; do not add an SEO or sitemap library. |
-| VERIFIED FACT | `VERCEL_PROJECT_PRODUCTION_URL` is available at build/runtime when system environment variables are exposed, omits the scheme, selects a production domain, and is also set on preview deployments. `VERCEL_URL` identifies the generated deployment URL. | Production-domain authority can remain stable on previews; deployment-specific preview hosts must never become canonical. |
-| VERIFIED FACT | `@vercel/analytics/next` supports `beforeSend`; returning `null` discards an event. | The official integration can exclude admin/private/draft surfaces before transmission. |
+| VERIFIED FACT | `VERCEL_PROJECT_PRODUCTION_URL` supplies the production-domain name when Vercel System Environment Variables are exposed and remains available on preview deployments. `VERCEL_ENV` distinguishes `production`, `preview`, and `development`; `VERCEL_URL` identifies the generated deployment URL. | Use `VERCEL_ENV` for hosted deployment classification and `VERCEL_PROJECT_PRODUCTION_URL` for Vercel production-origin authority. Preview/deployment-specific hosts must never become canonical. |
+| VERIFIED FACT | `@vercel/analytics/next` supports `beforeSend`; returning `null` discards an event and returning a modified event permits URL redaction before transmission. | The official integration can exclude private surfaces and sanitize public URLs before transmission, including removal of search/filter/query values. |
 | VERIFIED FACT | Google recommends absolute canonical URLs in sitemaps, canonical-only sitemap entries, Search Console sitemap submission, URL Inspection for representative URLs, and Rich Results Test validation. | Build one absolute canonical URL authority and keep duplicate query URLs out of the sitemap. |
 | VERIFIED FACT | Google recommends JSON-LD, requires structured data to represent visible page content accurately, and documents `BlogPosting` under Article structured data. | Emit only article facts already present in the rendered public page. |
 | PROJECT CONSTRAINT | Published public content only is indexable; drafts, admin data, contact messages, and private settings stay protected. | Every discovery surface must reuse public data boundaries and fail closed. |
@@ -111,7 +112,9 @@ Invalid configured values must fail fast in production builds rather than silent
 2. In Vercel-hosted builds without that approved override, use `https://${VERCEL_PROJECT_PRODUCTION_URL}`.
 3. In local development and tests, use the deterministic fallback `http://localhost:3000` unless the test explicitly supplies a valid isolated origin.
 
-`VERCEL_URL` and `VERCEL_BRANCH_URL` must not be canonical-origin sources. They are deployment/branch specific and can identify previews. Preview deployments may render metadata whose absolute links point to the production authority, but the preview host itself is never canonical.
+`VERCEL_ENV` is the hosted environment classifier when available: `production` permits the production route-indexability matrix, while `preview` forces `noindex, nofollow`. `NODE_ENV` must not be used by itself to distinguish Vercel production from preview deployments.
+
+`VERCEL_URL` and `VERCEL_BRANCH_URL` must not be canonical-origin sources. They are deployment/branch specific and can identify previews. Preview deployments may render metadata whose absolute links point to the production authority, but the preview host itself is never canonical. A hosted production deployment must fail verification rather than publish `localhost` or a preview deployment URL as canonical authority.
 
 No `.vercel.app` hostname or future custom domain may be hardcoded in source or documentation as the product's factual final domain.
 
@@ -120,9 +123,9 @@ No `.vercel.app` hostname or future custom domain may be hardcoded in source or 
 - Root `src/app/layout.tsx` will use `generateMetadata` to set `metadataBase` from the central resolver and to read the public settings singleton's `site_title`, `tagline`, and `default_seo_description` through the existing safe-fallback helper.
 - The public settings read will be request-memoized and shared with `PublicShell` where practical so dynamic metadata does not create a duplicate data waterfall.
 - A small helper will join validated route paths to the same origin for sitemap, robots, and JSON-LD.
-- Canonical paths will be clean, leading-slash paths with no tracking, search, filter, pagination, hash, or preview parameters.
+- Canonical paths will be deliberate leading-slash paths. Search, filter, tracking, unknown, hash, and preview parameters are removed unless a reviewed route contract explicitly maps the request elsewhere. Valid pagination retains its normalized `page` parameter because each page in a paginated sequence is a distinct canonical page.
 - Dynamic slugs must come only from existing published public records and must be URL encoded by the platform/URL API rather than string-trusted.
-- A deployment classifier will distinguish production, preview, and local/test rendering. Only the verified production authority is indexable; Vercel preview metadata is `noindex, nofollow` even though its canonical fields continue to point to production.
+- Hosted deployment classification uses `VERCEL_ENV` when available. Only `VERCEL_ENV=production` may apply production indexability rules; `VERCEL_ENV=preview` forces `noindex, nofollow`. Local/test rendering remains non-production. Canonical production authority still comes from the approved `SITE_URL` override or `VERCEL_PROJECT_PRODUCTION_URL`, never `VERCEL_URL` or `VERCEL_BRANCH_URL`.
 
 ## 7. Public route metadata contract
 
@@ -174,18 +177,74 @@ Unknown public query parameters must not alter the canonical URL or cause unsani
 
 ## 8. Search, filter, and pagination canonicalization
 
-The clean `/blog` route is the canonical listing authority. Any `/blog` request containing `q`, `topic`, `page`, or an unknown query parameter must:
+Search, filtering, pagination, and unknown query parameters are not treated as one SEO case.
 
-- canonicalize to `/blog` without a query string;
+### 8.1 Base blog listing
+
+The clean `/blog` route is the canonical first listing page.
+
+- canonical: `/blog`;
+- production indexing: `index, follow`;
+- included in `sitemap.xml`.
+
+### 8.2 Valid pagination
+
+Valid pagination such as `/blog?page=2` and `/blog?page=3` represents distinct pages in the listing sequence.
+
+- each valid pagination page uses a self-referential canonical that retains the normalized `page` parameter;
+- valid pagination pages may emit `index, follow` in production;
+- pagination pages remain crawlable;
+- pagination pages are not required in `sitemap.xml`;
+- page `1`, an empty page value, or an equivalent first-page representation canonicalizes to clean `/blog`;
+- malformed, negative, zero, non-integer, or out-of-range pagination must not become an indexable thin URL and follows the application's validated empty/not-found behavior.
+
+A paginated page must not canonicalize to page 1 merely because it belongs to the same sequence.
+
+### 8.3 Search variants
+
+Requests containing a public search query such as `/blog?q=...`:
+
+- remain usable for readers;
 - emit `noindex, follow`;
-- remain usable for readers; and
-- remain absent from `sitemap.xml`.
+- canonicalize to clean `/blog`;
+- remain absent from the sitemap; and
+- never echo unsanitized search text into metadata, social cards, structured data, or Analytics URLs.
 
-This prevents internal search, filter, and pagination combinations from competing with the canonical listing page while allowing crawlers to follow links to published articles. It does not block the base blog route.
+Combined search + pagination remains `noindex, follow` and canonicalizes to clean `/blog`; search-result pagination is not promoted into a separate indexable search corpus.
 
-Topic pagination/query variants follow the same rule: canonicalize to the clean `/topics/{slug}` route and emit `noindex, follow`. Only the clean, valid, non-empty topic route may be indexable.
+### 8.4 Topic filter variants
 
-Canonical tags are signals, not security controls or redirects. Query validation and public-data filtering remain separate application responsibilities.
+The application already has the dedicated topic route `/topics/{slug}`.
+
+When `/blog?topic={slug}` represents the same public topic collection:
+
+- the filter view emits `noindex, follow`;
+- its canonical points to `/topics/{slug}`;
+- it remains absent from the sitemap as a duplicate filter representation.
+
+If `q` is also present, the request remains a search variant and canonicalizes to clean `/blog`.
+
+Unknown, malformed, or invalid topic filters must not create indexable metadata.
+
+### 8.5 Topic pagination
+
+If the existing `/topics/{slug}` route supports genuine pagination:
+
+- the clean first page canonicalizes to `/topics/{slug}`;
+- each valid subsequent page such as `/topics/{slug}?page=2` uses its own self-referential canonical retaining the normalized page parameter;
+- valid topic-pagination pages may remain `index, follow` in production;
+- they are not required in the sitemap;
+- invalid/out-of-range pagination must not create an indexable thin URL.
+
+### 8.6 Unknown and tracking parameters
+
+Unknown and tracking parameters:
+
+- must not alter metadata text;
+- must not become part of canonical authority;
+- are stripped from canonical URLs unless a separately reviewed route contract gives them content identity.
+
+Canonical tags are discovery signals, not security controls or redirects. Query validation, published-public filtering, and authorization remain separate application responsibilities.
 
 ## 9. Open Graph and Twitter preview architecture
 
@@ -197,14 +256,18 @@ Root metadata provides shared Open Graph and Twitter defaults using the canonica
 
 The proposed implementation uses the framework-native `src/app/opengraph-image.tsx` convention with `ImageResponse` from `next/og`; no image-generation or social-card package is added. The image must be 1200×630 with an explicit content type and accurate alt description.
 
-The fallback visual must preserve the Evidence Folio system:
+The fallback visual must preserve the canonical Evidence Folio system and reuse its established semantic tokens:
 
-- warm paper/cream ground;
-- deep navy typography;
-- muted teal accent;
-- restrained red annotation;
+- page/parchment `#F6F1E8`;
+- reading surface/paper `#FFFDF9`;
+- primary ink `#242321`;
+- muted ink `#5E5953`;
+- brand oxide `#7B3F35`;
+- deep sage `#3F5E52`;
 - strong editorial hierarchy and generous whitespace; and
-- a document/folio device rather than generic gradient marketing art.
+- an approved Evidence Folio document/folio signature device rather than generic gradient marketing art.
+
+The social card must not establish a parallel navy/teal/red palette outside the frozen design contract.
 
 It may show only the verified site/publication name and neutral product language already accepted in the repository. It must not invent Marie's credentials, medical claims, dates, readership, clients, testimonials, contact facts, social handles, or a final domain.
 
@@ -233,7 +296,7 @@ Article `lastModified` uses `updated_at` when truthful, otherwise `published_at`
 - every `/admin` and authentication route;
 - drafts, archived records, unpublished records, and private preview URLs;
 - contact messages, comments administration, settings, and other private data;
-- query/search/filter/pagination variants;
+- search/filter/tracking/query duplicates; valid canonical pagination pages remain outside the sitemap by design but are not treated as canonical duplicates;
 - empty or invalid topic routes;
 - non-canonical preview hosts; and
 - future Categories or Media Library routes unless separately implemented and authorized.
@@ -297,9 +360,19 @@ The filter must parse the event URL safely and return `null` for:
 - `/admin` and every `/admin/...` route, including login;
 - any future private preview route;
 - any future draft route or URL that can reveal a draft identifier; and
-- malformed URLs that cannot be classified safely.
+- malformed or unclassifiable URLs.
 
-All other automatic page-view events return unchanged. Public query values must not be copied into custom event properties. If a future public query can carry personal or sensitive data, that URL must be redacted or discarded before analytics transmission through a separately reviewed change.
+For every permitted public page-view event, the filter must sanitize the URL before transmission:
+
+1. parse `event.url` with the URL API;
+2. retain only the normalized origin and pathname;
+3. remove the complete query string;
+4. remove any fragment/hash;
+5. return the event with the sanitized URL.
+
+For example, a page view for `/blog?q=diabetes&page=2` is transmitted only as the public `/blog` path, never with the search term or pagination query attached.
+
+This privacy rule applies to `q`, `topic`, `page`, tracking parameters, unknown parameters, and any future public query parameter. Removed values must never be copied into custom event properties. V1 continues to prohibit custom Analytics events.
 
 ### 13.3 Explicit exclusions
 
@@ -406,14 +479,19 @@ Before Stage 10 can pass, later authorized implementation must prove:
 ### 18.1 Automated and source checks
 
 - site-origin precedence, validation, normalization, and deterministic fallback tests;
-- no production canonical can resolve from `VERCEL_URL` or `VERCEL_BRANCH_URL`;
+- `VERCEL_ENV=production` and `VERCEL_ENV=preview` classification tests;
+- no production canonical can resolve from `VERCEL_URL`, `VERCEL_BRANCH_URL`, a preview host, or localhost;
 - metadata tests for every public route and article fallback path;
-- query/filter/pagination variants emit clean canonical plus `noindex, follow`;
+- clean `/blog` uses its clean self-canonical;
+- valid blog/topic pagination retains normalized `page` in a self-referential canonical and may remain `index, follow`;
+- search variants emit `noindex, follow` and canonicalize to clean `/blog`;
+- topic-filter duplicates emit `noindex, follow` and canonicalize to the dedicated `/topics/{slug}` route when equivalent;
+- unknown/tracking parameters never enter canonical authority or metadata text;
 - unpublished/missing articles cannot emit indexable metadata or JSON-LD;
 - sitemap contains only the approved static routes, published articles, and non-empty valid topics;
 - robots permits public crawling, disallows `/admin`, and lists the canonical sitemap;
 - JSON-LD serialization escapes `<` and omits unverified fields;
-- Analytics `beforeSend` drops admin/private/draft/malformed events and passes approved public page views; and
+- Analytics `beforeSend` drops admin/private/draft/malformed events, preserves approved public page views, and removes `q`, `topic`, `page`, unknown query parameters, tracking parameters, and fragments from transmitted public URLs; and
 - no forbidden analytics or SEO dependency is present.
 
 ### 18.2 Repository quality gate
@@ -441,7 +519,7 @@ Before Stage 10 can pass, later authorized implementation must prove:
 
 ### 18.4 Hosted checks
 
-Hosted checks occur only with separate authorization. They include exact Vercel project identity, production canonical origin, Analytics activation/filtered intake, Search Console property identity, sitemap processing, URL Inspection, Rich Results Test, and absence of preview/admin/draft URLs from submitted discovery artifacts.
+Hosted checks occur only with separate authorization. They include exact Vercel project identity; confirmation that required Vercel System Environment Variables are exposed; `VERCEL_ENV` classification; confirmation that the resolved production canonical origin is neither localhost nor a preview/deployment-specific host; Analytics activation and sanitized/filtered intake; Search Console property identity; sitemap processing; URL Inspection; Rich Results Test; and absence of preview/admin/draft URLs from submitted discovery artifacts.
 
 ## 19. Stage-10 acceptance criteria
 
@@ -469,9 +547,11 @@ Stage 10 is not complete until all of the following are true:
 - [Next.js — JSON-LD guide](https://nextjs.org/docs/app/guides/json-ld)
 - [Vercel — System environment variables](https://vercel.com/docs/environment-variables/system-environment-variables)
 - [Vercel — Advanced Web Analytics configuration and `beforeSend`](https://vercel.com/docs/analytics/package)
+- [Vercel — Redacting sensitive Analytics data](https://vercel.com/docs/analytics/redacting-sensitive-data)
 - [Vercel — Web Analytics privacy and compliance](https://vercel.com/docs/analytics/privacy-policy)
 - [Google Search Central — Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
 - [Google Search Central — Canonicalization](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+- [Google Search Central — Pagination and incremental page loading](https://developers.google.com/search/docs/specialty/ecommerce/pagination-and-incremental-page-loading)
 - [Google Search Central — Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article)
 - [Google Search Central — Structured data guidelines](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
 - [Google Search Central — Ask Google to recrawl URLs](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl)
@@ -482,7 +562,7 @@ Stage 10 is not complete until all of the following are true:
 
 At the end of this authorized work:
 
-- Stage 10 remains ACTIVE at Phase 10A design/governance;
+- Stage 10 remains ACTIVE with Phase 10A COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING;
 - D034 remains PROPOSED / OWNER REVIEW REQUIRED;
 - application implementation remains NOT STARTED;
 - `@vercel/analytics` remains uninstalled;

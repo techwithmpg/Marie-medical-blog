@@ -4,16 +4,17 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10A DESIGN
+- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10A COMPLETE / OWNER REVIEW PENDING
 - **Stage authorization:** PHASE 10A GOVERNANCE, RESEARCH & DESIGN FREEZE APPROVED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** NO — PHASE 10A DOCUMENTATION ONLY
-- **Current implementation phase:** PHASE 10A ACTIVE / APPLICATION IMPLEMENTATION NOT STARTED
-- **Phase 10A status:** ACTIVE / GOVERNANCE, RESEARCH & DESIGN FREEZE
+- **Application coding authorized:** NO — D034 OWNER APPROVAL REQUIRED BEFORE PHASE 10B
+- **Current implementation phase:** PHASE 10A COMPLETE / APPLICATION IMPLEMENTATION NOT STARTED
+- **Phase 10A status:** COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING
 - **D034 status:** PROPOSED / OWNER REVIEW REQUIRED / NOT ACTIVE
-- **Vercel hosted mutation:** NOT AUTHORIZED IN PHASE 10A
-- **Google Search Console mutation:** NOT AUTHORIZED IN PHASE 10A
+- **Phase 10B status:** NOT STARTED / NOT AUTHORIZED
+- **Vercel hosted mutation:** NOT AUTHORIZED
+- **Google Search Console mutation:** NOT AUTHORIZED
 - **Categories / Media Library implementation:** NOT AUTHORIZED IN STAGE 10
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
@@ -61,7 +62,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** ACTIVE / PHASE 10A DESIGN ONLY — OWNER AUTHORIZED 2026-08-26
+- **Stage 10:** ACTIVE / PHASE 10A COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING — OWNER AUTHORIZED 2026-08-26
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -285,14 +286,16 @@ The UI research/prototypes are now governed by:
 
 This acceptance defines future implementation requirements only. It does **not** authorize application code, packages, Stage 1, or out-of-order Stage 2 work.
 
-## Current authorization boundary
+## Historical authorization boundary — Stage 8 checkpoint
+
+> Historical snapshot retained for provenance. This section records the authorization state at the Stage-8 checkpoint on 2026-08-26 and does not represent the current project authorization boundary. The authoritative current state is the `## Current status` section at the top of this file.
 
 **Stage 8 — Publishing Workflow: Phase 8A & Phase 8B COMPLETED / LOCAL GATE PASS (2026-08-26).**
 
 - The project owner approved D030 and authorized Stage-8 implementation.
 - Phase 8A (Database Publishing Lifecycle Foundation) and Phase 8B (Server Actions & Storage Asset Promotion) are complete on branch `stage/08-publishing-workflow`.
-- Phase 8C (UI & Admin-Local Preview Workspace), hosted Supabase deployment, and Stage 9 remain separately gated and **NOT AUTHORIZED**.
-- Stage 7 is **COMPLETE**, **MERGED** into `main`, and **GATE PASS**.
+- Phase 8C (UI & Admin-Local Preview Workspace), hosted Supabase deployment, and Stage 9 were separately gated and **NOT AUTHORIZED AT THIS HISTORICAL CHECKPOINT**.
+- Stage 7 was **COMPLETE**, **MERGED** into `main`, and **GATE PASS** at this historical checkpoint.
 
 ## Stage-1 start record
 
