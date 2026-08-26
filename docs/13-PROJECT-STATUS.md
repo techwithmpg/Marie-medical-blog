@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — COMPLETE / GATE PASS / READY FOR OWNER MERGE REVIEW
-- **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — COMPLETE / MERGED / GATE PASS
+- **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER + MERGE AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
-- **Active working branch:** `stage/09-comments-contact-settings`
+- **Active working branch:** `main`
 - **Application coding authorized:** NO NEW IMPLEMENTATION STAGE AUTHORIZED
-- **Current implementation phase:** 9G — STAGE CLOSEOUT & HANDOFF (COMPLETE)
+- **Current implementation phase:** STAGE 9 COMPLETE / MERGED INTO main
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -36,7 +36,7 @@ This file is the authoritative repository record of the currently active develop
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Handoff document:** `docs/34-STAGE-9-HANDOFF.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED; PHASE 9G COMPLETE / STAGE CLOSEOUT
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F COMPLETE / HOSTED DEPLOYMENT VERIFIED; PHASE 9G COMPLETE / STAGE CLOSEOUT; POST-MERGE GATE PASS
 - **Hosted project:** `eoexnnhqzrkurbqgbtnx`
 - **Hosted Stage-9 migration:** DEPLOYED / VERIFIED — 2026-08-26
 - **Hosted Stage-9 migration version:** `20260826142425`
@@ -48,7 +48,13 @@ This file is the authoritative repository record of the currently active develop
 - **Vercel production/WAF mutation:** NOT AUTHORIZED IN STAGE 9
 - **Phase 9F status:** COMPLETE / HOSTED DEPLOYMENT VERIFIED
 - **Phase 9G status:** COMPLETE / STAGE CLOSEOUT & HANDOFF
-- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
+- **Stage-9 status:** COMPLETE / MERGED / GATE PASS
+- **Stage-9 approved branch head:** `c3bc682ec401959745e17037124a1f1381302997`
+- **Stage-9 merge commit:** `e4525f2496f68ea969d686d81f8abc9755d30007`
+- **Stage-9 merge status:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
+- **Stage-9 merge parents:**
+  - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
+  - second parent: `c3bc682ec401959745e17037124a1f1381302997`
 - **Stage 10:** NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
@@ -1078,10 +1084,36 @@ Stage 7 is complete, verified, and merged into `main`:
 - **No hosted Supabase mutation in Phase 9G:** confirmed; no `apply_migration`, no corrective SQL, no Auth/Storage mutation, no Vercel/WAF mutation
 - **No second Stage-9 migration attempt:** confirmed
 - **Verification:** `git diff --check` PASS; `npm run format:check` PASS; diff limited to Phase-9G documentation files only
-- **Phase 9G commit:** see git closeout (see git log)
+- **Phase 9G commit:** `c3bc682ec401959745e17037124a1f1381302997` (documentation review correction)
 - **Phase 9G status:** COMPLETE
-- **Stage-9 merge:** NOT AUTHORIZED / NOT PERFORMED
+- **Stage-9 merge:** MERGED INTO main WITH PROJECT-OWNER APPROVAL — 2026-08-26
+- **Stage-9 merge commit:** `e4525f2496f68ea969d686d81f8abc9755d30007`
 - **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Stage Merge & Post-Merge Gate (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Action:** Merge `stage/09-comments-contact-settings` into `main`
+- **Owner authorization:** Explicit project-owner authorization to merge approved branch head `c3bc682ec401959745e17037124a1f1381302997` into `main` (2026-08-26)
+- **Pre-merge baseline (`origin/main`):** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Merge strategy:** Deliberate `--no-ff` merge
+- **Merge commit SHA:** `e4525f2496f68ea969d686d81f8abc9755d30007`
+- **Merge parents:**
+  - first parent (prior `main`): `d7efeb7687e3d98f6af94c06300027b6275022ef`
+  - second parent (approved Stage-9 head): `c3bc682ec401959745e17037124a1f1381302997`
+- **Merge tree verification:** `b0e979ee34dd394fc52f97d2a59aee94227b6b04` (100% tree match with approved Stage-9 head)
+- **Post-merge quality gate suite:**
+  - `npx supabase db reset`: PASS (5/5 migrations applied cleanly)
+  - `npx supabase test db`: PASS (323/323 pgTAP tests across 11 files)
+  - `node --test tests/*.test.mjs`: PASS (67/67 Node tests, 0 failures)
+  - `npm run typecheck`: PASS (0 errors)
+  - `npm run lint`: PASS (0 errors, 0 warnings)
+  - `npm run format:check`: PASS
+  - `npm run build`: PASS (18 routes compiled cleanly)
+  - `git diff --check`: PASS
+- **Active working branch:** `main`
+- **Stage-9 status:** COMPLETE / MERGED / GATE PASS
+- **Stage 10 status:** NOT AUTHORIZED
 
 ## Stage transition rule
 
