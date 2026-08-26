@@ -26,18 +26,18 @@ export async function togglePortfolioFeaturedAction(
   const shouldFeature = operation === "feature";
   const supabase = await createClient();
 
-  // Enforce status = 'published' in the update predicate to uphold publication invariants
+  // Enforce status = 'published' in the update predicate to uphold publication invariants.
+  // updated_at is maintained by the database trigger (trg_articles_updated_at).
   const { error } = await supabase
     .from("articles")
     .update({
       is_portfolio_featured: shouldFeature,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", articleId)
     .eq("status", "published");
 
   if (error) {
-    throw new Error(`Failed to update portfolio featuring: ${error.message}`);
+    throw new Error("Unable to update Selected Writing right now.");
   }
 
   revalidatePath("/admin/portfolio");
@@ -66,7 +66,7 @@ export async function setLeadFeaturedArticleAction(
   });
 
   if (error) {
-    throw new Error(`Failed to set lead featured article: ${error.message}`);
+    throw new Error("Unable to update the lead article right now.");
   }
 
   revalidatePath("/admin/portfolio");

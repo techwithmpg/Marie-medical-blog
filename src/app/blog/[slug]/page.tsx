@@ -14,8 +14,10 @@ import {
 } from "@/lib/public-articles";
 import {
   getPublicProfile,
+  getPublicSiteSettings,
   getPublicAssetUrl,
   type PublicProfile,
+  type PublicSiteSettings,
 } from "@/lib/public-data";
 import {
   getApprovedCommentsByArticleId,
@@ -72,20 +74,28 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   }
 
   let profile: PublicProfile;
+  let settings: PublicSiteSettings;
   let relatedArticles: PublicArticleSummary[] = [];
   let featuredImageUrl: string | null = null;
   let approvedComments: PublicApprovedComment[] = [];
 
   try {
-    const [fetchedProfile, fetchedRelated, fetchedImageUrl, fetchedComments] =
-      await Promise.all([
-        getPublicProfile(),
-        getRelatedPublishedArticles(article.id, article.category_id, 3),
-        getPublicAssetUrl(article.featured_image_path),
-        getApprovedCommentsByArticleId(article.id),
-      ]);
+    const [
+      fetchedProfile,
+      fetchedSettings,
+      fetchedRelated,
+      fetchedImageUrl,
+      fetchedComments,
+    ] = await Promise.all([
+      getPublicProfile(),
+      getPublicSiteSettings(),
+      getRelatedPublishedArticles(article.id, article.category_id, 3),
+      getPublicAssetUrl(article.featured_image_path),
+      getApprovedCommentsByArticleId(article.id),
+    ]);
 
     profile = fetchedProfile;
+    settings = fetchedSettings;
     relatedArticles = fetchedRelated;
     featuredImageUrl = fetchedImageUrl;
     approvedComments = fetchedComments;
@@ -99,6 +109,16 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
       interests: null,
       social_links: null,
       cv_storage_path: null,
+    };
+    settings = {
+      site_title: "Marie Medere",
+      tagline: "Medical Writing Portfolio & Educational Blog",
+      default_seo_description:
+        "Medical Writing Portfolio & Educational Blog by Marie Medere.",
+      disclaimer_text:
+        "This publication provides educational content only and does not constitute medical advice.",
+      homepage_intro: null,
+      social_links: [],
     };
     relatedArticles = [];
     featuredImageUrl = null;
@@ -161,7 +181,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
       {/* Medical Disclaimer Banner */}
       <div>
-        <MedicalDisclaimer />
+        <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
       </div>
 
       {/* Related Writing (Category Relevancy only) */}

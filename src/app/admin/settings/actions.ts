@@ -92,7 +92,6 @@ export async function updateSiteSettingsAction(
       disclaimer_text: validatedCore.disclaimer_text,
       default_seo_description: validatedCore.default_seo_description,
       social_links: validatedSocialLinks,
-      updated_at: new Date().toISOString(),
     },
     { onConflict: "id" },
   );

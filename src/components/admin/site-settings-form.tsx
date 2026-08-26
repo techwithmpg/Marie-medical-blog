@@ -29,7 +29,7 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
     setHasEditedSinceResult(false);
   }
 
-  // Character counter state
+  // Character counter state: reflects true persisted data lengths or 0 if null/unsaved
   const [titleLen, setTitleLen] = useState(
     initialSettings?.site_title?.length || 0,
   );
@@ -131,7 +131,8 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
             type="text"
             required
             maxLength={120}
-            defaultValue={initialSettings?.site_title || "Marie Medere"}
+            defaultValue={initialSettings?.site_title ?? ""}
+            placeholder="e.g. Marie Medere"
             onChange={(e) => setTitleLen(e.target.value.length)}
             aria-invalid={Boolean(fieldErrors.site_title)}
             aria-describedby={
@@ -167,10 +168,8 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
             name="tagline"
             type="text"
             maxLength={200}
-            defaultValue={
-              initialSettings?.tagline ||
-              "Medical Writing Portfolio & Educational Blog"
-            }
+            defaultValue={initialSettings?.tagline ?? ""}
+            placeholder="e.g. Medical Writing Portfolio & Educational Blog"
             onChange={(e) => setTaglineLen(e.target.value.length)}
             aria-invalid={Boolean(fieldErrors.tagline)}
             aria-describedby={fieldErrors.tagline ? "tagline-error" : undefined}
@@ -201,14 +200,14 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
             name="homepage_intro"
             rows={4}
             maxLength={1200}
-            defaultValue={initialSettings?.homepage_intro || ""}
+            defaultValue={initialSettings?.homepage_intro ?? ""}
+            placeholder="A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication."
             onChange={(e) => setIntroLen(e.target.value.length)}
             aria-invalid={Boolean(fieldErrors.homepage_intro)}
             aria-describedby={
               fieldErrors.homepage_intro ? "homepage-intro-error" : undefined
             }
             className="bg-reading-surface w-full rounded-md border border-subtle-divider px-3.5 py-2.5 text-sm text-ink transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
-            placeholder="A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication."
           />
           {fieldErrors.homepage_intro && (
             <p
@@ -249,10 +248,8 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
             name="disclaimer_text"
             rows={3}
             maxLength={1500}
-            defaultValue={
-              initialSettings?.disclaimer_text ||
-              "This publication provides educational content only and does not constitute medical advice."
-            }
+            defaultValue={initialSettings?.disclaimer_text ?? ""}
+            placeholder="This publication provides educational content only and does not constitute medical advice."
             onChange={(e) => setDisclaimerLen(e.target.value.length)}
             aria-invalid={Boolean(fieldErrors.disclaimer_text)}
             aria-describedby={
@@ -292,10 +289,8 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
             name="default_seo_description"
             rows={2}
             maxLength={320}
-            defaultValue={
-              initialSettings?.default_seo_description ||
-              "Medical Writing Portfolio & Educational Blog by Marie Medere."
-            }
+            defaultValue={initialSettings?.default_seo_description ?? ""}
+            placeholder="Medical Writing Portfolio & Educational Blog by Marie Medere."
             onChange={(e) => setSeoDescLen(e.target.value.length)}
             aria-invalid={Boolean(fieldErrors.default_seo_description)}
             aria-describedby={

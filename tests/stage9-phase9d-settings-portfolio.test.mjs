@@ -53,19 +53,19 @@ test("A. Admin site settings data helper contract", async () => {
   );
 });
 
-test("B. Site settings core validation schema rules", async () => {
-  // Valid core settings
+test("B. Site settings core validation schema rules with synthetic test fixtures", async () => {
+  // Valid core settings (synthetic test data)
   const valid = siteSettingsCoreSchema.safeParse({
-    site_title: "Marie Medere",
-    tagline: "Medical Writing Portfolio",
-    homepage_intro: "Evidence-based writing intro.",
-    disclaimer_text: "Educational purposes only.",
-    default_seo_description: "Medical Writing Portfolio & Educational Blog.",
+    site_title: "Synthetic Publication",
+    tagline: "Synthetic Editorial Tagline",
+    homepage_intro: "Synthetic evidence-based intro.",
+    disclaimer_text: "Synthetic educational notice.",
+    default_seo_description: "Synthetic Publication & Editorial Index.",
   });
   assert.ok(valid.success, "Valid core settings should pass validation");
   if (valid.success) {
-    assert.equal(valid.data.site_title, "Marie Medere");
-    assert.equal(valid.data.tagline, "Medical Writing Portfolio");
+    assert.equal(valid.data.site_title, "Synthetic Publication");
+    assert.equal(valid.data.tagline, "Synthetic Editorial Tagline");
   }
 
   // Blank site title should fail
@@ -90,7 +90,7 @@ test("B. Site settings core validation schema rules", async () => {
 
   // Empty strings in optional fields become null
   const emptyOptionals = siteSettingsCoreSchema.safeParse({
-    site_title: "Valid Title",
+    site_title: "Synthetic Title",
     tagline: "   ",
     homepage_intro: "",
     disclaimer_text: "  ",
@@ -108,23 +108,29 @@ test("B. Site settings core validation schema rules", async () => {
   }
 });
 
-test("C. Social links validation, HTTPS requirement, and partial-row rejection", async () => {
-  // Valid HTTPS links
+test("C. Social links validation, HTTPS requirement, and partial-row rejection with synthetic fixtures", async () => {
+  // Valid HTTPS links with synthetic example.invalid domains
   const validResult = validateSocialLinks([
-    { label: "LinkedIn", url: "https://linkedin.com/in/mariemedere" },
     {
-      label: "ResearchGate",
-      url: "https://researchgate.net/profile/mariemedere",
+      label: "Synthetic Profile One",
+      url: "https://example.invalid/profile-one",
+    },
+    {
+      label: "Synthetic Profile Two",
+      url: "https://example.invalid/profile-two",
     },
   ]);
   assert.equal(validResult.errors.length, 0, "Valid HTTPS links must pass");
   assert.equal(validResult.links.length, 2);
-  assert.equal(validResult.links[0].label, "LinkedIn");
-  assert.equal(validResult.links[0].url, "https://linkedin.com/in/mariemedere");
+  assert.equal(validResult.links[0].label, "Synthetic Profile One");
+  assert.equal(validResult.links[0].url, "https://example.invalid/profile-one");
 
   // Blank rows should be omitted without error
   const blankRowsResult = validateSocialLinks([
-    { label: "LinkedIn", url: "https://linkedin.com/in/mariemedere" },
+    {
+      label: "Synthetic Profile One",
+      url: "https://example.invalid/profile-one",
+    },
     { label: "  ", url: "  " },
     { label: "", url: "" },
   ]);
@@ -137,7 +143,7 @@ test("C. Social links validation, HTTPS requirement, and partial-row rejection",
 
   // Partial row (label without URL) should fail
   const missingUrlResult = validateSocialLinks([
-    { label: "LinkedIn", url: "  " },
+    { label: "Synthetic Profile One", url: "  " },
   ]);
   assert.ok(
     missingUrlResult.errors.length > 0,
@@ -146,7 +152,7 @@ test("C. Social links validation, HTTPS requirement, and partial-row rejection",
 
   // Partial row (URL without label) should fail
   const missingLabelResult = validateSocialLinks([
-    { label: "  ", url: "https://linkedin.com" },
+    { label: "  ", url: "https://example.invalid/profile-one" },
   ]);
   assert.ok(
     missingLabelResult.errors.length > 0,
@@ -155,7 +161,7 @@ test("C. Social links validation, HTTPS requirement, and partial-row rejection",
 
   // HTTP URL should be rejected (HTTPS only)
   const insecureUrlResult = validateSocialLinks([
-    { label: "Insecure Link", url: "http://insecure.example.com" },
+    { label: "Insecure Link", url: "http://example.invalid/insecure" },
   ]);
   assert.ok(
     insecureUrlResult.errors.length > 0,
@@ -172,7 +178,7 @@ test("C. Social links validation, HTTPS requirement, and partial-row rejection",
   );
 });
 
-test("D. Settings Server Action security and revalidation contract", async () => {
+test("D. Settings Server Action security, trigger-owned updated_at, and revalidation contract", async () => {
   const actionModulePath = path.join(ROOT, "src/app/admin/settings/actions.ts");
   assert.ok(
     fs.existsSync(actionModulePath),
@@ -191,7 +197,7 @@ test("D. Settings Server Action security and revalidation contract", async () =>
     "Must enforce admin authorization via requireAdmin()",
   );
 
-  // Verify upsert of singleton id = 1
+  // Verify upsert of singleton id = 1 without application-owned updated_at
   assert.ok(
     content.includes("id: 1"),
     "Must enforce upsert of singleton record with id: 1",
@@ -200,6 +206,10 @@ test("D. Settings Server Action security and revalidation contract", async () =>
     content.includes('onConflict: "id"') ||
       content.includes("onConflict: 'id'"),
     "Must specify onConflict: id for safe singleton upsert",
+  );
+  assert.ok(
+    !content.includes("updated_at:"),
+    "Must not explicitly write updated_at; database trigger is authoritative",
   );
 
   // Verify targeted revalidation
@@ -407,7 +417,7 @@ test("H. Admin portfolio data helper published-only contract", async () => {
   );
 });
 
-test("I. Portfolio featuring Server Action security and invariants", async () => {
+test("I. Portfolio featuring Server Action security, business fields only, and generic error contract", async () => {
   const portfolioActionsPath = path.join(
     ROOT,
     "src/app/admin/portfolio/actions.ts",
@@ -440,9 +450,25 @@ test("I. Portfolio featuring Server Action security and invariants", async () =>
       content.includes('revalidatePath("/portfolio")'),
     "togglePortfolioFeaturedAction must revalidate /admin/portfolio and /portfolio",
   );
+
+  // Payload discipline: must only update is_portfolio_featured, no explicit updated_at or status
+  assert.ok(
+    !content.includes("updated_at:"),
+    "togglePortfolioFeaturedAction must not write updated_at; database trigger owns it",
+  );
+
+  // Generic error guard: do not leak raw backend details
+  assert.ok(
+    !content.includes("${error.message}"),
+    "Portfolio actions must not interpolate raw error.message into error strings",
+  );
+  assert.ok(
+    content.includes("Unable to update Selected Writing right now."),
+    "Must use generic user-safe error message for portfolio toggle",
+  );
 });
 
-test("J. Lead featured article Server Action and RPC invocation", async () => {
+test("J. Lead featured article Server Action, RPC invocation, and generic error contract", async () => {
   const portfolioActionsPath = path.join(
     ROOT,
     "src/app/admin/portfolio/actions.ts",
@@ -462,6 +488,12 @@ test("J. Lead featured article Server Action and RPC invocation", async () => {
       content.includes('revalidatePath("/")') &&
       content.includes('revalidatePath("/blog")'),
     "setLeadFeaturedArticleAction must revalidate /admin/portfolio, /, and /blog",
+  );
+
+  // Generic error guard: do not leak raw backend details
+  assert.ok(
+    content.includes("Unable to update the lead article right now."),
+    "Must use generic user-safe error message for lead article update",
   );
 });
 
@@ -537,5 +569,134 @@ test("L. Stage-9 scope boundary guard", async () => {
   assert.ok(
     !deps["resend"] && !deps["@sendgrid/mail"] && !deps["nodemailer"],
     "Must not install email dispatch libraries in Stage 9",
+  );
+});
+
+test("M. Admin empty settings state and nullish defaultValue semantics", async () => {
+  const formComponentPath = path.join(
+    ROOT,
+    "src/components/admin/site-settings-form.tsx",
+  );
+  const content = fs.readFileSync(formComponentPath, "utf8");
+
+  // Verify form uses nullish coalescing to empty string, NOT fallback copy
+  assert.ok(
+    content.includes('defaultValue={initialSettings?.site_title ?? ""}'),
+    "site_title input must start empty when no settings exist",
+  );
+  assert.ok(
+    content.includes('defaultValue={initialSettings?.tagline ?? ""}'),
+    "tagline input must start empty when null",
+  );
+  assert.ok(
+    content.includes('defaultValue={initialSettings?.homepage_intro ?? ""}'),
+    "homepage_intro input must start empty when null",
+  );
+  assert.ok(
+    content.includes('defaultValue={initialSettings?.disclaimer_text ?? ""}'),
+    "disclaimer_text input must start empty when null",
+  );
+  assert.ok(
+    content.includes(
+      'defaultValue={initialSettings?.default_seo_description ?? ""}',
+    ),
+    "default_seo_description input must start empty when null",
+  );
+
+  // Ensure no accidental fallback copy injection into defaultValues
+  assert.ok(
+    !content.includes(
+      'defaultValue={initialSettings?.site_title || "Marie Medere"}',
+    ),
+    "Must not inject default string as defaultValue for site_title",
+  );
+  assert.ok(
+    !content.includes(
+      "defaultValue={\n              initialSettings?.tagline ||",
+    ),
+    "Must not inject fallback tagline into defaultValue",
+  );
+});
+
+test("N. Character counters start at 0 when settings are empty or null", async () => {
+  const formComponentPath = path.join(
+    ROOT,
+    "src/components/admin/site-settings-form.tsx",
+  );
+  const content = fs.readFileSync(formComponentPath, "utf8");
+
+  assert.ok(
+    content.includes("initialSettings?.site_title?.length || 0"),
+    "Title length counter must initialize from persisted length or 0",
+  );
+  assert.ok(
+    content.includes("initialSettings?.tagline?.length || 0"),
+    "Tagline length counter must initialize from persisted length or 0",
+  );
+  assert.ok(
+    content.includes("initialSettings?.homepage_intro?.length || 0"),
+    "Intro length counter must initialize from persisted length or 0",
+  );
+  assert.ok(
+    content.includes("initialSettings?.disclaimer_text?.length || 0"),
+    "Disclaimer length counter must initialize from persisted length or 0",
+  );
+  assert.ok(
+    content.includes("initialSettings?.default_seo_description?.length || 0"),
+    "SEO desc length counter must initialize from persisted length or 0",
+  );
+});
+
+test("O. Disclaimer propagation across all public pages while /disclaimer remains independent", async () => {
+  const publicPageFiles = [
+    "src/app/page.tsx",
+    "src/app/blog/[slug]/page.tsx",
+    "src/app/portfolio/page.tsx",
+    "src/app/contact/page.tsx",
+    "src/app/about/page.tsx",
+  ];
+
+  for (const relPath of publicPageFiles) {
+    const fullPath = path.join(ROOT, relPath);
+    assert.ok(fs.existsSync(fullPath), `${relPath} must exist`);
+    const pageContent = fs.readFileSync(fullPath, "utf8");
+    assert.ok(
+      pageContent.includes("<MedicalDisclaimer") &&
+        pageContent.includes("disclaimerText={settings.disclaimer_text}"),
+      `${relPath} must pass disclaimerText={settings.disclaimer_text} to MedicalDisclaimer`,
+    );
+  }
+
+  // Verify /disclaimer page remains independent
+  const disclaimerPagePath = path.join(ROOT, "src/app/disclaimer/page.tsx");
+  assert.ok(
+    fs.existsSync(disclaimerPagePath),
+    "src/app/disclaimer/page.tsx must exist",
+  );
+  const disclaimerContent = fs.readFileSync(disclaimerPagePath, "utf8");
+  assert.ok(
+    !disclaimerContent.includes("<MedicalDisclaimer"),
+    "The full /disclaimer page must remain independent and not render MedicalDisclaimer component",
+  );
+});
+
+test("P. Stage-9D test fixture guard: no invented client URLs in test suites", async () => {
+  const currentTestFilePath = path.join(
+    ROOT,
+    "tests/stage9-phase9d-settings-portfolio.test.mjs",
+  );
+  const content = fs.readFileSync(currentTestFilePath, "utf8");
+  const suitesContent = content.slice(0, content.indexOf('test("P.'));
+
+  const forbiddenPrefix1 = "linkedin" + ".com/in/mariemedere";
+  const forbiddenPrefix2 = "researchgate" + ".net/profile/mariemedere";
+
+  assert.ok(
+    !suitesContent.includes(forbiddenPrefix1),
+    "Must not use invented client LinkedIn URL as test fixture in test suites",
+  );
+  assert.ok(
+    !suitesContent.includes(forbiddenPrefix2),
+    "Must not use invented client ResearchGate URL as test fixture in test suites",
   );
 });

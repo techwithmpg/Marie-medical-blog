@@ -9,6 +9,7 @@ import { ArticleListItem } from "@/components/public/article-list-item";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { getPortfolioPublishedArticles } from "@/lib/public-articles";
+import { getPublicSiteSettings } from "@/lib/public-data";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default async function PortfolioPage() {
   let portfolioArticles: Awaited<
     ReturnType<typeof getPortfolioPublishedArticles>
   > = [];
+  const settings = await getPublicSiteSettings();
   let fetchError = false;
 
   try {
@@ -30,7 +32,7 @@ export default async function PortfolioPage() {
   }
 
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-20">
         {/* Page Header */}
         <PageIntro
@@ -142,7 +144,7 @@ export default async function PortfolioPage() {
 
         {/* Medical Disclaimer Banner */}
         <section className="pt-4">
-          <MedicalDisclaimer />
+          <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
         </section>
       </div>
     </PublicShell>
