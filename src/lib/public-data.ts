@@ -11,12 +11,18 @@ export interface PublicProfile {
   cv_storage_path: string | null;
 }
 
+export interface PublicSiteSocialLink {
+  label: string;
+  url: string;
+}
+
 export interface PublicSiteSettings {
   site_title: string;
   tagline: string | null;
   default_seo_description: string | null;
   disclaimer_text: string | null;
   homepage_intro: string | null;
+  social_links: PublicSiteSocialLink[];
 }
 
 const DEFAULT_PROFILE: PublicProfile = {
@@ -38,6 +44,7 @@ const DEFAULT_SITE_SETTINGS: PublicSiteSettings = {
   disclaimer_text:
     "This publication provides educational content only and does not constitute medical advice.",
   homepage_intro: null,
+  social_links: [],
 };
 
 export async function getPublicProfile(): Promise<PublicProfile> {
@@ -79,13 +86,33 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
     const { data, error } = await supabase
       .from("site_settings")
       .select(
-        "site_title, tagline, default_seo_description, disclaimer_text, homepage_intro",
+        "site_title, tagline, default_seo_description, disclaimer_text, homepage_intro, social_links",
       )
       .limit(1)
       .maybeSingle();
 
     if (error || !data) {
       return DEFAULT_SITE_SETTINGS;
+    }
+
+    let parsedSocialLinks: PublicSiteSocialLink[] = [];
+    if (Array.isArray(data.social_links)) {
+      parsedSocialLinks = data.social_links.flatMap((item: unknown) => {
+        if (typeof item !== "object" || item === null) return [];
+        const raw = item as Record<string, unknown>;
+        if (typeof raw.label !== "string" || typeof raw.url !== "string")
+          return [];
+        const label = raw.label.trim();
+        const urlStr = raw.url.trim();
+        if (!label || !urlStr) return [];
+        try {
+          const parsed = new URL(urlStr);
+          if (parsed.protocol !== "https:") return [];
+          return [{ label, url: urlStr }];
+        } catch {
+          return [];
+        }
+      });
     }
 
     return {
@@ -97,6 +124,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
       disclaimer_text:
         data.disclaimer_text || DEFAULT_SITE_SETTINGS.disclaimer_text,
       homepage_intro: data.homepage_intro || null,
+      social_links: parsedSocialLinks,
     };
   } catch {
     return DEFAULT_SITE_SETTINGS;
