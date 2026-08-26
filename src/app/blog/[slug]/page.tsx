@@ -17,6 +17,11 @@ import {
   getPublicAssetUrl,
   type PublicProfile,
 } from "@/lib/public-data";
+import {
+  getApprovedCommentsByArticleId,
+  type PublicApprovedComment,
+} from "@/lib/public-comments";
+import { CommentSection } from "@/components/public/comment-section";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -69,19 +74,21 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   let profile: PublicProfile;
   let relatedArticles: PublicArticleSummary[] = [];
   let featuredImageUrl: string | null = null;
+  let approvedComments: PublicApprovedComment[] = [];
 
   try {
-    const [fetchedProfile, fetchedRelated, fetchedImageUrl] = await Promise.all(
-      [
+    const [fetchedProfile, fetchedRelated, fetchedImageUrl, fetchedComments] =
+      await Promise.all([
         getPublicProfile(),
         getRelatedPublishedArticles(article.id, article.category_id, 3),
         getPublicAssetUrl(article.featured_image_path),
-      ],
-    );
+        getApprovedCommentsByArticleId(article.id),
+      ]);
 
     profile = fetchedProfile;
     relatedArticles = fetchedRelated;
     featuredImageUrl = fetchedImageUrl;
+    approvedComments = fetchedComments;
   } catch {
     profile = {
       display_name: "Marie Medere",
@@ -95,6 +102,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     };
     relatedArticles = [];
     featuredImageUrl = null;
+    approvedComments = [];
   }
 
   const hasValidImage = Boolean(
@@ -180,6 +188,9 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           </div>
         </section>
       )}
+
+      {/* Discussion & Public Comments */}
+      <CommentSection articleId={article.id} comments={approvedComments} />
     </article>
   );
 }

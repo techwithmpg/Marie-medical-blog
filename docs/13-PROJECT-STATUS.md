@@ -4,20 +4,22 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9B PUBLIC SUBMISSIONS
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — PHASE 9B LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9B — PUBLIC COMMENTS & CONTACT SUBMISSIONS (ACTIVE)
+- **Current implementation phase:** 9B — PUBLIC COMMENTS & CONTACT SUBMISSIONS (LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW)
 - **Phase 9A status:** COMPLETE / LOCAL + EXTERNAL GATE PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
-- **Phase 9B status:** ACTIVE
+- **Phase 9B status:** COMPLETE / LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Phase 9C status:** NOT STARTED / AWAITING PHASE 9B EXTERNAL PASS
+- **Phase 9D status:** NOT STARTED
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A COMPLETE / LOCAL + EXTERNAL GATE PASS; PHASE 9B ACTIVE
+- **Gate status:** PHASE 9A COMPLETE / LOCAL + EXTERNAL GATE PASS; PHASE 9B LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW; PHASE 9C NOT STARTED
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
@@ -823,7 +825,45 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run build`: PASS (Next.js production build verified cleanly)
   - `git diff --check`: PASS (clean diff)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
-- **Phase 9B status:** NOT STARTED / AWAITING FINAL EXTERNAL PASS
+- **Phase 9A status:** COMPLETE / LOCAL + EXTERNAL GATE PASS
+- **Phase 9B status:** COMPLETE / LOCAL PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9B Public Comments & Contact Submissions (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9B — Public Comments & Contact Submissions
+- **Owner authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **New runtime dependency:** `zod` (`^4.4.3` / `4.4.3`) — authorized by D032
+- **New test suite:** `tests/stage9-phase9b-public-submissions.test.mjs`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Zod Validation Schemas (`src/lib/public-submissions.ts`):** Implemented `commentSubmissionSchema` and `contactSubmissionSchema` aligning with PostgreSQL schema invariants (UUID regex, trim, lowercased email, lengths: comment name 100, email 255, body 2000; contact name 100, email 255, subject 200, message 5000), honeypot check helper `isHoneypotTriggered`, and typed action response `SubmissionActionResult`.
+  - [x] **Safe Public Comments Query Helper (`src/lib/public-comments.ts`):** Implemented `getApprovedCommentsByArticleId(articleId)` which explicitly selects only public columns (`id, article_id, commenter_name, body, created_at`), filters `status = 'approved'`, and orders `created_at ASC`. Never selects `commenter_email` or `moderated_at`.
+  - [x] **Comment Server Action (`src/app/blog/[slug]/actions.ts`):** Implemented `submitCommentAction` using standard server client (`createClient()`), checking honeypot, validating with Zod schema, inserting only allowed columns (`article_id, commenter_name, commenter_email, body`), and returning safe generic messages without leaking SQL internals.
+  - [x] **Contact Server Action (`src/app/contact/actions.ts`):** Implemented `submitContactAction` using standard server client (`createClient()`), checking honeypot, validating with Zod schema, inserting only allowed columns (`name, email, subject, message`), and returning safe generic messages without leaking SQL internals.
+  - [x] **Accessible Comment Form Component (`src/components/public/comment-form.tsx`):** Created Client Component using React `useActionState(submitCommentAction)`, off-screen honeypot input, accessible labels, aria-invalid/aria-describedby error states, email privacy note, moderation review notice, and 44px submit button.
+  - [x] **Comment Section Server Component (`src/components/public/comment-section.tsx`):** Implemented Server Component with section header, `SplitRule`, comment count `TopicImprint`, approved comment list, and embedded `CommentForm`. Integrated into `src/app/blog/[slug]/page.tsx` directly after Related Writing.
+  - [x] **Active Contact Form Component (`src/components/public/contact-form-shell.tsx`):** Activated the contact form with `useActionState(submitContactAction)`, live character counters for subject (current / 200) and message (current / 5000), off-screen honeypot, accessible error alerts, and preserved Evidence Folio styling and medical disclaimer.
+  - [x] **Automated Application Test Suite (`tests/stage9-phase9b-public-submissions.test.mjs`):** 11 tests covering validation contracts, whitespace normalization, length boundaries, Server Action source constraints (createClient, narrow insert columns, no service-role, safe errors), public comment query privacy invariants, UI contracts (contact form active, counters present, comment notices present), and scope drift guards (zero reader auth, captcha, email providers, or client writes).
+  - [x] **Real Database E2E Verification:** Verified comment insertion (default pending), pending comment invisibility against anon queries, contact insertion (default unread), and anon read confidentiality against contact table.
+- **Local Quality Gates (Phase 9B):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (6 test files, 39 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 12 routes)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
+- **Phase 9C status:** NOT STARTED / AWAITING CHATGPT EXTERNAL REVIEW
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 
