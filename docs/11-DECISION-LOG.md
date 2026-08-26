@@ -649,6 +649,34 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 7. The first authorized write attempt is **CONSUMED** with zero hosted drift.
 8. Stage-9 merge remains unauthorized; Stage 10 remains unauthorized.
 
+### D033 Execution Addendum 2 — Replacement Hosted Migration Attempt Authorized
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The original D033 deployment path produced zero hosted mutation.
+2. Subsequent reconciliation confirmed three apply_migration tool invocations were rejected before hosted SQL execution:
+   - stale OAuth refresh token (`supabase_stage8_write`);
+   - read-only MCP guard (`supabase`);
+   - read-only MCP session after configuration edit (`supabase`).
+3. Hosted migration history remains at the Stage-8 baseline (4 applied migrations).
+4. No Stage-9 constraints/indexes/triggers/functions are deployed (0/10 constraints, 0/5 indexes, 0/2 triggers, 0/3 functions).
+5. Zero persistent synthetic rows, Auth changes, Storage changes, or content changes occurred.
+6. The project owner explicitly authorizes exactly ONE replacement Stage-9 migration apply attempt.
+7. The replacement may occur ONLY after:
+   - a dedicated write-capable connection is established;
+   - project identity is verified as `eoexnnhqzrkurbqgbtnx`;
+   - migration history is verified;
+   - anon commenter_email SELECT is confirmed false;
+   - anon contact_messages SELECT is confirmed false.
+8. Only the reviewed Stage-9 migration may be applied (`supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`, SHA-256: `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`).
+9. No automatic retry is authorized if this replacement invocation fails.
+10. Stage-9 merge remains unauthorized.
+11. Stage 10 remains unauthorized.
+
+**Approved by:** project owner — explicit authorization: "I authorize exactly one replacement Phase 9F Stage-9 migration attempt to Supabase project `eoexnnhqzrkurbqgbtnx`, using only `20260826000635_stage9_submission_security_and_feature_controls.sql`, after the write connection and hosted privacy grants are verified. No automatic retry is authorized." (2026-08-26)
+
+**Status:** ACTIVE / ONE REPLACEMENT ATTEMPT AUTHORIZED.
+
 ---
 
 ## New decision template
