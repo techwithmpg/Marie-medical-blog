@@ -4,18 +4,20 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9A DATABASE-SECURITY LOCAL GATE PASS (FINAL BOUNDARY TESTS PASSED)
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9B PUBLIC SUBMISSIONS
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9A — DATABASE / PUBLIC-SUBMISSION SECURITY (FINAL BOUNDARY TESTS PASSED / LOCAL GATE PASS)
-- **Phase 9B status:** NOT STARTED / AWAITING FINAL EXTERNAL PASS
+- **Current implementation phase:** 9B — PUBLIC COMMENTS & CONTACT SUBMISSIONS (ACTIVE)
+- **Phase 9A status:** COMPLETE / LOCAL + EXTERNAL GATE PASS
+- **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+- **Phase 9B status:** ACTIVE
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A LOCAL QUALITY GATE PASS (11/11 pgTAP FILES, 323/323 TESTS, 113/113 IN STAGE-9 SUITE; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
+- **Gate status:** PHASE 9A COMPLETE / LOCAL + EXTERNAL GATE PASS; PHASE 9B ACTIVE
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
