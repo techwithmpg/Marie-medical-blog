@@ -13,6 +13,14 @@ type VercelEnvironment = "production" | "preview" | "development";
 
 const LOCAL_SITE_URL = "http://localhost:3000";
 
+function getProcessSiteEnvironment(): SiteEnvironment {
+  return {
+    SITE_URL: process.env.SITE_URL,
+    VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    VERCEL_ENV: process.env.VERCEL_ENV,
+  };
+}
+
 function getVercelEnvironment(
   env: SiteEnvironment,
 ): VercelEnvironment | undefined {
@@ -68,18 +76,20 @@ function parseOrigin(
 }
 
 export function isProductionDeployment(
-  env: SiteEnvironment = process.env,
+  env: SiteEnvironment = getProcessSiteEnvironment(),
 ): boolean {
   return getVercelEnvironment(env) === "production";
 }
 
 export function isPreviewDeployment(
-  env: SiteEnvironment = process.env,
+  env: SiteEnvironment = getProcessSiteEnvironment(),
 ): boolean {
   return getVercelEnvironment(env) === "preview";
 }
 
-export function getSiteUrl(env: SiteEnvironment = process.env): URL {
+export function getSiteUrl(
+  env: SiteEnvironment = getProcessSiteEnvironment(),
+): URL {
   const vercelEnvironment = getVercelEnvironment(env);
   const siteUrlOverride = env.SITE_URL?.trim();
 
@@ -112,7 +122,7 @@ export function getSiteUrl(env: SiteEnvironment = process.env): URL {
 
 export function getCanonicalUrl(
   routePath: string,
-  env: SiteEnvironment = process.env,
+  env: SiteEnvironment = getProcessSiteEnvironment(),
 ): URL {
   if (!routePath.startsWith("/") || routePath.startsWith("//")) {
     throw new Error(
@@ -134,7 +144,7 @@ export function getCanonicalUrl(
 
 export function getDeploymentRobots(
   routePolicy: RouteIndexingPolicy,
-  env: SiteEnvironment = process.env,
+  env: SiteEnvironment = getProcessSiteEnvironment(),
 ): RouteIndexingPolicy {
   if (!isProductionDeployment(env)) {
     return {
