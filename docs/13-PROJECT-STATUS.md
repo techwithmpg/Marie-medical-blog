@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9D FINAL PREVIEW-FIDELITY CORRECTION GATE PASS
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9E FULL LOCAL & NATIVE BROWSER QUALITY GATE
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9D — SITE SETTINGS & PORTFOLIO FEATURING (COMPLETE / FINAL CORRECTION LOCAL GATE PASS / AWAITING CHATGPT FINAL EXTERNAL PASS)
+- **Current implementation phase:** 9E — FULL LOCAL & NATIVE BROWSER QUALITY GATE (ACTIVE)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -19,17 +19,19 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 9B native browser automation:** DEFERRED TO PHASE 9E (Reason: Playwright driver retrieval failed from upstream CDN during 9B; HTTP/SSR, database, build, and automated application gates passed cleanly)
 - **Phase 9C status:** COMPLETE / EXTERNAL PASS
 - **Phase 9C final reviewed head:** `f2b5527c8cb35052be365c9afc6d50031af28cff`
-- **Phase 9D status:** COMPLETE / FINAL CORRECTION LOCAL GATE PASS / AWAITING CHATGPT FINAL EXTERNAL PASS
+- **Phase 9D status:** COMPLETE / FINAL EXTERNAL PASS
+- **Phase 9D final reviewed head:** `2fad9ae5b2b4af04634866e08c22671e10e83789`
 - **Phase 9D final preview-fidelity correction:** PASS (Reusable disclaimer propagation: COMPLETE INCLUDING ADMIN-LOCAL ARTICLE PREVIEW; Admin-local preview profile: VERIFIED PUBLIC PROFILE / NO FABRICATED PROFESSIONAL CREDENTIALS; Client profile/settings reads in preview: NONE)
 - **D032 social-link addendum:** APPROVED / { label, url }[] / HTTPS ONLY
-- **Phase 9E status:** NOT STARTED
-- **Native browser E2E:** DEFERRED TO PHASE 9E
+- **Phase 9E status:** ACTIVE
+- **Native browser E2E:** REQUIRED IN THIS PHASE
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL CORRECTION LOCAL GATE PASS / AWAITING CHATGPT FINAL EXTERNAL PASS; PHASE 9E NOT STARTED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E ACTIVE
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
+- **Phase 9F status:** NOT STARTED / OWNER AUTHORIZATION REQUIRED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
