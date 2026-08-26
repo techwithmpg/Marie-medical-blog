@@ -74,6 +74,12 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
     setHasEditedSinceResult(true);
   };
 
+  const isHydrated = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
   const showFeedback = Boolean(state?.message && !hasEditedSinceResult);
   const isSuccess = state?.success === true;
   const fieldErrors = state?.fieldErrors || {};
@@ -82,6 +88,7 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
     <form
       action={formAction}
       onInput={() => setHasEditedSinceResult(true)}
+      data-hydrated={isHydrated ? "true" : "false"}
       className="space-y-8"
       noValidate
     >
@@ -320,6 +327,7 @@ export function SiteSettingsForm({ initialSettings }: SiteSettingsFormProps) {
           </div>
           <button
             type="button"
+            data-hydrated={isHydrated ? "true" : "false"}
             onClick={handleAddSocialLink}
             className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
           >

@@ -29,6 +29,11 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
   const [subjectLen, setSubjectLen] = React.useState(0);
   const [messageLen, setMessageLen] = React.useState(0);
   const [hasEditedSinceResult, setHasEditedSinceResult] = React.useState(false);
+  const isHydrated = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // Synchronize local edit tracking & counters when action state transitions
   if (state !== prevActionState) {
@@ -81,6 +86,7 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
         ref={formRef}
         action={formAction}
         onInput={() => setHasEditedSinceResult(true)}
+        data-hydrated={isHydrated ? "true" : "false"}
         className="space-y-5"
         noValidate
       >
@@ -198,6 +204,9 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
             maxLength={200}
             placeholder="Subject"
             onChange={(e) => setSubjectLen(e.target.value.length)}
+            onInput={(e) =>
+              setSubjectLen((e.target as HTMLInputElement).value.length)
+            }
             aria-invalid={Boolean(state.fieldErrors?.subject)}
             aria-describedby={
               state.fieldErrors?.subject
@@ -245,6 +254,9 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
             maxLength={5000}
             placeholder="Please detail your inquiry or editorial discussion topic..."
             onChange={(e) => setMessageLen(e.target.value.length)}
+            onInput={(e) =>
+              setMessageLen((e.target as HTMLTextAreaElement).value.length)
+            }
             aria-invalid={Boolean(state.fieldErrors?.message)}
             aria-describedby={
               state.fieldErrors?.message

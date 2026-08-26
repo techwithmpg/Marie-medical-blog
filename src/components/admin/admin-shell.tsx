@@ -179,7 +179,7 @@ export function AdminShell({
       </aside>
 
       {/* Main workspace container */}
-      <div className="flex flex-1 flex-col md:pl-64">
+      <div className="flex min-w-0 flex-1 flex-col md:pl-64">
         {/* Top Header */}
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#D2C9BC] bg-[#F6F1E8]/90 px-5 backdrop-blur-xs sm:px-8">
           <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ export function AdminShell({
         </header>
 
         {/* Workspace Canvas */}
-        <main className="w-full max-w-[1248px] flex-1 p-5 sm:p-8">
+        <main className="w-full max-w-[1248px] min-w-0 flex-1 p-5 sm:p-8">
           {children}
         </main>
       </div>
