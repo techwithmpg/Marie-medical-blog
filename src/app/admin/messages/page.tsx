@@ -196,7 +196,7 @@ export default async function AdminMessagesPage({
                         <Clock className="size-3" />
                         {formatAdminDate(msg.created_at)}
                       </span>
-                      <span className="max-w-[140px] truncate text-ink-muted/80">
+                      <span className="max-w-[140px] truncate font-medium text-ink">
                         {msg.email}
                       </span>
                     </div>

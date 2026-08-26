@@ -22,8 +22,16 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 9D final reviewed head:** `2fad9ae5b2b4af04634866e08c22671e10e83789`
 - **Phase 9D final preview-fidelity correction:** PASS (Reusable disclaimer propagation: COMPLETE INCLUDING ADMIN-LOCAL ARTICLE PREVIEW; Admin-local preview profile: VERIFIED PUBLIC PROFILE / NO FABRICATED PROFESSIONAL CREDENTIALS; Client profile/settings reads in preview: NONE)
 - **D032 social-link addendum:** APPROVED / { label, url }[] / HTTPS ONLY
-- **Phase 9E status:** COMPLETE / LOCAL & NATIVE BROWSER QUALITY GATE PASS
-- **Native browser E2E:** 14/14 TESTS PASSED (Playwright Chromium + local Supabase)
+- **Phase 9E status:** COMPLETE / LOCAL + NATIVE BROWSER + EXTERNAL-REVIEW CORRECTION GATE PASS / AWAITING CHATGPT FINAL EXTERNAL PASS
+- **Playwright resolved version:** `1.62.1`
+- **axe-core Playwright resolved version:** `4.13.0`
+- **WCAG automated rules:** 2.0 / 2.1 / 2.2 AA supplemental coverage
+- **axe serious violations:** 0
+- **axe critical violations:** 0
+- **Admin keyboard / focus:** PASS
+- **Representative visual review:** PASS (9 screenshots reviewed; Evidence Folio drift: NONE)
+- **Local-only guard:** `http://127.0.0.1:54321` or `http://localhost:54321` ONLY (Port 54321 strictly enforced)
+- **Native browser E2E:** 14/14 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links)
 - **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / LOCAL & NATIVE BROWSER GATE PASS
@@ -936,9 +944,9 @@ Stage 7 is complete, verified, and merged into `main`:
 - **New test suite:** `tests/stage9-phase9d-settings-portfolio.test.mjs`
 - **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
 - **Deliverables completed:**
-  - [x] **Site Settings Validation & Zod Schema (`src/lib/admin/settings-validation.ts`):** Implemented `siteSettingsSchema` validating site_title (1-100), site_description (0-300), footer_text (0-300), disclaimer_text (0-2000), and structured social_links (`{ label, url }[]`, HTTPS only, max 5, partial rows rejected).
+  - [x] **Site Settings Validation & Zod Schema (`src/lib/admin/settings-validation.ts`):** Implemented `siteSettingsSchema` validating `site_title` (required, trimmed, max 120), `tagline` (nullable, max 200), `homepage_intro` (nullable, max 1200), `disclaimer_text` (nullable, max 1500), `default_seo_description` (nullable, max 320), and structured `social_links` (`{ label, url }[]`, label max 80, HTTPS only, blank rows omitted, partial rows rejected).
   - [x] **Admin Site Settings Data Helper (`src/lib/admin/settings.ts`):** Implemented `getAdminSiteSettings()` with explicit single row extraction from `site_settings`.
-  - [x] **Site Settings Server Action (`src/app/admin/settings/actions.ts`):** Implemented `updateSiteSettingsAction` with `requireAdmin()`, Zod validation, updating only business fields (`site_title, site_description, footer_text, disclaimer_text, social_links`), trigger-owned `updated_at`, and revalidating public layout.
+  - [x] **Site Settings Server Action (`src/app/admin/settings/actions.ts`):** Implemented `updateSiteSettingsAction` with `requireAdmin()`, Zod validation, updating only business fields (`site_title, tagline, homepage_intro, disclaimer_text, default_seo_description, social_links`), trigger-owned `updated_at`, and revalidating public layout.
   - [x] **Admin Site Settings Form (`src/components/admin/site-settings-form.tsx`):** Implemented interactive form with live character counters, dynamic social link rows (Add/Remove), nullish value preservation, accessible error states, and Evidence Folio design tokens.
   - [x] **Public Site Settings & Disclaimer Propagation:** Public shell (`public-shell.tsx`), header (`site-header.tsx`), footer (`site-footer.tsx`), and reusable `MedicalDisclaimer` consume live settings. Admin-local article preview (`article-preview-modal.tsx`) consumes verified author profile and saved site disclaimer text.
   - [x] **Portfolio Admin Data Helper & Actions (`src/lib/admin/portfolio.ts`, `src/app/admin/portfolio/actions.ts`):** Implemented `getAdminPortfolioArticles()` (published articles only), `togglePortfolioFeaturedAction`, and `updateLeadFeaturedArticleAction` with generic error messages and targeted cache revalidation.
@@ -957,41 +965,45 @@ Stage 7 is complete, verified, and merged into `main`:
 ## Stage-9 progress record — Phase 9E Full Local & Native Browser Quality Gate (2026-08-26)
 
 - **Stage:** Stage 9 — Comments, Contact Inbox & Settings
-- **Phase:** Phase 9E — Full Local / Native Browser Quality Verification
+- **Phase:** Phase 9E — Full Local / Native Browser Quality Verification & External-Review Correction
 - **Owner authorization:** D032 APPROVED + D020 PLAYWRIGHT & AXE TOOLING SCOPE (2026-08-26)
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
-- **Testing Tooling (D020 Permitted):** `@playwright/test` (`^1.58.2`), `@axe-core/playwright` (`^4.11.1`)
-- **Native Browser Environment:** Chromium Desktop, Local Supabase (`127.0.0.1:54321` / `localhost:54321`), Local Next.js dev server (`http://localhost:3000`), Single Worker (Serial execution).
-- **Safety Invariant:** Local-only guard (`tests/e2e/helpers/local-only.ts`) halts if target is non-local; Synthetic credentials only (`synthetic-admin@example.invalid`).
-- **Native Browser Test Matrix (14/14 Tests Passed):**
+- **Testing Tooling (Resolved Versions):** `@playwright/test` (`1.62.1`), `@axe-core/playwright` (`4.13.0`)
+- **Native Browser Environment:** Chromium Desktop, Local Supabase API (`http://127.0.0.1:54321` / `http://localhost:54321`), Local Next.js dev server (`http://localhost:3000`), Single Worker (Serial execution).
+- **Safety Invariant:** Local-only guard (`tests/e2e/helpers/local-only.ts`) strictly enforces port 54321 and halts if target is non-local; Synthetic credentials only (`synthetic-admin@example.invalid`).
+- **Native Browser Test Matrix (14 Tests Passed):**
   - [x] **Suite 1: Accessibility, Responsive & Runtime Verification (`tests/e2e/stage9-accessibility-responsive.spec.ts`):**
     - Test 1: Responsive matrix across Desktop (1440px), Tablet (768px), and Mobile (390px) with zero horizontal scroll overflow (`scrollWidth <= clientWidth + 1`). (PASS)
     - Test 2: Keyboard navigation and focus flow in public contact and comment forms. (PASS)
-    - Test 3: Automated WCAG 2.1 Level A and AA accessibility scans with Axe-core across representative public (`/`, `/blog`, `/contact`, `/portfolio`, `/disclaimer`) and admin surfaces (`/admin`, `/admin/comments`, `/admin/messages`, `/admin/settings`, `/admin/portfolio`). Zero critical/serious violations. (PASS)
-    - Test 4: Runtime error and unhandled exception guard. Zero uncaught errors or console errors. (PASS)
+    - Test 3: Keyboard navigation and focus flow across admin surfaces (Settings fields/Add Link/Remove/Save, Comments moderation actions, Messages list/reader/actions, and Article Preview open via Space/Escape close/focus return). (PASS)
+    - Test 4: Automated WCAG 2.0, 2.1, and 2.2 Level A and AA accessibility scans with Axe-core across representative public (`/`, `/about`, `/contact`, `/portfolio`, `/blog`, `/blog/[slug]`, `/disclaimer`) and admin surfaces (`/admin`, `/admin/comments`, `/admin/messages`, `/admin/settings`, `/admin/portfolio`). Zero serious and zero critical violations. (PASS)
+    - Test 5: Runtime error and unhandled exception guard. Zero uncaught errors or console errors. (PASS)
   - [x] **Suite 2: Admin Moderation & Inbox Workflows (`tests/e2e/stage9-admin-workflows.spec.ts`):**
-    - Test 5: Comment moderation lifecycle: Public submission -> Admin Pending filter -> Approve -> Public verified -> Admin Hide -> Public hidden -> Admin Delete -> Database hard delete verified. (PASS)
-    - Test 6: Contact inbox lifecycle: Public submission -> Admin New filter -> Private reader inspection -> Mark Read -> Archive -> Restore to Read. (PASS)
+    - Test 6: Comment moderation lifecycle: Public submission -> Admin Pending filter -> Approve -> Public verified -> Admin Hide -> Public hidden -> Admin Delete -> Database hard delete verified. (PASS)
+    - Test 7: Contact inbox lifecycle: Public submission -> Admin New filter -> Private reader inspection -> Mark Read -> Archive -> Restore to Read. (PASS)
   - [x] **Suite 3: Public Submissions & Privacy Boundaries (`tests/e2e/stage9-public-submissions.spec.ts`):**
-    - Test 7: Public comment reading, submission, moderation notice, honeypot protection, and private email exclusion from public DOM. (PASS)
-    - Test 8: Public contact form validation, submission, live character counters, and reset behavior on repeat submissions. (PASS)
+    - Test 8: Public comment reading, submission, moderation notice, honeypot protection, and private email exclusion from public DOM. (PASS)
+    - Test 9: Public contact form validation, submission, live character counters, and reset behavior on repeat submissions. (PASS)
   - [x] **Suite 4: Security & Private Data Boundaries (`tests/e2e/stage9-security-boundaries.spec.ts`):**
-    - Test 9: Anonymous visitors cannot access admin workspace routes (redirects to `/admin/login`). (PASS)
-    - Test 10: Public draft and archived articles return 404 and do not leak content. (PASS)
-    - Test 11: Private emails and contact messages are never present in public DOM or anon API responses. (PASS)
+    - Test 10: Anonymous visitors cannot access admin workspace routes (redirects to `/admin/login`). (PASS)
+    - Test 11: Public draft and archived articles return 404 and do not leak content. (PASS)
+    - Test 12: Private emails and contact messages are never present in public DOM (public exclusion verified in browser; backend confidentiality verified via pgTAP security tests). (PASS)
   - [x] **Suite 5: Settings & Portfolio Curation (`tests/e2e/stage9-settings-portfolio.spec.ts`):**
-    - Test 12: Site settings validation, saving, and public site propagation across header, footer, and disclaimer. (PASS)
-    - Test 13: Admin article preview fidelity with verified public profile (`Synthetic Stage 6 Author`) and site disclaimer text. (PASS)
-    - Test 14: Selected Writing portfolio curation and explicit lead article selection / automatic fallback lifecycle. (PASS)
+    - Test 13: Site settings validation, saving, and public site propagation across header, footer, and disclaimer. (PASS)
+    - Test 14: Admin article preview fidelity with verified public profile (`Synthetic Stage 6 Author`) and site disclaimer text. (PASS)
+    - Test 15: Selected Writing portfolio curation and explicit lead article selection / automatic fallback lifecycle. (PASS)
+- **Representative Visual Screenshot Review:**
+  - 9 representative screenshots captured & reviewed against `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`: Public Desktop `/`, Public Mobile `/`, Article Desktop `/blog/plain-language-clinical-protocol-summaries`, Article Mobile, Contact Mobile `/contact`, Admin Comments Desktop `/admin/comments`, Admin Messages Mobile `/admin/messages`, Admin Settings Desktop `/admin/settings`, Admin Portfolio Mobile `/admin/portfolio`.
+  - Evidence Folio meaningful drift: `NONE` (Evidence Rail, Topic Imprints, Split Rules, Reference Ledger, Newsreader / Source Sans typography, parchment / paper / oxide palette, public/admin visual distinction, readable mobile measures, zero clipped controls).
 - **Local Quality Gates (Phase 9E):**
   - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
   - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures)
   - `node --test tests/*.test.mjs`: PASS (8 test files, 67 tests, 0 failures)
-  - `npx playwright test`: PASS (14 tests, 0 failures, 100% pass)
+  - `npx playwright test`: PASS (15 tests across 5 suites, 0 failures, 100% pass)
   - `npm run typecheck`: PASS (0 type errors)
   - `npm run lint`: PASS (0 warnings, 0 errors)
   - `npm run format:check`: PASS (Prettier verified across entire codebase)

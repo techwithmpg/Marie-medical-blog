@@ -32,7 +32,7 @@ export function ensureLocalSupabaseTarget(): void {
 
   const isLocalHost =
     parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost";
-  const isLocalPort = parsed.port === "54321" || parsed.port === "54322";
+  const isLocalPort = parsed.port === "54321";
 
   if (!isLocalHost || !isLocalPort || parsed.protocol !== "http:") {
     throw new Error(

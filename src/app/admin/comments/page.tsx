@@ -181,7 +181,7 @@ export default async function AdminCommentsPage({
                       Submitted {formatAdminDate(comment.created_at)}
                     </span>
                     {comment.moderated_at && (
-                      <span className="hidden text-ink-muted/70 sm:inline">
+                      <span className="hidden text-ink-muted sm:inline">
                         • Moderated {formatAdminDate(comment.moderated_at)}
                       </span>
                     )}
