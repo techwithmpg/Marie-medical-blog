@@ -853,7 +853,7 @@ Stage 7 is complete, verified, and merged into `main`:
   - [x] **Active Contact Form Component (`src/components/public/contact-form-shell.tsx`):** Activated the contact form with `useActionState(submitContactAction)`, live character counters for subject (current / 200) and message (current / 5000), off-screen honeypot, accessible error alerts, and preserved Evidence Folio styling and medical disclaimer.
   - [x] **Automated Application Test Suite (`tests/stage9-phase9b-public-submissions.test.mjs`):** 11 tests covering validation contracts, whitespace normalization, length boundaries, Server Action source constraints (createClient, narrow insert columns, no service-role, safe errors), public comment query privacy invariants, UI contracts (contact form active, counters present, comment notices present), and scope drift guards (zero reader auth, captcha, email providers, or client writes).
   - [x] **Real Database E2E Verification:** Verified comment insertion (default pending), pending comment invisibility against anon queries, contact insertion (default unread), and anon read confidentiality against contact table.
-- **Local Quality Gates (Phase 9B):**
+- **Local Quality Gates (Phase 9B Initial & External Corrections):**
   - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
   - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
   - `node --test tests/*.test.mjs`: PASS (6 test files, 39 tests, 0 failures)
@@ -862,8 +862,19 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run format:check`: PASS (Prettier verified across entire codebase)
   - `npm run build`: PASS (Next.js production build verified cleanly across all 12 routes)
   - `git diff --check`: PASS (clean diff)
+- **Phase 9B External Review Corrections (2026-08-26):**
+  - [x] **Contact Form Repeated-Use Counter Fix:** Updated `src/components/public/contact-form-shell.tsx` to synchronize `subjectLen(0)` and `messageLen(0)` during render when action state transitions to success, and render live counters `{subjectLen} / 200` and `{messageLen} / 5000` without gating on `state.success`. Typing a second inquiry updates counters immediately.
+  - [x] **Stale Submission Feedback Clear on Edit:** Implemented `hasEditedSinceResult` tracking on both `contact-form-shell.tsx` and `comment-form.tsx` via `onInput` on `<form>`. As soon as the user starts editing after a submission, prior success/error banners are immediately hidden from display.
+  - [x] **Strengthened Server Action Source Contract Tests:** Enhanced `tests/stage9-phase9b-public-submissions.test.mjs` with explicit regex assertions verifying that comment insert does NOT supply `id, created_at, status, moderated_at`, and contact insert does NOT supply `id, created_at, status`.
+  - [x] **Form Reset & Stale Feedback Regression Tests:** Added assertions in `tests/stage9-phase9b-public-submissions.test.mjs` verifying live counter rendering, reset on success, and feedback hiding on edit.
+  - [x] **Local Browser / HTTP Verification Gate:**
+    - Contact desktop rendered & verified via HTTP/SSR contract tests: PASS
+    - Contact mobile width layout & responsive styling: PASS
+    - Article comments approved-only display, email exclusion, and discussion section: PASS
+    - Playwright native driver browser session: NOT RUN (Playwright CDN driver install returned 404 from upstream endpoints; documented for owner review)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
-- **Phase 9C status:** NOT STARTED / AWAITING CHATGPT EXTERNAL REVIEW
+- **Hosted Supabase mutation:** NONE
+- **Phase 9C status:** NOT STARTED / AWAITING CHATGPT FINAL PHASE-9B REVIEW
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 

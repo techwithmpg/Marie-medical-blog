@@ -194,20 +194,41 @@ test("Comment Server Action source contract: uses createClient, inserts only 4 c
   assert.ok(!actionContent.includes("createAdminClient"));
   assert.ok(!actionContent.includes("SUPABASE_SERVICE_ROLE_KEY"));
 
-  // 3. Narrow insert columns check: only article_id, commenter_name, commenter_email, body
-  assert.match(actionContent, /article_id:/);
-  assert.match(actionContent, /commenter_name:/);
-  assert.match(actionContent, /commenter_email:/);
-  assert.match(actionContent, /body:/);
+  // 3. Extract the exact insert payload block
+  const insertMatch = actionContent.match(
+    /\.from\(["']comments["']\)\.insert\(\{([\s\S]*?)\}\)/,
+  );
+  assert.ok(insertMatch, "Must contain .from('comments').insert({ ... }) call");
+  const insertBody = insertMatch[1];
 
-  // 4. Does NOT insert forbidden system-managed columns
-  assert.ok(!actionContent.includes("moderated_at:"));
-  assert.ok(!actionContent.includes("status:"));
+  // 4. Narrow insert columns check: only article_id, commenter_name, commenter_email, body
+  assert.match(insertBody, /article_id\s*:/);
+  assert.match(insertBody, /commenter_name\s*:/);
+  assert.match(insertBody, /commenter_email\s*:/);
+  assert.match(insertBody, /body\s*:/);
 
-  // 5. Honeypot check present
+  // 5. Explicitly verify forbidden system-managed fields are NOT in insert payload
+  assert.ok(
+    !/(?<!article_)id\s*:/.test(insertBody),
+    "Comment insert must NOT supply id",
+  );
+  assert.ok(
+    !/created_at\s*:/.test(insertBody),
+    "Comment insert must NOT supply created_at",
+  );
+  assert.ok(
+    !/status\s*:/.test(insertBody),
+    "Comment insert must NOT supply status",
+  );
+  assert.ok(
+    !/moderated_at\s*:/.test(insertBody),
+    "Comment insert must NOT supply moderated_at",
+  );
+
+  // 6. Honeypot check present
   assert.match(actionContent, /isHoneypotTriggered/);
 
-  // 6. Raw SQL/database errors not leaked
+  // 7. Raw SQL/database errors not leaked
   assert.ok(
     actionContent.includes(
       "We couldn't submit your comment right now. Please wait a little and try again.",
@@ -230,19 +251,37 @@ test("Contact Server Action source contract: uses createClient, inserts only 4 c
   assert.ok(!actionContent.includes("createAdminClient"));
   assert.ok(!actionContent.includes("SUPABASE_SERVICE_ROLE_KEY"));
 
-  // 3. Narrow insert columns check: only name, email, subject, message
-  assert.match(actionContent, /name/);
-  assert.match(actionContent, /email/);
-  assert.match(actionContent, /subject/);
-  assert.match(actionContent, /message/);
+  // 3. Extract the exact insert payload block
+  const insertMatch = actionContent.match(
+    /\.from\(["']contact_messages["']\)\.insert\(\{([\s\S]*?)\}\)/,
+  );
+  assert.ok(
+    insertMatch,
+    "Must contain .from('contact_messages').insert({ ... }) call",
+  );
+  const insertBody = insertMatch[1];
 
-  // 4. Does NOT insert system-managed columns
-  assert.ok(!actionContent.includes("status:"));
+  // 4. Narrow insert columns check: only name, email, subject, message
+  assert.match(insertBody, /\bname\b/);
+  assert.match(insertBody, /\bemail\b/);
+  assert.match(insertBody, /\bsubject\b/);
+  assert.match(insertBody, /\bmessage\b/);
 
-  // 5. Honeypot check present
+  // 5. Explicitly verify forbidden system-managed fields are NOT in insert payload
+  assert.ok(!/\bid\b/.test(insertBody), "Contact insert must NOT supply id");
+  assert.ok(
+    !/\bcreated_at\b/.test(insertBody),
+    "Contact insert must NOT supply created_at",
+  );
+  assert.ok(
+    !/\bstatus\b/.test(insertBody),
+    "Contact insert must NOT supply status",
+  );
+
+  // 6. Honeypot check present
   assert.match(actionContent, /isHoneypotTriggered/);
 
-  // 6. Raw SQL/database errors not leaked
+  // 7. Raw SQL/database errors not leaked
   assert.ok(
     actionContent.includes(
       "We couldn't submit your inquiry right now. Please wait a little and try again.",
@@ -279,10 +318,10 @@ test("Public comment query helper: selects ONLY safe public columns and filters 
 });
 
 // ============================================================================
-// Section D: Public UI Contract Verification
+// Section D: Public UI Contract & Reset/Counter Regression Tests
 // ============================================================================
 
-test("Contact UI contract: form is active with character counters, honeypot, and medical disclaimer preserved", async () => {
+test("Contact UI contract: form is active with live counters, reset on success, and medical disclaimer preserved", async () => {
   const contactFormPath = path.join(
     REPO_ROOT,
     "src/components/public/contact-form-shell.tsx",
@@ -304,18 +343,29 @@ test("Contact UI contract: form is active with character counters, honeypot, and
   assert.match(contactFormContent, /name="message"/);
   assert.match(contactFormContent, /name="website"/); // honeypot
 
-  // 3. Character counters present for subject and message
-  assert.match(contactFormContent, /200/);
-  assert.match(contactFormContent, /5000/);
+  // 3. Character counters render from live state (not permanently zeroed by state.success ? 0 : ...)
+  assert.match(contactFormContent, /\{subjectLen\}\s*\/\s*200/);
+  assert.match(contactFormContent, /\{messageLen\}\s*\/\s*5000/);
+  assert.ok(!contactFormContent.includes("displayedSubjectLen"));
+  assert.ok(!contactFormContent.includes("state.success ? 0 :"));
 
-  // 4. Contact page retains medical inquiry warning
+  // 4. Counter resets to 0 when state transitions on success
+  assert.match(contactFormContent, /setSubjectLen\(0\)/);
+  assert.match(contactFormContent, /setMessageLen\(0\)/);
+
+  // 5. Stale result feedback cleared when user starts editing a new submission
+  assert.match(contactFormContent, /onInput=\{/);
+  assert.match(contactFormContent, /setHasEditedSinceResult\(true\)/);
+  assert.match(contactFormContent, /showFeedback/);
+
+  // 6. Contact page retains medical inquiry warning
   const contactPagePath = path.join(REPO_ROOT, "src/app/contact/page.tsx");
   const contactPageContent = await fs.readFile(contactPagePath, "utf-8");
   assert.match(contactPageContent, /Personal medical inquiries/);
   assert.match(contactPageContent, /MedicalDisclaimer/);
 });
 
-test("Comment UI contract: rendered on article page after related writing with moderation and privacy notices", async () => {
+test("Comment UI contract: rendered on article page after related writing with stale feedback reset", async () => {
   const articlePagePath = path.join(REPO_ROOT, "src/app/blog/[slug]/page.tsx");
   const articlePageContent = await fs.readFile(articlePagePath, "utf-8");
 
@@ -329,7 +379,7 @@ test("Comment UI contract: rendered on article page after related writing with m
     "CommentSection must be placed after Related Writing",
   );
 
-  // 2. Comment form includes notices
+  // 2. Comment form includes notices & stale feedback clear on input
   const commentFormPath = path.join(
     REPO_ROOT,
     "src/components/public/comment-form.tsx",
@@ -345,6 +395,9 @@ test("Comment UI contract: rendered on article page after related writing with m
     /Your email is used[\s\n]+only for moderation and is never published/,
   );
   assert.match(commentFormContent, /name="website"/); // honeypot
+  assert.match(commentFormContent, /onInput=\{/);
+  assert.match(commentFormContent, /setHasEditedSinceResult\(true\)/);
+  assert.match(commentFormContent, /showFeedback/);
 
   // 3. Comment section plain text rendering (no dangerouslySetInnerHTML)
   const commentSectionPath = path.join(

@@ -25,8 +25,20 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
   );
 
   const formRef = React.useRef<HTMLFormElement>(null);
+  const [prevActionState, setPrevActionState] = React.useState(state);
   const [subjectLen, setSubjectLen] = React.useState(0);
   const [messageLen, setMessageLen] = React.useState(0);
+  const [hasEditedSinceResult, setHasEditedSinceResult] = React.useState(false);
+
+  // Synchronize local edit tracking & counters when action state transitions
+  if (state !== prevActionState) {
+    setPrevActionState(state);
+    setHasEditedSinceResult(false);
+    if (state.success) {
+      setSubjectLen(0);
+      setMessageLen(0);
+    }
+  }
 
   React.useEffect(() => {
     if (state.success) {
@@ -34,8 +46,7 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
     }
   }, [state.success]);
 
-  const displayedSubjectLen = state.success ? 0 : subjectLen;
-  const displayedMessageLen = state.success ? 0 : messageLen;
+  const showFeedback = Boolean(state.message && !hasEditedSinceResult);
 
   return (
     <div
@@ -52,7 +63,7 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
       </div>
 
       {/* Global Action Feedback */}
-      {state.message && (
+      {showFeedback && state.message && (
         <div
           role="status"
           aria-live="polite"
@@ -66,7 +77,13 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
         </div>
       )}
 
-      <form ref={formRef} action={formAction} className="space-y-5" noValidate>
+      <form
+        ref={formRef}
+        action={formAction}
+        onInput={() => setHasEditedSinceResult(true)}
+        className="space-y-5"
+        noValidate
+      >
         {/* Off-screen Honeypot Field */}
         <div
           aria-hidden="true"
@@ -170,7 +187,7 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
               id="contact-subject-counter"
               className="text-[11px] text-[#7A746B] tabular-nums"
             >
-              {displayedSubjectLen} / 200
+              {subjectLen} / 200
             </span>
           </div>
           <input
@@ -217,7 +234,7 @@ export function ContactFormShell({ className }: ContactFormShellProps) {
               id="contact-message-counter"
               className="text-[11px] text-[#7A746B] tabular-nums"
             >
-              {displayedMessageLen} / 5000
+              {messageLen} / 5000
             </span>
           </div>
           <textarea

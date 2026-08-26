@@ -23,12 +23,22 @@ export function CommentForm({ articleId }: CommentFormProps) {
   );
 
   const formRef = React.useRef<HTMLFormElement>(null);
+  const [prevActionState, setPrevActionState] = React.useState(state);
+  const [hasEditedSinceResult, setHasEditedSinceResult] = React.useState(false);
+
+  // Synchronize local edit tracking when action state transitions
+  if (state !== prevActionState) {
+    setPrevActionState(state);
+    setHasEditedSinceResult(false);
+  }
 
   React.useEffect(() => {
     if (state.success) {
       formRef.current?.reset();
     }
   }, [state.success]);
+
+  const showFeedback = Boolean(state.message && !hasEditedSinceResult);
 
   return (
     <div className="space-y-6 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-6 sm:p-8">
@@ -43,7 +53,7 @@ export function CommentForm({ articleId }: CommentFormProps) {
       </div>
 
       {/* Global Action Feedback */}
-      {state.message && (
+      {showFeedback && state.message && (
         <div
           role="status"
           aria-live="polite"
@@ -57,7 +67,13 @@ export function CommentForm({ articleId }: CommentFormProps) {
         </div>
       )}
 
-      <form ref={formRef} action={formAction} className="space-y-5" noValidate>
+      <form
+        ref={formRef}
+        action={formAction}
+        onInput={() => setHasEditedSinceResult(true)}
+        className="space-y-5"
+        noValidate
+      >
         {/* Hidden Article ID */}
         <input type="hidden" name="articleId" value={articleId} />
 
