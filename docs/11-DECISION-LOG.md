@@ -710,12 +710,12 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 
 **Status:** ACTIVE / REPLACEMENT ATTEMPT CONSUMED / HOSTED DEPLOYMENT COMPLETE.
 
-### PROPOSED — D034 — Stage-10 SEO, social discovery & analytics architecture
+### ACTIVE — D034 — Stage-10 SEO, social discovery & analytics architecture
 **Date:** 2026-08-26
 
 **Decision:**
 
-Subject to explicit owner approval, Stage 10 will use the architecture frozen in `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`:
+Stage 10 uses the owner-approved architecture frozen in `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`:
 
 1. One server-only site URL authority will supply `metadataBase`, canonical URLs, social URLs, JSON-LD URLs, sitemap URLs, and the robots sitemap reference.
 2. A future owner-approved `SITE_URL` may represent the verified Stage-12 custom domain. Otherwise hosted builds prefer `VERCEL_PROJECT_PRODUCTION_URL`; local development/tests use deterministic `http://localhost:3000`. `VERCEL_ENV` classifies hosted production versus preview behavior. `VERCEL_URL` and `VERCEL_BRANCH_URL` never supply canonical authority. Preview deployments emit `noindex, nofollow` and never become canonical; a hosted production gate must reject localhost or preview/deployment-specific canonical authority.
@@ -749,11 +749,11 @@ The accepted repository has basic public-route titles/descriptions and published
 
 **Impact:**
 
-If approved, D034 authorizes the architecture for a later explicitly opened local implementation phase within the exact design boundary. It does not itself authorize application coding, dependency installation, Vercel hosted changes, Search Console changes, final domain configuration, Categories, Media Library, Stage-10 merge, or Stage 11.
+D034 authorizes the frozen Stage-10 architecture. The project owner additionally authorized Phase 10B local implementation on 2026-08-26. Hosted Vercel changes, Search Console changes, final domain configuration, Categories, Media Library, Stage-10 merge, and Stage 11 remain separately unauthorized.
 
-**Approved by:** PENDING PROJECT-OWNER REVIEW.
+**Approved by:** project owner — explicit approval on 2026-08-26: "I approve D034 — Stage-10 SEO, social discovery & analytics architecture, and I authorize Phase 10B local implementation. No hosted Vercel or Search Console mutation is authorized."
 
-**Status:** PROPOSED / OWNER REVIEW REQUIRED / NOT ACTIVE.
+**Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
 
 ---
 

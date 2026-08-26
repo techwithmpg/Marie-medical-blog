@@ -3,17 +3,17 @@
 ## 1. Authority and status
 
 - **Stage:** Stage 10 — SEO, Social & Analytics
-- **Current phase:** Phase 10A — Governance, Research & Design Freeze
-- **Phase status:** COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING
+- **Current phase:** Phase 10B — Metadata & Canonical URL Infrastructure
+- **Phase status:** PHASE 10A COMPLETE / D034 APPROVED / PHASE 10B ACTIVE
 - **Owner authorization date:** 2026-08-26
 - **Canonical accepted `main`:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Stage branch:** `stage/10-seo-social-analytics`
-- **Architecture decision:** D034 — PROPOSED / OWNER REVIEW REQUIRED
-- **Application implementation:** NOT STARTED / NOT AUTHORIZED IN PHASE 10A
-- **Hosted Vercel mutation:** NOT AUTHORIZED IN PHASE 10A
-- **Google Search Console mutation:** NOT AUTHORIZED IN PHASE 10A
+- **Architecture decision:** D034 — ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
+- **Application implementation:** PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-26
+- **Hosted Vercel mutation:** NOT AUTHORIZED
+- **Google Search Console mutation:** NOT AUTHORIZED
 
-This document is the Phase-10A design-freeze candidate. It records the exact architecture proposed for Stage 10 before application code, dependency installation, production-domain configuration, hosted Analytics activation, or Search Console ownership work begins. It does not activate D034 by itself.
+This document is the owner-approved Stage-10 architecture freeze under ACTIVE D034. Phase 10B may implement the local metadata and canonical URL infrastructure within this contract. Later Stage-10 phases, dependency installation, hosted Analytics activation, production-domain configuration, and Search Console operations remain separately gated.
 
 ## 2. Governance basis
 
@@ -29,7 +29,7 @@ This design is constrained by:
 - the accepted Evidence Folio UI contract and reference policy in `docs/18-UI-IMPLEMENTATION-CONTRACT.md` and `docs/19-UI-VISUAL-REFERENCE-MANIFEST.md`; and
 - the completed Stage-9 boundary recorded in `docs/34-STAGE-9-HANDOFF.md`.
 
-When this document and an ACTIVE decision conflict, the ACTIVE decision wins. D034 must receive explicit owner approval before any Stage-10 application implementation.
+When this document and an ACTIVE decision conflict, the ACTIVE decision wins. D034 was explicitly approved by the project owner on 2026-08-26. Phase 10B local metadata/canonical implementation is authorized; later phases remain separately gated.
 
 ## 3. Phase-10A scope and exclusions
 
