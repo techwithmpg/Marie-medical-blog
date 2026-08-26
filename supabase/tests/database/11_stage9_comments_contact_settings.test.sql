@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(107);
+SELECT plan(113);
 
 -- ============================================================================
 -- Test Suite 11: Stage 9 Comments, Contact Inbox & Settings Security
@@ -552,11 +552,14 @@ SELECT throws_ok(
   '11th comment within 24 hours from same email is rejected (10/24h rule)'
 );
 
--- G3: 100 per 1-hour site-wide global limit
--- Create exactly 100 historical comments within the past hour with distinct synthetic emails
+-- G3: 100 per 1-hour site-wide global limit (Boundary Test: 99 allowed -> 100th succeeds -> 101st rejected)
 RESET ROLE;
 SET LOCAL "request.jwt.claims" TO '';
 
+-- Remove previous rolling-hour comments so exact count is completely deterministic
+DELETE FROM public.comments WHERE created_at >= (now() - INTERVAL '1 hour');
+
+-- Insert exactly 99 distinct comments within the rolling hour with distinct synthetic emails
 INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, created_at)
 SELECT
   '90000000-0000-0000-0000-000000000001',
@@ -564,24 +567,53 @@ SELECT
   'synthetic-global-' || i || '@example.invalid',
   'Global filler comment ' || i,
   'pending',
-  now() - (i || ' seconds')::interval
-FROM generate_series(1, 100) AS s(i);
+  now() - ((i * 10) || ' seconds')::interval
+FROM generate_series(1, 99) AS s(i);
 
--- Switch to anon API role and attempt a comment from a brand new email
+-- A. Assert exactly 99 comments exist in rolling hour before allowed boundary insert
+SELECT is(
+  (SELECT count(*)::int FROM public.comments WHERE created_at >= (now() - INTERVAL '1 hour')),
+  99,
+  'Exactly 99 qualifying comments exist in the rolling hour before boundary test'
+);
+
+-- Switch to anon API role
 SET LOCAL ROLE anon;
 SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
 
-SELECT throws_ok(
+-- B. 100th comment succeeds
+SELECT lives_ok(
   $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-     VALUES ('90000000-0000-0000-0000-000000000002', 'Fresh Global Tester', 'synthetic-fresh-global@example.invalid', 'Fresh comment under busy site') $$,
-  'Comment system is currently busy. Please try again later.',
-  'Fresh comment is rejected when site-wide limit exceeds 100 comments/hour (100/1h global rule)'
+     VALUES ('90000000-0000-0000-0000-000000000002', 'Boundary Tester 100', 'synthetic-boundary-100@example.invalid', '100th qualifying comment') $$,
+  '100th public comment within rolling hour is accepted at boundary'
 );
 
--- Clean up global comment filler fixtures so they do not interfere with subsequent tests
+-- C. Confirm rolling-hour count is now exactly 100
 RESET ROLE;
 SET LOCAL "request.jwt.claims" TO '';
-DELETE FROM public.comments WHERE commenter_email LIKE 'synthetic-global-%@example.invalid';
+
+SELECT is(
+  (SELECT count(*)::int FROM public.comments WHERE created_at >= (now() - INTERVAL '1 hour')),
+  100,
+  'Rolling-hour comment count is exactly 100 after boundary insert'
+);
+
+-- Switch back to anon API role
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+-- D. 101st comment is rejected by 100/1h global rule
+SELECT throws_ok(
+  $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
+     VALUES ('90000000-0000-0000-0000-000000000002', 'Boundary Tester 101', 'synthetic-boundary-101@example.invalid', '101st comment attempt') $$,
+  'Comment system is currently busy. Please try again later.',
+  'Comment submission beyond 100/hour is rejected by global rate limit (100/1h global rule)'
+);
+
+-- Clean up global filler fixtures
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+DELETE FROM public.comments WHERE commenter_email LIKE 'synthetic-global-%@example.invalid' OR commenter_email LIKE 'synthetic-boundary-%@example.invalid';
 
 -- ----------------------------------------------------------------------------
 -- Section H: Direct Anonymous Contact Message Behavior, Normalization & System Fields
@@ -730,11 +762,14 @@ SELECT throws_ok(
   '6th contact message within 24 hours from same email is rejected (5/24h rule)'
 );
 
--- I3: 30 per 1-hour site-wide global limit
--- Create exactly 30 historical contact messages within the past hour with distinct emails
+-- I3: 30 per 1-hour site-wide global limit (Boundary Test: 29 allowed -> 30th succeeds -> 31st rejected)
 RESET ROLE;
 SET LOCAL "request.jwt.claims" TO '';
 
+-- Remove previous rolling-hour contact messages so exact count is completely deterministic
+DELETE FROM public.contact_messages WHERE created_at >= (now() - INTERVAL '1 hour');
+
+-- Insert exactly 29 distinct contact messages within the rolling hour with distinct emails
 INSERT INTO public.contact_messages (name, email, subject, message, status, created_at)
 SELECT
   'Global Inquirer ' || i,
@@ -742,24 +777,53 @@ SELECT
   'Global Contact Subject ' || i,
   'Global contact filler message ' || i,
   'new',
-  now() - (i || ' minutes')::interval
-FROM generate_series(1, 30) AS s(i);
+  now() - ((i * 30) || ' seconds')::interval
+FROM generate_series(1, 29) AS s(i);
 
--- Switch to anon API role and attempt a contact message from a brand new email
+-- A. Assert exactly 29 contact messages exist in rolling hour before allowed boundary insert
+SELECT is(
+  (SELECT count(*)::int FROM public.contact_messages WHERE created_at >= (now() - INTERVAL '1 hour')),
+  29,
+  'Exactly 29 qualifying contact messages exist in the rolling hour before boundary test'
+);
+
+-- Switch to anon API role
 SET LOCAL ROLE anon;
 SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
 
+-- B. 30th contact message succeeds
+SELECT lives_ok(
+  $$ INSERT INTO public.contact_messages (name, email, subject, message)
+     VALUES ('Boundary Inquirer 30', 'synthetic-contact-boundary-30@example.invalid', '30th Subject', '30th qualifying message') $$,
+  '30th public contact message within rolling hour is accepted at boundary'
+);
+
+-- C. Confirm rolling-hour count is now exactly 30
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+SELECT is(
+  (SELECT count(*)::int FROM public.contact_messages WHERE created_at >= (now() - INTERVAL '1 hour')),
+  30,
+  'Rolling-hour contact message count is exactly 30 after boundary insert'
+);
+
+-- Switch back to anon API role
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+-- D. 31st contact message is rejected by 30/1h global rule
 SELECT throws_ok(
   $$ INSERT INTO public.contact_messages (name, email, subject, message)
-     VALUES ('Fresh Inquirer', 'synthetic-fresh-contact@example.invalid', 'Fresh Subject', 'Fresh contact message under busy service') $$,
+     VALUES ('Boundary Inquirer 31', 'synthetic-contact-boundary-31@example.invalid', '31st Subject', '31st message attempt') $$,
   'Contact service is currently experiencing high volume. Please try again later.',
-  'Fresh contact message is rejected when site-wide volume exceeds 30/hour (30/1h global rule)'
+  'Contact message beyond 30/hour is rejected by global rate limit (30/1h global rule)'
 );
 
 -- Clean up global contact filler fixtures so they do not interfere with subsequent tests
 RESET ROLE;
 SET LOCAL "request.jwt.claims" TO '';
-DELETE FROM public.contact_messages WHERE email LIKE 'synthetic-contact-global-%@example.invalid';
+DELETE FROM public.contact_messages WHERE email LIKE 'synthetic-contact-global-%@example.invalid' OR email LIKE 'synthetic-contact-boundary-%@example.invalid';
 
 -- ----------------------------------------------------------------------------
 -- Section J: Authenticated Non-Admin Regression & System-Field Spoof Defense
@@ -850,6 +914,17 @@ SELECT throws_ok(
 -- ----------------------------------------------------------------------------
 
 RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+-- Ensure admin has fixtures to moderate and read
+INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, created_at)
+VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Moderatee', 'synthetic-commenter@example.invalid', 'Pending comment for admin testing', 'pending', now() - INTERVAL '2 hours')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.contact_messages (name, email, subject, message, status, created_at)
+VALUES ('Synthetic Inquirer', 'synthetic-inquirer@example.invalid', 'Admin Moderation Subj', 'Admin Moderation Body', 'new', now() - INTERVAL '2 hours')
+ON CONFLICT DO NOTHING;
+
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000001", "role": "authenticated"}';
 

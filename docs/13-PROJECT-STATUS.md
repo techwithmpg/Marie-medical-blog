@@ -4,18 +4,18 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9A DATABASE-SECURITY LOCAL GATE PASS (REVIEW CORRECTIONS APPLIED)
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9A DATABASE-SECURITY LOCAL GATE PASS (FINAL BOUNDARY TESTS PASSED)
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9A — DATABASE / PUBLIC-SUBMISSION SECURITY (CORRECTIONS APPLIED / LOCAL GATE PASS)
-- **Phase 9B status:** NOT STARTED (AWAITING EXTERNAL REVIEW)
+- **Current implementation phase:** 9A — DATABASE / PUBLIC-SUBMISSION SECURITY (FINAL BOUNDARY TESTS PASSED / LOCAL GATE PASS)
+- **Phase 9B status:** NOT STARTED / AWAITING FINAL EXTERNAL PASS
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A LOCAL QUALITY GATE PASS (11/11 pgTAP FILES, 317/317 TESTS, 107/107 IN STAGE-9 SUITE; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
+- **Gate status:** PHASE 9A LOCAL QUALITY GATE PASS (11/11 pgTAP FILES, 323/323 TESTS, 113/113 IN STAGE-9 SUITE; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
@@ -789,6 +789,10 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
 - **Phase 9A test suite:** `supabase/tests/database/11_stage9_comments_contact_settings.test.sql`
 - **External Phase-9A review:** CORRECTIONS APPLIED / LOCAL GATE PASS
+- **Phase 9A final boundary-test correction:** PASS
+- **Exact global limits verified:**
+  - Comments: 99 qualifying in rolling hour -> 100th allowed; >100 rejected (`Comment system is currently busy. Please try again later.`)
+  - Contact messages: 29 qualifying in rolling hour -> 30th allowed; >30 rejected (`Contact service is currently experiencing high volume. Please try again later.`)
 - **Phase 9A deliverables completed & hardened:**
   - [x] **Comment Moderation Consistency Check:** Added constraint `comments_moderation_consistency_check` enforcing `(status = 'pending' AND moderated_at IS NULL) OR (status IN ('approved', 'hidden') AND moderated_at IS NOT NULL)`.
   - [x] **Feature Flag Publication Checks & Lead Uniqueness:** Added constraints `articles_is_featured_published_check` and `articles_is_portfolio_featured_published_check` enforcing that only published articles can be featured; created partial unique index `idx_articles_single_featured` ensuring at most one lead featured article site-wide.
@@ -801,15 +805,15 @@ Stage 7 is complete, verified, and merged into `main`:
   - [x] **Explicit Rate-Limit Boundary Tests:** Verified all 6 rate-limit boundaries:
     - comment 3/15m: PASS
     - comment 10/24h: PASS
-    - comment 100/1h global: PASS
+    - comment 100/1h global (exact 99 -> 100 allowed -> 101 rejected): PASS
     - contact 3/1h: PASS
     - contact 5/24h: PASS
-    - contact 30/1h global: PASS
+    - contact 30/1h global (exact 29 -> 30 allowed -> 31 rejected): PASS
   - [x] **Neutral Synthetic Fixture Cleanup:** Replaced all medical/professional identity claims with neutral synthetic fixtures across test suites and migrations.
-  - [x] **Comprehensive pgTAP Test Suite:** 107 subtests in `supabase/tests/database/11_stage9_comments_contact_settings.test.sql` covering moderation invariants, feature flag constraints, lead uniqueness, site settings constraints, private guard function security, anonymous comment submission normalization, rate limiting boundaries, anonymous contact message normalization, column/table permission denials, authenticated non-admin system-field defense, admin moderation/contact operations, and prior regression integrity.
+  - [x] **Comprehensive pgTAP Test Suite:** 113 subtests in `supabase/tests/database/11_stage9_comments_contact_settings.test.sql` covering moderation invariants, feature flag constraints, lead uniqueness, site settings constraints, private guard function security, anonymous comment submission normalization, rate limiting boundaries, anonymous contact message normalization, column/table permission denials, authenticated non-admin system-field defense, admin moderation/contact operations, and prior regression integrity.
 - **Local Quality Gates (Phase 9A):**
   - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
-  - `npx supabase test db`: PASS (11 files, 317 tests, 0 failures; 107 tests in Stage-9 suite)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
   - `node --test tests/*.test.mjs`: PASS (5 test files, 28 tests, 0 failures)
   - `npm run typecheck`: PASS (0 type errors)
   - `npm run lint`: PASS (0 warnings, 0 errors)
@@ -817,7 +821,7 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run build`: PASS (Next.js production build verified cleanly)
   - `git diff --check`: PASS (clean diff)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
-- **Phase 9B status:** NOT STARTED (AWAITING EXTERNAL REVIEW)
+- **Phase 9B status:** NOT STARTED / AWAITING FINAL EXTERNAL PASS
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 
