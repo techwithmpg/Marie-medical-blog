@@ -31,7 +31,7 @@ This file is the authoritative repository record of the currently active develop
 - **Admin keyboard / focus:** PASS
 - **Representative visual review:** PASS (9 screenshots reviewed; Evidence Folio drift: NONE)
 - **Local-only guard:** `http://127.0.0.1:54321` or `http://localhost:54321` ONLY (Port 54321 strictly enforced)
-- **Native browser E2E:** 14/14 tests passed (Playwright Chromium + local Supabase)
+- **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links)
 - **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / LOCAL & NATIVE BROWSER GATE PASS
@@ -975,7 +975,7 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Testing Tooling (Resolved Versions):** `@playwright/test` (`1.62.1`), `@axe-core/playwright` (`4.13.0`)
 - **Native Browser Environment:** Chromium Desktop, Local Supabase API (`http://127.0.0.1:54321` / `http://localhost:54321`), Local Next.js dev server (`http://localhost:3000`), Single Worker (Serial execution).
 - **Safety Invariant:** Local-only guard (`tests/e2e/helpers/local-only.ts`) strictly enforces port 54321 and halts if target is non-local; Synthetic credentials only (`synthetic-admin@example.invalid`).
-- **Native Browser Test Matrix (14 Tests Passed):**
+- **Native Browser Test Matrix (15 Tests Passed):**
   - [x] **Suite 1: Accessibility, Responsive & Runtime Verification (`tests/e2e/stage9-accessibility-responsive.spec.ts`):**
     - Test 1: Responsive matrix across Desktop (1440px), Tablet (768px), and Mobile (390px) with zero horizontal scroll overflow (`scrollWidth <= clientWidth + 1`). (PASS)
     - Test 2: Keyboard navigation and focus flow in public contact and comment forms. (PASS)

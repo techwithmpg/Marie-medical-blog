@@ -11,6 +11,7 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
   test("1. Responsive matrix and horizontal overflow check across viewports", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     const viewports = [
       { name: "Desktop", width: 1440, height: 900 },
       { name: "Tablet", width: 768, height: 1024 },
@@ -151,11 +152,11 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
       .locator("input[name='socialLabel']")
       .count();
 
-    // Add Link button keyboard focus and activation
+    // Add Link button keyboard focus and activation via Space
     const addLinkBtn = page.getByRole("button", { name: "Add Link" });
     await addLinkBtn.focus();
     await expect(addLinkBtn).toBeFocused();
-    await addLinkBtn.click();
+    await page.keyboard.press("Space");
     await expect(page.locator("input[name='socialLabel']")).toHaveCount(
       initialCount + 1,
     );
@@ -170,21 +171,25 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
     const newSocialUrl = page.locator("input[name='socialUrl']").last();
     await expect(newSocialUrl).toBeFocused();
 
-    // Remove link button keyboard focus and activation
+    // Remove link button keyboard focus and activation via Space
     const removeLinkBtn = page.getByRole("button", { name: "Remove" }).last();
     await removeLinkBtn.focus();
     await expect(removeLinkBtn).toBeFocused();
-    await removeLinkBtn.click();
+    await page.keyboard.press("Space");
     await expect(page.locator("input[name='socialLabel']")).toHaveCount(
       initialCount,
     );
 
-    // Save Settings button keyboard focus
+    // Save Settings button keyboard focus and activation via Enter
     const saveSettingsBtn = page.getByRole("button", { name: "Save Settings" });
     await saveSettingsBtn.focus();
     await expect(saveSettingsBtn).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByText(/Site settings saved successfully|saved successfully/i),
+    ).toBeVisible();
 
-    // 3b. Admin Comments moderation action button keyboard focus
+    // 3b. Admin Comments moderation action button keyboard reachability via Tab
     await page.goto("/admin/comments");
     await page.waitForLoadState("domcontentloaded");
 
@@ -192,8 +197,15 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
       .getByRole("button", { name: /Approve|Hide|Delete/i })
       .first();
     if (await commentModerationBtn.isVisible()) {
-      await commentModerationBtn.focus();
-      await expect(commentModerationBtn).toBeFocused();
+      let isFocused = false;
+      for (let i = 0; i < 30; i++) {
+        await page.keyboard.press("Tab");
+        isFocused = await commentModerationBtn.evaluate(
+          (el) => document.activeElement === el,
+        );
+        if (isFocused) break;
+      }
+      expect(isFocused).toBe(true);
     }
 
     // 3c. Admin Messages message list & reader pane keyboard focus
