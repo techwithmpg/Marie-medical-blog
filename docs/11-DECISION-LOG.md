@@ -572,6 +572,54 @@ Status:
 
 ACTIVE / FROZEN UNDER D032.
 
+### ACTIVE — D033 — Stage-9 controlled hosted migration deployment and verification
+**Date:** 2026-08-26
+
+**Decision:**
+The project owner explicitly authorizes deployment of exactly:
+`supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+to Supabase project `eoexnnhqzrkurbqgbtnx`.
+
+Migration SHA-256: `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+
+**Deployment rules:**
+1. Only the reviewed Stage-9 migration may be applied.
+2. Verify hosted migration history before any write.
+3. Prefer standard Supabase CLI migration deployment if authenticated and linked to the exact project.
+4. Use `supabase migration list` and `supabase db push --dry-run` before the write.
+5. The dry run must show ONLY the Stage-9 migration as pending.
+6. Never use `--include-seed`.
+7. Never use `db reset --linked`.
+8. Do not deploy local seed data.
+9. Do not change Auth.
+10. Do not change Storage buckets or Storage policies.
+11. Do not make Vercel/WAF changes.
+12. Do not execute arbitrary corrective hosted SQL if deployment fails.
+13. Exactly one actual hosted migration apply attempt is authorized.
+14. If that write fails or produces uncertain/partial state, STOP and report.
+15. No automatic second write attempt.
+16. Hosted functional verification must use read-only inspection and, where write behavior must be proven, a single explicit SQL transaction ending in ROLLBACK using clearly synthetic values.
+17. No persistent synthetic hosted rows may remain.
+18. Run Supabase security and performance advisors after the migration.
+19. Advisor findings must be classified; do not automatically fix them.
+20. Stage-9 merge remains separately owner-gated.
+21. Stage 10 remains unauthorized.
+
+**Reason:**
+Stage 9 implementation (Phases 9A through 9E) is complete with 100% passing automated unit, integration, database, accessibility, and native browser test gates. Controlled deployment to hosted Supabase brings the hosted database schema and submission security guards in sync with the Stage-9 frozen architecture.
+
+**Alternatives considered:**
+- Deploying without pre-flight dry-run or verification (rejected: violates safe deployment protocol).
+- Deploying local seed data to hosted environment (rejected: seed data is development-only).
+- Combining hosted DB migration with production Vercel deployment (rejected: Vercel production deployment is separately staged).
+
+**Impact:**
+Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-deploy verification. Does NOT authorize Stage-9 merge, Phase 9G merge execution, or Stage 10.
+
+**Approved by:** project owner — explicit authorization: "I authorize Phase 9F hosted Stage-9 deployment." (2026-08-26)
+
+**Status:** ACTIVE / FROZEN FOR STAGE-9 HOSTED DEPLOYMENT.
+
 ---
 
 ## New decision template

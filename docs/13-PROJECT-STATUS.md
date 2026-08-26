@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9E FULL LOCAL & NATIVE BROWSER QUALITY GATE PASS
-- **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9F HOSTED SUPABASE DEPLOYMENT
+- **Stage authorization:** D032 APPROVED + D033 HOSTED DEPLOYMENT AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9E — FULL LOCAL & NATIVE BROWSER QUALITY GATE (COMPLETE / GATE PASS)
+- **Current implementation phase:** 9F — CONTROLLED HOSTED SUPABASE DEPLOYMENT & VERIFICATION (ACTIVE / OWNER AUTHORIZED)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -22,23 +22,28 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 9D final reviewed head:** `2fad9ae5b2b4af04634866e08c22671e10e83789`
 - **Phase 9D final preview-fidelity correction:** PASS (Reusable disclaimer propagation: COMPLETE INCLUDING ADMIN-LOCAL ARTICLE PREVIEW; Admin-local preview profile: VERIFIED PUBLIC PROFILE / NO FABRICATED PROFESSIONAL CREDENTIALS; Client profile/settings reads in preview: NONE)
 - **D032 social-link addendum:** APPROVED / { label, url }[] / HTTPS ONLY
-- **Phase 9E status:** COMPLETE / LOCAL + NATIVE BROWSER + EXTERNAL-REVIEW CORRECTION GATE PASS / AWAITING CHATGPT FINAL EXTERNAL PASS
+- **Phase 9E status:** COMPLETE / FULL EXTERNAL PASS
+- **Phase 9E final reviewed head:** `93a26e03e15d0bf4c42b7694c02db4b058c51f7f`
 - **Playwright resolved version:** `1.62.1`
 - **axe-core Playwright resolved version:** `4.13.0`
 - **WCAG automated rules:** 2.0 / 2.1 / 2.2 AA supplemental coverage
 - **axe serious violations:** 0
 - **axe critical violations:** 0
-- **Admin keyboard / focus:** PASS
+- **Admin keyboard / focus:** PASS (Settings Space/Enter activation, Comments Tab reachability, Messages activation, Article Preview Space/Escape/focus return)
 - **Representative visual review:** PASS (9 screenshots reviewed; Evidence Folio drift: NONE)
 - **Local-only guard:** `http://127.0.0.1:54321` or `http://localhost:54321` ONLY (Port 54321 strictly enforced)
 - **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
-- **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / LOCAL & NATIVE BROWSER GATE PASS
-- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
-- **Hosted Supabase mutation:** NONE
-- **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
-- **Phase 9F status:** NOT STARTED / OWNER AUTHORIZATION REQUIRED
+- **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F ACTIVE / OWNER AUTHORIZED
+- **Hosted project:** `eoexnnhqzrkurbqgbtnx`
+- **Hosted Stage-9 migration:** AUTHORIZED / NOT YET APPLIED
+- **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
+- **Hosted Supabase mutation (Pre-9F):** NONE
+- **Vercel production/WAF mutation:** NOT AUTHORIZED IN 9F
+- **Phase 9F status:** ACTIVE / OWNER AUTHORIZED
+- **Phase 9G status:** NOT STARTED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
