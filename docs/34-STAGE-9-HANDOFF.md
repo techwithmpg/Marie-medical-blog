@@ -357,13 +357,13 @@ Post-migration (all verified after `apply_migration`):
 
 - **Vercel / WAF not configured in Stage 9.** Production WAF rate-limit rules (complementing the database-layer guards) remain for a future operations/infrastructure stage.
 - **`auth_leaked_password_protection` warning** is a pre-existing Supabase Auth dashboard setting, not introduced by Stage 9. Enabling it requires a dashboard configuration change outside the migration system.
-- **Unused-index INFO notices** are expected on a pre-production instance and will resolve once production traffic begins.
+- **Unused-index INFO notices** are expected on the current pre-production instance and should be reassessed after representative production traffic exists.
 - **Real client settings and social URLs** (site title, tagline, homepage intro, disclaimer, social links) remain placeholder/empty. Real content is a Stage-12 client-content responsibility.
 - **No notification system.** When a new comment or contact message is submitted, Marie receives no email, push, or webhook notification. Comment/contact discovery is through the admin inbox only.
 - **No CAPTCHA service.** Abuse defense relies on database-layer transaction rate limiting, honeypot detection, and server-side input validation. A platform WAF can provide additional protection as a complementary infrastructure layer.
 - **No manual portfolio ordering.** The Selected Writing portfolio uses the natural database order of featured articles. Explicit ordering controls are out of V1 scope.
 - **No reader accounts.** Public visitors remain unauthenticated throughout.
-- **Playwright CDN intermittency.** During Phase 9E the Playwright browser driver download from the upstream Azure CDN returned intermittent 404s in the local environment. Tests were run when the driver was available and passed 15/15. The Playwright version (`1.62.1`) and axe version (`4.13.0`) are pinned in `package.json`.
+- **Playwright CDN intermittency.** During Phase 9E the Playwright browser driver download from the upstream Azure CDN returned intermittent 404s in the local environment. Tests were run when the driver was available and passed 15/15. The verified resolved versions used during Stage-9 testing were Playwright `1.62.1` and `@axe-core/playwright` `4.13.0`; `package.json` specifies these as `^1.62.1` and `^4.13.0` respectively.
 
 ---
 
