@@ -378,6 +378,147 @@ ACTIVE / FROZEN FOR STAGE-8 HOSTED DEPLOYMENT.
 
 ---
 
+### ACTIVE — D032 — Stage-9 comments, contact, settings & featuring architecture
+
+**Date:** 2026-08-26
+
+**Decision:**
+
+Stage 9 implements the frozen V1 Comments, Contact Inbox, Settings and Portfolio Featuring workflows using the existing Stage-3 schema and the single-admin architecture.
+
+Architecture contract:
+
+1. **COMMENTS**
+   - Reader accounts remain excluded.
+   - Public visitors may submit comments on published articles only.
+   - New comments always begin as `pending`.
+   - Approved comments only may be rendered publicly.
+   - `commenter_email` remains private and is never rendered publicly.
+   - Public comment content is plain text only.
+   - Moderation lifecycle: `pending -> approved / hidden / delete`.
+   - Hidden comments may later be approved.
+   - Approve/Hide records `moderated_at`.
+   - Delete is hard delete.
+   - No replies, reactions, avatars, accounts or comment editing.
+
+2. **CONTACT**
+   - Existing `public.contact_messages` remains the single inbox model.
+   - Public submission fields: `name`, `email`, `subject`, `message`.
+   - New public submissions always begin `status = 'new'`.
+   - Public visitors may never read messages.
+   - Admin lifecycle: `new -> read -> archived`.
+   - Archived may restore to read.
+   - No automatic mutation merely from rendering a GET page.
+   - V1 admin UI does not expose destructive message deletion.
+   - No mail-sending/reply integration is introduced.
+
+3. **SITE SETTINGS**
+   - Existing singleton `public.site_settings` (`id = 1`) remains the settings model.
+   - Do not introduce arbitrary key/value settings.
+   - Editable Stage-9 fields: `site_title`, `tagline`, `homepage_intro`, `disclaimer_text`, `default_seo_description`, `social_links`.
+   - Public rendering uses safe fallbacks when no production settings row exists.
+   - `social_links` must remain a JSON array and UI validation will require valid HTTPS URLs before rendering.
+   - `disclaimer_text` controls the compact reusable disclaimer banner only; it does not replace the full `/disclaimer` page.
+   - Full dynamic SEO use of `default_seo_description` remains Stage 10.
+
+4. **PORTFOLIO / FEATURE CONTROLS**
+   - Reuse existing `public.articles.is_portfolio_featured`.
+   - Reuse existing `public.articles.is_featured`.
+   - Portfolio selections must be published articles.
+   - Lead featured article must be published.
+   - At most ONE article may have `is_featured = true`.
+   - Zero featured lead articles is valid.
+   - Portfolio featured is multi-select.
+   - Manual portfolio ordering is NOT implemented.
+   - No duplicate portfolio CMS/table is introduced.
+
+5. **PUBLIC SUBMISSION VALIDATION**
+   - Public forms use Next.js Server Actions.
+   - Server-side runtime validation is mandatory.
+   - Zod is approved for Stage 9 under the existing D020 dependency policy and may be added when Phase 9B begins.
+   - Browser validation may supplement but never replace server validation.
+   - Honeypot/time-trap may be used as a low-cost bot signal.
+   - The database remains authoritative against direct Data API bypass.
+
+6. **DATABASE ABUSE DEFENSE**
+   - Retain the existing Supabase publishable-key + Grants + RLS model.
+   - Do NOT add service-role application submission logic.
+   - Do NOT add an Edge Function merely for public submissions.
+   - Narrow private `BEFORE INSERT` trigger functions provide normalization and database-enforced launch-scale throttling.
+   - `SECURITY DEFINER` may be used ONLY for these private trigger guards where inspection across private submission history is required.
+   - Every `SECURITY DEFINER` function:
+     - `SET search_path = ''`
+     - fully schema-qualify every referenced object
+     - remain outside the exposed API schema
+     - revoke `EXECUTE` from `PUBLIC`, `anon`, and `authenticated`.
+   - Do NOT use deprecated `auth.role()`.
+   - If request-role inspection is needed, use the current JWT context defensively and test both anon and authenticated-non-admin behavior.
+
+7. **COMMENT RATE LIMIT CONTRACT**
+   Applied to public/non-admin request context:
+   - max 3 comments per normalized email + article per rolling 15 minutes;
+   - max 10 comments per normalized email per rolling 24 hours;
+   - max 100 public comments site-wide per rolling hour.
+   - Rate-limit decisions must execute transactionally and safely under concurrency. A small fixed transaction-level advisory lock for the comment-submission guard is acceptable at this site's expected launch scale.
+
+8. **CONTACT RATE LIMIT CONTRACT**
+   Applied to public/non-admin request context:
+   - max 3 messages per normalized email per rolling hour;
+   - max 5 messages per normalized email per rolling 24 hours;
+   - max 30 public contact submissions site-wide per rolling hour.
+   - Use transactional concurrency protection equivalent to the comment guard.
+
+9. **NORMALIZATION**
+   Before public insert:
+   - trim names;
+   - lowercase + trim emails;
+   - trim subject;
+   - trim message/comment outer whitespace;
+   - public comments remain `pending` with `moderated_at` null;
+   - public contact messages remain `new`.
+
+10. **OUTER TRAFFIC PROTECTION**
+    - Vercel Firewall/WAF rate limiting is a hosted deployment layer only if the project's plan supports the required capability.
+    - It is NOT the sole security boundary.
+    - Stage-9 database throttling remains mandatory regardless of Vercel plan.
+    - No production firewall configuration is authorized by this decision alone.
+
+11. **SERVER COMPONENT / SECURITY BOUNDARIES**
+    - Public article/content rendering remains Server Component-first.
+    - Privileged admin mutations execute server-side and require `requireAdmin()`.
+    - No service-role credential enters browser code.
+    - RLS remains enabled everywhere.
+    - Existing Stage-8 publishing invariants remain untouched.
+
+12. **HOSTED DEPLOYMENT**
+    - Stage-9 SQL must first pass local migration + pgTAP review.
+    - Hosted migration deployment is a separate owner decision.
+    - No Stage-9 hosted SQL may be applied during implementation phases 9A–9E without explicit hosted authorization.
+
+**Reason:**
+Stage 9 activates V1 workflows that were deliberately modeled in Stage 3 while adding abuse resistance and admin controls without creating a reader-auth, enterprise moderation, messaging, or duplicate portfolio subsystem.
+
+**Alternatives considered:**
+- reader accounts;
+- CAPTCHA as mandatory first-line architecture;
+- public Edge Functions;
+- browser service-role operations;
+- exposed SECURITY DEFINER submission RPCs;
+- email-response integration;
+- comment replies/reactions;
+- arbitrary settings key/value store;
+- second portfolio content system;
+- manual portfolio ordering.
+
+**Impact:**
+Authorizes Stage-9 implementation within this architecture. Does NOT authorize hosted deployment or Stage 10.
+
+**Approved by:** project owner — explicit approval: "I approve D032 and authorize Stage 9 implementation." (2026-08-26)
+
+**Status:** ACTIVE / FROZEN FOR STAGE-9 IMPLEMENTATION.
+
+---
+
 ## New decision template
 
 ### ACTIVE/REPLACED — DXXX — Title
