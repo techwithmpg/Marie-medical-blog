@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9C ADMIN MODERATION & INBOX
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9C ADMIN MODERATION & INBOX LOCAL GATE PASS
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9C — ADMIN COMMENT MODERATION & CONTACT INBOX (ACTIVE)
+- **Current implementation phase:** 9C — ADMIN COMMENT MODERATION & CONTACT INBOX (COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW)
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
@@ -17,11 +17,11 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 9B status:** COMPLETE / FINAL EXTERNAL PASS
 - **Phase 9B final reviewed head:** `d43d4c2bba1ed389cf772952daed3ed560a8c3e7`
 - **Phase 9B native browser automation:** DEFERRED TO PHASE 9E (Reason: Playwright driver retrieval failed from upstream CDN during 9B; HTTP/SSR, database, build, and automated application gates passed cleanly)
-- **Phase 9C status:** ACTIVE
+- **Phase 9C status:** COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW
 - **Phase 9D status:** NOT STARTED
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C ACTIVE; PHASE 9D NOT STARTED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW; PHASE 9D NOT STARTED
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
@@ -876,7 +876,43 @@ Stage 7 is complete, verified, and merged into `main`:
     - Playwright native driver browser session: NOT RUN (Playwright CDN driver install returned 404 from upstream endpoints; documented for owner review)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
-- **Phase 9C status:** NOT STARTED / AWAITING CHATGPT FINAL PHASE-9B REVIEW
+- **Phase 9C status:** COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Phase 9D status:** NOT STARTED
+- **Stage-9 merge:** NOT AUTHORIZED
+- **Stage 10:** NOT AUTHORIZED
+
+## Stage-9 progress record — Phase 9C Admin Comment Moderation & Contact Inbox (2026-08-26)
+
+- **Stage:** Stage 9 — Comments, Contact Inbox & Settings
+- **Phase:** Phase 9C — Admin Comment Moderation & Contact Inbox
+- **Owner authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER (2026-08-26)
+- **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
+- **Active working branch:** `stage/09-comments-contact-settings`
+- **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
+- **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6` (verified intact)
+- **New test suite:** `tests/stage9-phase9c-admin-moderation-inbox.test.mjs`
+- **Hosted Supabase status:** NOT APPLIED / ZERO HOSTED MUTATION / WRITE CHANNEL REMAINS DORMANT
+- **Deliverables completed:**
+  - [x] **Admin Comments Data Helper (`src/lib/admin/comments.ts`):** Implemented `getAdminComments(statusFilter)` and `getAdminCommentById(id)` with explicit column selection (`id, article_id, commenter_name, commenter_email, body, status, created_at, moderated_at`), mapped article title/slug/status, descending sort, and zero service-role usage.
+  - [x] **Admin Comment Moderation Server Action (`src/app/admin/comments/actions.ts`):** Implemented `moderateCommentAction` with `requireAdmin()`, UUID validation, allowlist (`approve`, `hide`, `delete`), setting `status = 'approved'`/`'hidden'` with `moderated_at = now()` on approval/hide, executing hard delete on delete, and targeted revalidation of `/admin/comments` and `/blog/<slug>`.
+  - [x] **Admin Comments Workspace Page (`src/app/admin/comments/page.tsx`):** Implemented Server Component with noindex/nofollow metadata, `requireAdmin()`, filter tabs (Pending Review default, Approved, Hidden, All Comments), clear moderation status badges, private email indicator, article context links, plain-text comment formatting (`whitespace-pre-wrap`, no `dangerouslySetInnerHTML`), and permitted action forms (Approve, Hide, Delete).
+  - [x] **Admin Contact Messages Data Helper (`src/lib/admin/messages.ts`):** Implemented `getAdminContactMessages(statusFilter)` and `getAdminContactMessageById(id)` with explicit column selection (`id, name, email, subject, message, status, created_at`), descending sort, side-effect free reads, and zero service-role usage.
+  - [x] **Admin Contact Message Status Server Action (`src/app/admin/messages/actions.ts`):** Implemented `updateContactMessageStatusAction` with `requireAdmin()`, UUID validation, allowlist (`read`, `archive`, `restore`), revalidation of `/admin/messages`, and strict omission of destructive delete controls.
+  - [x] **Admin Contact Inbox Workspace Page (`src/app/admin/messages/page.tsx`):** Implemented same-page inbox workspace (left message list + right reader pane) with `requireAdmin()`, filter tabs (New Inquiries default, Read, Archived, All Messages), private email display, plain-text message formatting, and lifecycle action forms (Mark Read, Archive, Restore to Read; no Delete/Reply/Forward).
+  - [x] **Automated Application Test Suite (`tests/stage9-phase9c-admin-moderation-inbox.test.mjs`):** 10 test suites covering admin comment helper contracts, moderation action security, targeted revalidation, comments page UI contract, message data helper contracts, message action security, GET-side-effect guards, inbox page same-page reader contract, private data confidentiality boundaries, and scope drift guards.
+- **Local Quality Gates (Phase 9C):**
+  - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
+  - `npx supabase test db`: PASS (11 files, 323 tests, 0 failures; 113 tests in Stage-9 suite)
+  - `node --test tests/*.test.mjs`: PASS (7 test files, 49 tests, 0 failures)
+  - `npm run typecheck`: PASS (0 type errors)
+  - `npm run lint`: PASS (0 warnings, 0 errors)
+  - `npm run format:check`: PASS (Prettier verified across entire codebase)
+  - `npm run build`: PASS (Next.js production build verified cleanly across all 14 routes)
+  - `git diff --check`: PASS (clean diff)
+- **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
+- **Phase 9C status:** COMPLETE / LOCAL GATE PASS / AWAITING CHATGPT EXTERNAL REVIEW
+- **Phase 9D status:** NOT STARTED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 
