@@ -105,7 +105,9 @@ BEGIN
     -- Transaction-level advisory lock (Key: 74839201) to eliminate race conditions in rolling counts
     PERFORM pg_catalog.pg_advisory_xact_lock(74839201);
 
-    -- 1. Input Normalization
+    -- 1. Force system-owned fields and input normalization
+    NEW.id := extensions.gen_random_uuid();
+    NEW.created_at := pg_catalog.now();
     NEW.commenter_name := pg_catalog.btrim(NEW.commenter_name);
     NEW.commenter_email := pg_catalog.lower(pg_catalog.btrim(NEW.commenter_email));
     NEW.body := pg_catalog.btrim(NEW.body);
@@ -186,7 +188,9 @@ BEGIN
     -- Transaction-level advisory lock (Key: 74839202) to eliminate race conditions in rolling counts
     PERFORM pg_catalog.pg_advisory_xact_lock(74839202);
 
-    -- 1. Input Normalization
+    -- 1. Force system-owned fields and input normalization
+    NEW.id := extensions.gen_random_uuid();
+    NEW.created_at := pg_catalog.now();
     NEW.name := pg_catalog.btrim(NEW.name);
     NEW.email := pg_catalog.lower(pg_catalog.btrim(NEW.email));
     NEW.subject := pg_catalog.btrim(NEW.subject);

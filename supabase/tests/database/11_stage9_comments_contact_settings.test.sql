@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(90);
+SELECT plan(107);
 
 -- ============================================================================
 -- Test Suite 11: Stage 9 Comments, Contact Inbox & Settings Security
@@ -7,21 +7,21 @@ SELECT plan(90);
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- Setup Synthetic Test Fixtures
+-- Setup Synthetic Test Fixtures (Strictly Neutral Fixtures)
 -- ----------------------------------------------------------------------------
 
 INSERT INTO public.categories (id, name, slug)
-VALUES ('99999999-9999-9999-9999-999999999999', 'Cardiology Test', 'cardiology-test')
+VALUES ('99999999-9999-9999-9999-999999999999', 'Synthetic Category', 'synthetic-category')
 ON CONFLICT (id) DO NOTHING;
 
 -- Published article 1
 INSERT INTO public.articles (id, title, slug, excerpt, content_json, status, published_at, category_id)
 VALUES (
   '90000000-0000-0000-0000-000000000001',
-  'Published Article 1',
-  'published-article-1',
-  'Excerpt 1',
-  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Clinical content 1"}]}]}'::jsonb,
+  'Synthetic Published Article 1',
+  'synthetic-published-article-1',
+  'Synthetic Excerpt 1',
+  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Synthetic article body content 1."}]}]}'::jsonb,
   'published',
   now(),
   '99999999-9999-9999-9999-999999999999'
@@ -31,10 +31,23 @@ VALUES (
 INSERT INTO public.articles (id, title, slug, excerpt, content_json, status, published_at, category_id)
 VALUES (
   '90000000-0000-0000-0000-000000000002',
-  'Published Article 2',
-  'published-article-2',
-  'Excerpt 2',
-  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Clinical content 2"}]}]}'::jsonb,
+  'Synthetic Published Article 2',
+  'synthetic-published-article-2',
+  'Synthetic Excerpt 2',
+  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Synthetic article body content 2."}]}]}'::jsonb,
+  'published',
+  now(),
+  '99999999-9999-9999-9999-999999999999'
+);
+
+-- Published article 3 (for multi-article daily distribution)
+INSERT INTO public.articles (id, title, slug, excerpt, content_json, status, published_at, category_id)
+VALUES (
+  '90000000-0000-0000-0000-000000000005',
+  'Synthetic Published Article 3',
+  'synthetic-published-article-3',
+  'Synthetic Excerpt 3',
+  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Synthetic article body content 3."}]}]}'::jsonb,
   'published',
   now(),
   '99999999-9999-9999-9999-999999999999'
@@ -44,10 +57,10 @@ VALUES (
 INSERT INTO public.articles (id, title, slug, excerpt, content_json, status, published_at, category_id)
 VALUES (
   '90000000-0000-0000-0000-000000000003',
-  'Draft Article 1',
+  'Synthetic Draft Article 1',
   'draft-90000000-0000-0000-0000-000000000003',
-  'Draft Excerpt',
-  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Draft content"}]}]}'::jsonb,
+  'Synthetic Draft Excerpt',
+  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Synthetic draft content"}]}]}'::jsonb,
   'draft',
   NULL,
   '99999999-9999-9999-9999-999999999999'
@@ -57,10 +70,10 @@ VALUES (
 INSERT INTO public.articles (id, title, slug, excerpt, content_json, status, published_at, category_id)
 VALUES (
   '90000000-0000-0000-0000-000000000004',
-  'Archived Article 1',
-  'archived-article-1',
-  'Archived Excerpt',
-  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Archived content"}]}]}'::jsonb,
+  'Synthetic Archived Article 1',
+  'synthetic-archived-article-1',
+  'Synthetic Archived Excerpt',
+  '{"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Synthetic archived content"}]}]}'::jsonb,
   'archived',
   now(),
   '99999999-9999-9999-9999-999999999999'
@@ -77,42 +90,42 @@ SELECT col_is_pk('public', 'comments', 'id', 'public.comments has id primary key
 -- 1. Valid pending comment with null moderated_at is accepted
 PREPARE insert_valid_pending AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test1@example.com', 'Valid pending body', 'pending', NULL);
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test1@example.invalid', 'Synthetic valid pending body', 'pending', NULL);
 
 SELECT lives_ok('insert_valid_pending', 'Valid pending comment with null moderated_at is accepted');
 
 -- 2. Pending with non-null moderated_at is rejected
 PREPARE insert_invalid_pending AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test2@example.com', 'Invalid pending body', 'pending', now());
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test2@example.invalid', 'Synthetic invalid pending body', 'pending', now());
 
 SELECT throws_ok('insert_invalid_pending', '23514', NULL, 'Pending comment with non-null moderated_at is rejected by check constraint');
 
 -- 3. Approved with null moderated_at is rejected
 PREPARE insert_invalid_approved AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test3@example.com', 'Invalid approved body', 'approved', NULL);
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test3@example.invalid', 'Synthetic invalid approved body', 'approved', NULL);
 
 SELECT throws_ok('insert_invalid_approved', '23514', NULL, 'Approved comment with null moderated_at is rejected by check constraint');
 
 -- 4. Hidden with null moderated_at is rejected
 PREPARE insert_invalid_hidden AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test4@example.com', 'Invalid hidden body', 'hidden', NULL);
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test4@example.invalid', 'Synthetic invalid hidden body', 'hidden', NULL);
 
 SELECT throws_ok('insert_invalid_hidden', '23514', NULL, 'Hidden comment with null moderated_at is rejected by check constraint');
 
 -- 5. Valid approved with non-null moderated_at is accepted
 PREPARE insert_valid_approved AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test5@example.com', 'Valid approved body', 'approved', now());
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test5@example.invalid', 'Synthetic valid approved body', 'approved', now());
 
 SELECT lives_ok('insert_valid_approved', 'Approved comment with non-null moderated_at is accepted');
 
 -- 6. Valid hidden with non-null moderated_at is accepted
 PREPARE insert_valid_hidden AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, moderated_at)
-  VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Tester', 'test6@example.com', 'Valid hidden body', 'hidden', now());
+  VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Tester', 'synthetic-test6@example.invalid', 'Synthetic valid hidden body', 'hidden', now());
 
 SELECT lives_ok('insert_valid_hidden', 'Hidden comment with non-null moderated_at is accepted');
 
@@ -125,7 +138,7 @@ SELECT has_table('public', 'site_settings', 'public.site_settings table exists')
 -- Verify singleton ID check (id <> 1 is rejected)
 PREPARE insert_invalid_settings_id AS
   INSERT INTO public.site_settings (id, site_title, tagline)
-  VALUES (2, 'Invalid ID Blog', 'Tagline');
+  VALUES (2, 'Invalid ID Publication', 'Tagline');
 
 SELECT throws_ok('insert_invalid_settings_id', '23514', NULL, 'Site settings with id <> 1 is rejected by constraint');
 
@@ -153,19 +166,19 @@ SELECT throws_ok('update_long_seo_desc', '23514', NULL, 'Default SEO description
 
 -- Verify non-array social_links is rejected
 PREPARE update_invalid_social_links AS
-  UPDATE public.site_settings SET social_links = '{"url": "https://example.com"}'::jsonb WHERE id = 1;
+  UPDATE public.site_settings SET social_links = '{"url": "https://example.invalid"}'::jsonb WHERE id = 1;
 
 SELECT throws_ok('update_invalid_social_links', '23514', NULL, 'Non-array social_links JSON is rejected');
 
--- Verify valid update is accepted
+-- Verify valid update is accepted with neutral synthetic data
 PREPARE update_valid_settings AS
   UPDATE public.site_settings SET
-    site_title = 'Marie E. LeBlanc, MD',
-    tagline = 'Cardiology & Clinical Evidence Portfolio',
-    homepage_intro = 'Welcome to the clinical portfolio of Dr. Marie E. LeBlanc.',
-    disclaimer_text = 'For informational and educational purposes only.',
-    default_seo_description = 'Cardiology essays and medical writing portfolio.',
-    social_links = '[{"platform": "orcid", "url": "https://orcid.org/0000-0002-1825-0097"}]'::jsonb
+    site_title = 'Synthetic Publication',
+    tagline = 'Synthetic editorial testing tagline',
+    homepage_intro = 'Synthetic homepage introduction used only for local settings validation.',
+    disclaimer_text = 'Synthetic disclaimer text used only for local settings validation.',
+    default_seo_description = 'Synthetic default SEO description.',
+    social_links = '[{"platform": "github", "url": "https://example.invalid/synthetic-author"}]'::jsonb
   WHERE id = 1;
 
 SELECT lives_ok('update_valid_settings', 'Valid site settings update is accepted');
@@ -380,7 +393,7 @@ SELECT is(
 );
 
 -- ----------------------------------------------------------------------------
--- Section F: Direct Anonymous Comment Behavior & Normalization
+-- Section F: Direct Anonymous Comment Behavior, Normalization & System Fields
 -- ----------------------------------------------------------------------------
 
 SET LOCAL ROLE anon;
@@ -391,46 +404,57 @@ PREPARE anon_insert_comment AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
   VALUES (
     '90000000-0000-0000-0000-000000000001',
-    '  Dr. Sarah Jenkins, MD  ',
-    '  SARAH.JENKINS@Hospital.org  ',
-    '  Insightful analysis of the clinical trial endpoints.  '
+    '  Synthetic Commenter  ',
+    '  SYNTHETIC-COMMENTER@EXAMPLE.INVALID  ',
+    '  Synthetic comment used only to verify normalization.  '
   );
 
 SELECT lives_ok('anon_insert_comment', 'Anonymous comment submission on published article succeeds');
 
--- Verify inserted comment normalization (queried by admin to inspect normalized fields)
+-- Verify inserted comment normalization & forced system fields via Admin session
 RESET ROLE;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000001", "role": "authenticated"}';
 
 SELECT is(
-  (SELECT commenter_name FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org'),
-  'Dr. Sarah Jenkins, MD',
+  (SELECT commenter_name FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid'),
+  'Synthetic Commenter',
   'Commenter name is trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT commenter_email FROM public.comments WHERE commenter_name = 'Dr. Sarah Jenkins, MD'),
-  'sarah.jenkins@hospital.org',
+  (SELECT commenter_email FROM public.comments WHERE commenter_name = 'Synthetic Commenter'),
+  'synthetic-commenter@example.invalid',
   'Commenter email is lowercased and trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT body FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org'),
-  'Insightful analysis of the clinical trial endpoints.',
+  (SELECT body FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid'),
+  'Synthetic comment used only to verify normalization.',
   'Comment body outer whitespace is trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT status FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org'),
+  (SELECT status FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid'),
   'pending',
   'Comment status is forced to pending by trigger'
 );
 
 SELECT is(
-  (SELECT moderated_at FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org'),
+  (SELECT moderated_at FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid'),
   NULL,
   'Comment moderated_at is forced to NULL by trigger'
+);
+
+SELECT isnt(
+  (SELECT id FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid'),
+  NULL,
+  'Comment id is generated by database'
+);
+
+SELECT ok(
+  (SELECT created_at FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid') >= (now() - INTERVAL '1 minute'),
+  'Comment created_at is forced to current timestamp'
 );
 
 -- Anonymous comment on draft article must fail via RLS
@@ -439,13 +463,13 @@ SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
 
 PREPARE anon_insert_draft_comment AS
   INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-  VALUES ('90000000-0000-0000-0000-000000000003', 'Visitor', 'visitor@test.com', 'Draft comment');
+  VALUES ('90000000-0000-0000-0000-000000000003', 'Synthetic Visitor', 'synthetic-visitor@example.invalid', 'Synthetic draft comment');
 
 SELECT throws_ok('anon_insert_draft_comment', '42501', NULL, 'Anonymous comment on unpublished draft article is rejected by RLS');
 
 -- Anonymous visitor cannot read pending comments (safe columns return empty result)
 SELECT is_empty(
-  $$ SELECT id, article_id, commenter_name, body, created_at FROM public.comments WHERE body = 'Insightful analysis of the clinical trial endpoints.' $$,
+  $$ SELECT id, article_id, commenter_name, body, created_at FROM public.comments WHERE body = 'Synthetic comment used only to verify normalization.' $$,
   'Anonymous visitor cannot read pending comments'
 );
 
@@ -465,51 +489,119 @@ SELECT throws_ok(
 );
 
 -- ----------------------------------------------------------------------------
--- Section G: Comment Rate Limiting Invariants
+-- Section G: Comment Rate Limiting Invariants (3/15m, 10/24h, 100/1h Global)
 -- ----------------------------------------------------------------------------
 
--- Sarah Jenkins has already submitted 1 comment on article 90000000...0001
+-- G1: 3 per 15-minute per article+email
+-- synthetic-commenter@example.invalid has already submitted 1 comment on article 90000000...0001
 -- Submit 2nd comment (allowed)
 SELECT lives_ok(
   $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-     VALUES ('90000000-0000-0000-0000-000000000001', 'Sarah J', 'sarah.jenkins@hospital.org', 'Second comment') $$,
+     VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic C2', 'synthetic-commenter@example.invalid', 'Second comment') $$,
   'Second comment within 15 minutes is accepted'
 );
 
 -- Submit 3rd comment (allowed)
 SELECT lives_ok(
   $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-     VALUES ('90000000-0000-0000-0000-000000000001', 'Sarah J', 'sarah.jenkins@hospital.org', 'Third comment') $$,
+     VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic C3', 'synthetic-commenter@example.invalid', 'Third comment') $$,
   'Third comment within 15 minutes is accepted'
 );
 
 -- Submit 4th comment (rejected by per-article 15-minute rate limit)
 SELECT throws_ok(
   $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-     VALUES ('90000000-0000-0000-0000-000000000001', 'Sarah J', 'sarah.jenkins@hospital.org', 'Fourth comment') $$,
+     VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic C4', 'synthetic-commenter@example.invalid', 'Fourth comment') $$,
   'Too many comments submitted for this article. Please wait before posting again.',
-  '4th comment within 15 minutes on same article is rejected'
+  '4th comment within 15 minutes on same article is rejected (3/15m rule)'
 );
 
 -- Another user with different email can submit on the same article
 SELECT lives_ok(
   $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
-     VALUES ('90000000-0000-0000-0000-000000000001', 'Dr. Alex Reed', 'alex.reed@clinic.org', 'Fresh commenter') $$,
+     VALUES ('90000000-0000-0000-0000-000000000001', 'Synthetic Peer', 'synthetic-peer@example.invalid', 'Fresh commenter') $$,
   'Different commenter can submit on the same article'
 );
 
+-- G2: 10 per 24-hour per email limit
+-- Create controlled historical rows for synthetic-comment-daily@example.invalid
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, created_at)
+VALUES
+  ('90000000-0000-0000-0000-000000000001', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 1', 'pending', now() - INTERVAL '1 hour'),
+  ('90000000-0000-0000-0000-000000000001', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 2', 'pending', now() - INTERVAL '2 hours'),
+  ('90000000-0000-0000-0000-000000000001', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 3', 'pending', now() - INTERVAL '3 hours'),
+  ('90000000-0000-0000-0000-000000000002', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 4', 'pending', now() - INTERVAL '4 hours'),
+  ('90000000-0000-0000-0000-000000000002', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 5', 'pending', now() - INTERVAL '5 hours'),
+  ('90000000-0000-0000-0000-000000000002', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 6', 'pending', now() - INTERVAL '6 hours'),
+  ('90000000-0000-0000-0000-000000000005', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 7', 'pending', now() - INTERVAL '7 hours'),
+  ('90000000-0000-0000-0000-000000000005', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 8', 'pending', now() - INTERVAL '8 hours'),
+  ('90000000-0000-0000-0000-000000000005', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 9', 'pending', now() - INTERVAL '9 hours'),
+  ('90000000-0000-0000-0000-000000000005', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Historical comment 10', 'pending', now() - INTERVAL '10 hours');
+
+-- Switch to anon API role and attempt 11th comment
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+SELECT throws_ok(
+  $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
+     VALUES ('90000000-0000-0000-0000-000000000001', 'Daily Tester', 'synthetic-comment-daily@example.invalid', 'Eleventh comment') $$,
+  'Daily comment submission limit reached. Please try again tomorrow.',
+  '11th comment within 24 hours from same email is rejected (10/24h rule)'
+);
+
+-- G3: 100 per 1-hour site-wide global limit
+-- Create exactly 100 historical comments within the past hour with distinct synthetic emails
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+INSERT INTO public.comments (article_id, commenter_name, commenter_email, body, status, created_at)
+SELECT
+  '90000000-0000-0000-0000-000000000001',
+  'Global Tester ' || i,
+  'synthetic-global-' || i || '@example.invalid',
+  'Global filler comment ' || i,
+  'pending',
+  now() - (i || ' seconds')::interval
+FROM generate_series(1, 100) AS s(i);
+
+-- Switch to anon API role and attempt a comment from a brand new email
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+SELECT throws_ok(
+  $$ INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
+     VALUES ('90000000-0000-0000-0000-000000000002', 'Fresh Global Tester', 'synthetic-fresh-global@example.invalid', 'Fresh comment under busy site') $$,
+  'Comment system is currently busy. Please try again later.',
+  'Fresh comment is rejected when site-wide limit exceeds 100 comments/hour (100/1h global rule)'
+);
+
+-- Clean up global comment filler fixtures so they do not interfere with subsequent tests
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+DELETE FROM public.comments WHERE commenter_email LIKE 'synthetic-global-%@example.invalid';
+
 -- ----------------------------------------------------------------------------
--- Section H: Direct Anonymous Contact Message Behavior & Normalization
+-- Section H: Direct Anonymous Contact Message Behavior, Normalization & System Fields
 -- ----------------------------------------------------------------------------
+
+-- Clean up global comment fixtures so they do not interfere with subsequent tests
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
 
 PREPARE anon_insert_contact AS
   INSERT INTO public.contact_messages (name, email, subject, message)
   VALUES (
-    '  Dr. Robert Chen  ',
-    '  RCHEN@CardioResearch.org  ',
-    '  Collaboration Inquiry  ',
-    '  Interested in discussing your evidence synthesis methodology.  '
+    '  Synthetic Inquirer  ',
+    '  SYNTHETIC-INQUIRER@EXAMPLE.INVALID  ',
+    '  Synthetic Collaboration Inquiry  ',
+    '  Synthetic contact message used only for local security verification.  '
   );
+
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
 
 SELECT lives_ok('anon_insert_contact', 'Anonymous contact submission succeeds');
 
@@ -537,73 +629,224 @@ SELECT throws_ok(
   'Anonymous visitor is denied DELETE on contact_messages table'
 );
 
--- Verify contact message normalization via Admin session
+-- Verify contact message normalization & forced system fields via Admin session
 RESET ROLE;
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000001", "role": "authenticated"}';
 
 SELECT is(
-  (SELECT name FROM public.contact_messages WHERE email = 'rchen@cardioresearch.org'),
-  'Dr. Robert Chen',
+  (SELECT name FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
+  'Synthetic Inquirer',
   'Contact name is trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT email FROM public.contact_messages WHERE name = 'Dr. Robert Chen'),
-  'rchen@cardioresearch.org',
+  (SELECT email FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
+  'synthetic-inquirer@example.invalid',
   'Contact email is lowercased and trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT subject FROM public.contact_messages WHERE email = 'rchen@cardioresearch.org'),
-  'Collaboration Inquiry',
+  (SELECT subject FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
+  'Synthetic Collaboration Inquiry',
   'Contact subject is trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT message FROM public.contact_messages WHERE email = 'rchen@cardioresearch.org'),
-  'Interested in discussing your evidence synthesis methodology.',
+  (SELECT message FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
+  'Synthetic contact message used only for local security verification.',
   'Contact message outer whitespace is trimmed by trigger'
 );
 
 SELECT is(
-  (SELECT status FROM public.contact_messages WHERE email = 'rchen@cardioresearch.org'),
+  (SELECT status FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
   'new',
   'Contact status is forced to new by trigger'
 );
 
+SELECT isnt(
+  (SELECT id FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1),
+  NULL,
+  'Contact id is generated by database'
+);
+
+SELECT ok(
+  (SELECT created_at FROM public.contact_messages WHERE email = 'synthetic-inquirer@example.invalid' LIMIT 1) >= (now() - INTERVAL '1 minute'),
+  'Contact created_at is forced to current timestamp'
+);
+
 -- ----------------------------------------------------------------------------
--- Section I: Contact Message Rate Limiting Invariants
+-- Section I: Contact Message Rate Limiting Invariants (3/1h, 5/24h, 30/1h Global)
 -- ----------------------------------------------------------------------------
 
+-- I1: 3 per 1-hour limit
 SET LOCAL ROLE anon;
 SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
 
--- Robert Chen has submitted 1 message
+-- synthetic-inquirer@example.invalid has submitted 1 message
 -- Submit 2nd message (allowed)
 SELECT lives_ok(
   $$ INSERT INTO public.contact_messages (name, email, subject, message)
-     VALUES ('Robert Chen', 'rchen@cardioresearch.org', 'Followup 1', 'Second message content') $$,
+     VALUES ('Synthetic Inquirer', 'synthetic-inquirer@example.invalid', 'Followup 1', 'Second message content') $$,
   'Second contact message within 1 hour is accepted'
 );
 
 -- Submit 3rd message (allowed)
 SELECT lives_ok(
   $$ INSERT INTO public.contact_messages (name, email, subject, message)
-     VALUES ('Robert Chen', 'rchen@cardioresearch.org', 'Followup 2', 'Third message content') $$,
+     VALUES ('Synthetic Inquirer', 'synthetic-inquirer@example.invalid', 'Followup 2', 'Third message content') $$,
   'Third contact message within 1 hour is accepted'
 );
 
 -- Submit 4th message (rejected by 3/hour rate limit)
 SELECT throws_ok(
   $$ INSERT INTO public.contact_messages (name, email, subject, message)
-     VALUES ('Robert Chen', 'rchen@cardioresearch.org', 'Followup 3', 'Fourth message content') $$,
+     VALUES ('Synthetic Inquirer', 'synthetic-inquirer@example.invalid', 'Followup 3', 'Fourth message content') $$,
   'Too many messages sent. Please wait before submitting another inquiry.',
-  '4th contact message within 1 hour from same email is rejected'
+  '4th contact message within 1 hour from same email is rejected (3/1h rule)'
+);
+
+-- I2: 5 per 24-hour limit
+-- Create controlled historical contact messages distributed outside 1-hour threshold
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+INSERT INTO public.contact_messages (name, email, subject, message, status, created_at)
+VALUES
+  ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 1', 'Historical inquiry 1', 'new', now() - INTERVAL '2 hours'),
+  ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 2', 'Historical inquiry 2', 'new', now() - INTERVAL '3 hours'),
+  ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 3', 'Historical inquiry 3', 'new', now() - INTERVAL '4 hours'),
+  ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 4', 'Historical inquiry 4', 'new', now() - INTERVAL '5 hours'),
+  ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 5', 'Historical inquiry 5', 'new', now() - INTERVAL '6 hours');
+
+-- Switch to anon API role and attempt 6th message
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+SELECT throws_ok(
+  $$ INSERT INTO public.contact_messages (name, email, subject, message)
+     VALUES ('Daily Inquirer', 'synthetic-contact-daily@example.invalid', 'Daily Msg 6', 'Sixth message attempt') $$,
+  'Daily message limit reached. Please try again tomorrow.',
+  '6th contact message within 24 hours from same email is rejected (5/24h rule)'
+);
+
+-- I3: 30 per 1-hour site-wide global limit
+-- Create exactly 30 historical contact messages within the past hour with distinct emails
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+
+INSERT INTO public.contact_messages (name, email, subject, message, status, created_at)
+SELECT
+  'Global Inquirer ' || i,
+  'synthetic-contact-global-' || i || '@example.invalid',
+  'Global Contact Subject ' || i,
+  'Global contact filler message ' || i,
+  'new',
+  now() - (i || ' minutes')::interval
+FROM generate_series(1, 30) AS s(i);
+
+-- Switch to anon API role and attempt a contact message from a brand new email
+SET LOCAL ROLE anon;
+SET LOCAL "request.jwt.claims" TO '{"role": "anon"}';
+
+SELECT throws_ok(
+  $$ INSERT INTO public.contact_messages (name, email, subject, message)
+     VALUES ('Fresh Inquirer', 'synthetic-fresh-contact@example.invalid', 'Fresh Subject', 'Fresh contact message under busy service') $$,
+  'Contact service is currently experiencing high volume. Please try again later.',
+  'Fresh contact message is rejected when site-wide volume exceeds 30/hour (30/1h global rule)'
+);
+
+-- Clean up global contact filler fixtures so they do not interfere with subsequent tests
+RESET ROLE;
+SET LOCAL "request.jwt.claims" TO '';
+DELETE FROM public.contact_messages WHERE email LIKE 'synthetic-contact-global-%@example.invalid';
+
+-- ----------------------------------------------------------------------------
+-- Section J: Authenticated Non-Admin Regression & System-Field Spoof Defense
+-- ----------------------------------------------------------------------------
+
+RESET ROLE;
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000002", "role": "authenticated"}';
+
+-- A. Comments: Authenticated non-admin comment INSERT remains rejected by RLS
+PREPARE nonadmin_insert_comment AS
+  INSERT INTO public.comments (article_id, commenter_name, commenter_email, body)
+  VALUES ('90000000-0000-0000-0000-000000000001', 'NonAdmin User', 'nonadmin@example.invalid', 'Nonadmin direct comment attempt');
+
+SELECT throws_ok('nonadmin_insert_comment', '42501', NULL, 'Authenticated non-admin direct comment INSERT is rejected by RLS');
+
+-- B. Contact: Authenticated non-admin contact INSERT with spoofed ID, created_at, status, whitespace
+PREPARE nonadmin_insert_contact AS
+  INSERT INTO public.contact_messages (id, created_at, status, name, email, subject, message)
+  VALUES (
+    '88888888-8888-8888-8888-888888888888'::uuid,
+    now() - INTERVAL '30 days',
+    'archived',
+    '  Authenticated NonAdmin Inquirer  ',
+    '  NONADMIN-INQUIRER@EXAMPLE.INVALID  ',
+    '  Nonadmin Collaboration Subject  ',
+    '  Nonadmin message body content  '
+  );
+
+SELECT lives_ok('nonadmin_insert_contact', 'Authenticated non-admin contact submission succeeds');
+
+-- Verify system fields and normalization under admin session
+RESET ROLE;
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000001", "role": "authenticated"}';
+
+SELECT isnt(
+  (SELECT id FROM public.contact_messages WHERE email = 'nonadmin-inquirer@example.invalid' LIMIT 1),
+  '88888888-8888-8888-8888-888888888888'::uuid,
+  'Client-supplied ID is discarded and replaced by database-generated UUID for non-admin'
+);
+
+SELECT ok(
+  (SELECT created_at FROM public.contact_messages WHERE email = 'nonadmin-inquirer@example.invalid' LIMIT 1) >= (now() - INTERVAL '1 minute'),
+  'Client-supplied historical created_at is discarded and replaced by current timestamp for non-admin'
+);
+
+SELECT is(
+  (SELECT status FROM public.contact_messages WHERE email = 'nonadmin-inquirer@example.invalid' LIMIT 1),
+  'new',
+  'Client-supplied status is discarded and forced to new for non-admin'
+);
+
+SELECT is(
+  (SELECT email FROM public.contact_messages WHERE email = 'nonadmin-inquirer@example.invalid' LIMIT 1),
+  'nonadmin-inquirer@example.invalid',
+  'Non-admin contact email is lowercased and trimmed'
+);
+
+-- Prove rate limiting cannot be bypassed by non-admin repeatedly supplying old created_at
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000002", "role": "authenticated"}';
+
+-- Submit 2nd message with old created_at (allowed)
+SELECT lives_ok(
+  $$ INSERT INTO public.contact_messages (created_at, name, email, subject, message)
+     VALUES (now() - INTERVAL '30 days', 'NonAdmin User', 'nonadmin-inquirer@example.invalid', 'Subj 2', 'Body 2') $$,
+  'Second non-admin message is accepted'
+);
+
+-- Submit 3rd message with old created_at (allowed)
+SELECT lives_ok(
+  $$ INSERT INTO public.contact_messages (created_at, name, email, subject, message)
+     VALUES (now() - INTERVAL '30 days', 'NonAdmin User', 'nonadmin-inquirer@example.invalid', 'Subj 3', 'Body 3') $$,
+  'Third non-admin message is accepted'
+);
+
+-- Submit 4th message with old created_at (rejected by 3/1h limit despite old created_at)
+SELECT throws_ok(
+  $$ INSERT INTO public.contact_messages (created_at, name, email, subject, message)
+     VALUES (now() - INTERVAL '30 days', 'NonAdmin User', 'nonadmin-inquirer@example.invalid', 'Subj 4', 'Body 4') $$,
+  'Too many messages sent. Please wait before submitting another inquiry.',
+  '4th non-admin message is rejected by 3/1h rate limit despite supplying historical created_at'
 );
 
 -- ----------------------------------------------------------------------------
--- Section J: Admin Compatibility & Moderation Actions
+-- Section K: Admin Compatibility & Moderation Actions
 -- ----------------------------------------------------------------------------
 
 RESET ROLE;
@@ -612,7 +855,7 @@ SET LOCAL "request.jwt.claims" TO '{"sub": "00000000-0000-0000-0000-000000000001
 
 -- Admin can read commenter email
 SELECT isnt(
-  (SELECT commenter_email FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org' LIMIT 1),
+  (SELECT commenter_email FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid' LIMIT 1),
   NULL,
   'Admin can read commenter_email'
 );
@@ -621,7 +864,7 @@ SELECT isnt(
 SELECT lives_ok(
   $$ UPDATE public.comments
      SET status = 'approved', moderated_at = now()
-     WHERE commenter_email = 'sarah.jenkins@hospital.org' $$,
+     WHERE commenter_email = 'synthetic-commenter@example.invalid' $$,
   'Admin can approve pending comment with moderated_at set'
 );
 
@@ -629,13 +872,13 @@ SELECT lives_ok(
 SELECT lives_ok(
   $$ UPDATE public.comments
      SET status = 'hidden', moderated_at = now()
-     WHERE commenter_email = 'sarah.jenkins@hospital.org' $$,
+     WHERE commenter_email = 'synthetic-commenter@example.invalid' $$,
   'Admin can hide approved comment with moderated_at set'
 );
 
 -- Admin can delete comment
 SELECT lives_ok(
-  $$ DELETE FROM public.comments WHERE commenter_email = 'sarah.jenkins@hospital.org' $$,
+  $$ DELETE FROM public.comments WHERE commenter_email = 'synthetic-commenter@example.invalid' $$,
   'Admin can delete comment'
 );
 
@@ -647,17 +890,17 @@ SELECT isnt(
 );
 
 SELECT lives_ok(
-  $$ UPDATE public.contact_messages SET status = 'read' WHERE email = 'rchen@cardioresearch.org' $$,
+  $$ UPDATE public.contact_messages SET status = 'read' WHERE email = 'synthetic-inquirer@example.invalid' $$,
   'Admin can update contact message status to read'
 );
 
 SELECT lives_ok(
-  $$ UPDATE public.contact_messages SET status = 'archived' WHERE email = 'rchen@cardioresearch.org' $$,
+  $$ UPDATE public.contact_messages SET status = 'archived' WHERE email = 'synthetic-inquirer@example.invalid' $$,
   'Admin can update contact message status to archived'
 );
 
 -- ----------------------------------------------------------------------------
--- Section K: Prior Regression Integrity
+-- Section L: Prior Regression Integrity
 -- ----------------------------------------------------------------------------
 
 -- Verify save_article_draft RPC is intact

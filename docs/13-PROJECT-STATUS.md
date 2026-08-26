@@ -4,18 +4,18 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9A DATABASE-SECURITY LOCAL GATE PASS
+- **Current stage:** Stage 9 — Comments, Contact Inbox & Settings — ACTIVE / PHASE 9A DATABASE-SECURITY LOCAL GATE PASS (REVIEW CORRECTIONS APPLIED)
 - **Stage authorization:** D032 APPROVED + STAGE-9 IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
 - **Canonical Stage-9 base:** `d7efeb7687e3d98f6af94c06300027b6275022ef`
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Application coding authorized:** YES — STAGE 9 ONLY
-- **Current implementation phase:** 9A — DATABASE / PUBLIC-SUBMISSION SECURITY (COMPLETE / LOCAL GATE PASS)
-- **Phase 9B status:** NOT STARTED
+- **Current implementation phase:** 9A — DATABASE / PUBLIC-SUBMISSION SECURITY (CORRECTIONS APPLIED / LOCAL GATE PASS)
+- **Phase 9B status:** NOT STARTED (AWAITING EXTERNAL REVIEW)
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
-- **Phase 9A migration SHA-256:** `ded53995570bb84360d26a37667b8872b5945ab1cd08fe8542ae467a8324a77e`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring)
-- **Gate status:** PHASE 9A LOCAL QUALITY GATE PASS (11/11 pgTAP FILES, 300/300 TESTS, 90/90 IN STAGE-9 SUITE; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
+- **Gate status:** PHASE 9A LOCAL QUALITY GATE PASS (11/11 pgTAP FILES, 317/317 TESTS, 107/107 IN STAGE-9 SUITE; 5/5 NODE SUITES, 28/28 TESTS; 12/12 NEXT.JS ROUTES COMPILED)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
 - **Hosted Supabase mutation:** NONE
 - **Vercel production/WAF mutation:** NOT CONFIGURED / HOSTED GATE
@@ -777,7 +777,7 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Hosted Stage-8 deployment:** DEPLOYED / VERIFIED — 2026-08-26
 - **Stage-8 final status:** COMPLETE / MERGED / GATE PASS
 
-## Stage-9 progress record — Phase 9A (2026-08-26)
+## Stage-9 progress record — Phase 9A & Review Corrections (2026-08-26)
 
 - **Stage:** Stage 9 — Comments, Contact Inbox & Settings
 - **Phase:** Phase 9A — Database / Public-Submission Security Foundation
@@ -786,20 +786,30 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Active working branch:** `stage/09-comments-contact-settings`
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Phase 9A migration:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
-- **Phase 9A migration SHA-256:** `ded53995570bb84360d26a37667b8872b5945ab1cd08fe8542ae467a8324a77e`
+- **Phase 9A migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
 - **Phase 9A test suite:** `supabase/tests/database/11_stage9_comments_contact_settings.test.sql`
-- **Phase 9A deliverables completed:**
+- **External Phase-9A review:** CORRECTIONS APPLIED / LOCAL GATE PASS
+- **Phase 9A deliverables completed & hardened:**
   - [x] **Comment Moderation Consistency Check:** Added constraint `comments_moderation_consistency_check` enforcing `(status = 'pending' AND moderated_at IS NULL) OR (status IN ('approved', 'hidden') AND moderated_at IS NOT NULL)`.
   - [x] **Feature Flag Publication Checks & Lead Uniqueness:** Added constraints `articles_is_featured_published_check` and `articles_is_portfolio_featured_published_check` enforcing that only published articles can be featured; created partial unique index `idx_articles_single_featured` ensuring at most one lead featured article site-wide.
   - [x] **Site Settings Singleton Invariants:** Added constraints on `public.site_settings` enforcing `id = 1`, title length (1-120 chars, trimmed), tagline <=200 chars, homepage intro <=1200 chars, disclaimer <=1500 chars, SEO description <=320 chars, and JSON array type for `social_links`.
   - [x] **Rate-Limit Supporting Indexes:** Created indexes on `public.comments (commenter_email, created_at DESC)`, `public.comments (created_at DESC)`, `public.contact_messages (email, created_at DESC)`, and `public.contact_messages (created_at DESC)`.
-  - [x] **Private Comment Submission Guard (`private.guard_comment_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Trims name/email/body, forces `status = 'pending'` and `moderated_at = NULL`, and applies transaction-locked rate limits (3/15m/email+article, 10/24h/email, 100/1h global).
-  - [x] **Private Contact Submission Guard (`private.guard_contact_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Trims name/email/subject/message, forces `status = 'new'`, and applies transaction-locked rate limits (3/1h/email, 5/24h/email, 30/1h global).
+  - [x] **Private Comment Submission Guard (`private.guard_comment_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Forces system fields (`id := extensions.gen_random_uuid()`, `created_at := pg_catalog.now()`, `status := 'pending'`, `moderated_at := NULL`), trims name/email/body, and applies transaction-locked rate limits (3/15m/email+article, 10/24h/email, 100/1h global).
+  - [x] **Private Contact Submission Guard (`private.guard_contact_submission`):** Created `BEFORE INSERT` trigger function in `private` schema with `SECURITY DEFINER`, `search_path = ''`, execution revoked from `PUBLIC, anon, authenticated`. Forces system fields (`id := extensions.gen_random_uuid()`, `created_at := pg_catalog.now()`, `status := 'new'`), trims name/email/subject/message, and applies transaction-locked rate limits (3/1h/email, 5/24h/email, 30/1h global).
   - [x] **Admin Lead-Feature RPC (`public.set_featured_article`):** Implemented `public.set_featured_article(p_article_id uuid)` as `SECURITY INVOKER`, empty `search_path`, protected by `private.is_admin()`, revoked from `PUBLIC` and `anon`, granted to `authenticated`. Atomically sets or clears lead featured article.
-  - [x] **Comprehensive pgTAP Test Suite:** Created `supabase/tests/database/11_stage9_comments_contact_settings.test.sql` with 90 subtests covering moderation invariants, feature flag constraints, lead uniqueness, site settings constraints, private guard function security, anonymous comment submission normalization, rate limiting boundaries, anonymous contact message normalization, column/table permission denials, admin moderation/contact operations, and prior regression integrity.
+  - [x] **Hardened Authenticated Non-Admin Regression Tests:** Tested authenticated non-admin comment INSERT (rejected by RLS `42501`) and authenticated non-admin contact INSERT with spoofed client UUID, historical `created_at`, and `status = 'archived'`. Verified that client-supplied ID/timestamp/status are discarded, generated ID and current `created_at` are enforced, and historical timestamps cannot bypass rate limiting.
+  - [x] **Explicit Rate-Limit Boundary Tests:** Verified all 6 rate-limit boundaries:
+    - comment 3/15m: PASS
+    - comment 10/24h: PASS
+    - comment 100/1h global: PASS
+    - contact 3/1h: PASS
+    - contact 5/24h: PASS
+    - contact 30/1h global: PASS
+  - [x] **Neutral Synthetic Fixture Cleanup:** Replaced all medical/professional identity claims with neutral synthetic fixtures across test suites and migrations.
+  - [x] **Comprehensive pgTAP Test Suite:** 107 subtests in `supabase/tests/database/11_stage9_comments_contact_settings.test.sql` covering moderation invariants, feature flag constraints, lead uniqueness, site settings constraints, private guard function security, anonymous comment submission normalization, rate limiting boundaries, anonymous contact message normalization, column/table permission denials, authenticated non-admin system-field defense, admin moderation/contact operations, and prior regression integrity.
 - **Local Quality Gates (Phase 9A):**
   - `npx supabase db reset`: PASS (clean reset across all 5 migrations)
-  - `npx supabase test db`: PASS (11 files, 300 tests, 0 failures; 90 tests in Stage-9 suite)
+  - `npx supabase test db`: PASS (11 files, 317 tests, 0 failures; 107 tests in Stage-9 suite)
   - `node --test tests/*.test.mjs`: PASS (5 test files, 28 tests, 0 failures)
   - `npm run typecheck`: PASS (0 type errors)
   - `npm run lint`: PASS (0 warnings, 0 errors)
@@ -807,7 +817,7 @@ Stage 7 is complete, verified, and merged into `main`:
   - `npm run build`: PASS (Next.js production build verified cleanly)
   - `git diff --check`: PASS (clean diff)
 - **Hosted Stage-9 deployment:** NOT AUTHORIZED / NOT APPLIED
-- **Phase 9B status:** NOT STARTED
+- **Phase 9B status:** NOT STARTED (AWAITING EXTERNAL REVIEW)
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED
 
