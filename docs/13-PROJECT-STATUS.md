@@ -35,14 +35,14 @@ This file is the authoritative repository record of the currently active develop
 - **Native browser E2E:** 15/15 tests passed (Playwright Chromium + local Supabase)
 - **Design specification:** `docs/33-STAGE-9-COMMENTS-CONTACT-SETTINGS-DESIGN.md`
 - **Owner-approved architecture decisions:** D032 (Comments, Contact, Settings & Featuring) + D032 Addendum (Structured Social Links) + D033 (Stage-9 Controlled Hosted Deployment)
-- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F ACTIVE / OWNER AUTHORIZED
+- **Gate status:** PHASE 9A COMPLETE / EXTERNAL PASS; PHASE 9B COMPLETE / FINAL EXTERNAL PASS; PHASE 9C COMPLETE / EXTERNAL PASS; PHASE 9D COMPLETE / FINAL EXTERNAL PASS; PHASE 9E COMPLETE / FULL EXTERNAL PASS; PHASE 9F ATTEMPT 1 CONSUMED / ZERO HOSTED DRIFT / LOCAL GATE PASS
 - **Hosted project:** `eoexnnhqzrkurbqgbtnx`
-- **Hosted Stage-9 migration:** AUTHORIZED / NOT YET APPLIED
+- **Hosted Stage-9 migration:** AUTHORIZED (D033) / FIRST ATTEMPT CONSUMED WITH ZERO MUTATION
 - **Authorized migration file:** `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql`
 - **Authorized migration SHA-256:** `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`
-- **Hosted Supabase mutation (Pre-9F):** NONE
+- **Hosted Supabase mutation:** NONE (Zero drift verified; Stage-8 baseline intact: 4 migrations, 0 Stage-9 objects)
 - **Vercel production/WAF mutation:** NOT AUTHORIZED IN 9F
-- **Phase 9F status:** ACTIVE / OWNER AUTHORIZED
+- **Phase 9F status:** ATTEMPT 1 CONSUMED / ZERO HOSTED DRIFT / AWAITING WRITE-CHANNEL RECOVERY OR OWNER INSTRUCTION
 - **Phase 9G status:** NOT STARTED
 - **Stage-9 merge:** NOT AUTHORIZED
 - **Stage 10:** NOT AUTHORIZED

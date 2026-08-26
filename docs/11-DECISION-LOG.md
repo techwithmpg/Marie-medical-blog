@@ -620,6 +620,35 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 
 **Status:** ACTIVE / FROZEN FOR STAGE-9 HOSTED DEPLOYMENT.
 
+### D033 Execution Addendum — Hosted Migration Deployment Attempt & Verification Record
+**Date:** 2026-08-26
+
+**Execution record:**
+1. The D033-authorized Stage-9 migration `supabase/migrations/20260826000635_stage9_submission_security_and_feature_controls.sql` (SHA-256: `8620e4ace706bf4be7bea6cd437db219ac9e7c92256bec364812865facb6ccd6`) was processed for deployment to project `eoexnnhqzrkurbqgbtnx`.
+2. Pre-write hosted inspection verified the exact expected Stage-8 baseline via `list_migrations`:
+   - `20260825054917_initial_database_security_foundation`
+   - `20260825081012_add_public_is_admin_rpc`
+   - `20260825200129_stage7_draft_authoring_foundation`
+   - `20260825232024_stage8_publishing_lifecycle`
+   - Pending: `20260826000635_stage9_submission_security_and_feature_controls` (not yet applied).
+3. Direct CLI database push encountered local network TCP pooler timeout (`aws-0-ap-south-1.pooler.supabase.com:5432/6543`), and the active MCP session was constrained to read-only mode (`"Cannot apply migration in read-only mode."`).
+4. Immediate post-attempt inspection confirmed **ZERO hosted mutations** occurred:
+   - Hosted applied migrations remained intact at 4/4 baseline (`20260825054917`, `20260825081012`, `20260825200129`, `20260825232024`).
+   - Stage-9 objects count on hosted database: 0/1 `public.set_featured_article`, 0/1 `private.guard_comment_submission`, 0/1 `private.guard_contact_submission`, 0/4 Stage-9 check constraints.
+   - Zero synthetic rows, zero content mutations, zero auth changes, and zero storage policy changes.
+5. Supabase security and performance advisors were inspected on the hosted project:
+   - Security Advisor: 1 INFO (`rls_enabled_no_policy` on `private.admin_users` — by design, private schema internal table), 1 WARN (`auth_leaked_password_protection` — Supabase Auth dashboard setting).
+   - Performance Advisor: 4 INFO (`unused_index` on `idx_articles_category_id`, `idx_articles_is_featured`, `idx_articles_is_portfolio_featured`, `idx_contact_messages_status` — expected on pre-production instance).
+6. Local regression gate passed completely:
+   - 11/11 pgTAP test files (323/323 tests passing).
+   - 8/8 Node test files (67/67 tests passing).
+   - TypeScript `tsc --noEmit` clean (0 errors).
+   - ESLint clean (0 errors, 0 warnings).
+   - Prettier formatting clean.
+   - Next.js production build clean (16/16 routes compiled).
+7. The first authorized write attempt is **CONSUMED** with zero hosted drift.
+8. Stage-9 merge remains unauthorized; Stage 10 remains unauthorized.
+
 ---
 
 ## New decision template
