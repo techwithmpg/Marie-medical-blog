@@ -1,7 +1,15 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/admin";
 import { AdminShell } from "@/components/admin/admin-shell";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminLayout({
   children,

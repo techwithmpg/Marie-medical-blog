@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 export interface SiteEnvironment {
   SITE_URL?: string;
   VERCEL_PROJECT_PRODUCTION_URL?: string;
@@ -140,6 +142,29 @@ export function getCanonicalUrl(
   canonicalUrl.hash = "";
 
   return canonicalUrl;
+}
+
+export interface PublicRouteDiscoveryOptions {
+  routePolicy?: RouteIndexingPolicy;
+  env?: SiteEnvironment;
+}
+
+export function getPublicRouteDiscoveryMetadata(
+  canonicalPath: string,
+  options: PublicRouteDiscoveryOptions = {},
+): Pick<Metadata, "alternates" | "robots"> {
+  const env = options.env ?? getProcessSiteEnvironment();
+  const routePolicy = options.routePolicy ?? {
+    index: true,
+    follow: true,
+  };
+
+  return {
+    alternates: {
+      canonical: getCanonicalUrl(canonicalPath, env),
+    },
+    robots: getDeploymentRobots(routePolicy, env),
+  };
 }
 
 export function getDeploymentRobots(

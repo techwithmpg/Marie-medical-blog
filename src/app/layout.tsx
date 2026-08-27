@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Source_Sans_3 } from "next/font/google";
 import { getPublicSiteSettings } from "@/lib/public-data";
-import { getSiteUrl } from "@/lib/site-url";
+import { getDeploymentRobots, getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -33,6 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
     title: siteTitle,
     description,
     applicationName: siteTitle,
+    robots: getDeploymentRobots({
+      index: true,
+      follow: true,
+    }),
   };
 }
 

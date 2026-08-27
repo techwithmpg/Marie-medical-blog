@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicShell } from "@/components/site/public-shell";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,12 +14,14 @@ import {
   getPublicCvUrl,
   getPublicSiteSettings,
 } from "@/lib/public-data";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "About — Marie Medere",
   description:
     "About Marie Medere, medical writing portfolio, and educational publication approach.",
+  ...getPublicRouteDiscoveryMetadata("/about"),
 };
 
 export default async function AboutPage() {

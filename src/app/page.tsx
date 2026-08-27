@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicShell } from "@/components/site/public-shell";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
 import { ArticleListItem } from "@/components/public/article-list-item";
 import { FeaturedArticle } from "@/components/public/featured-article";
 import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import {
   getFeaturedPublishedArticle,
   getLatestPublishedArticles,
@@ -18,10 +20,7 @@ import {
 } from "@/lib/public-articles";
 import { cn } from "@/lib/utils";
 
-export const metadata = {
-  title: "Marie Medere — Medical Writing Portfolio & Educational Blog",
-  description: "Medical Writing Portfolio & Educational Blog by Marie Medere.",
-};
+export const metadata: Metadata = getPublicRouteDiscoveryMetadata("/");
 
 export default async function HomePage() {
   const [profile, settings] = await Promise.all([

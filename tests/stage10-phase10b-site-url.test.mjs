@@ -1,12 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import {
   getCanonicalUrl,
   getDeploymentRobots,
+  getPublicRouteDiscoveryMetadata,
   getSiteUrl,
   isPreviewDeployment,
   isProductionDeployment,
 } from "../src/lib/site-url.ts";
+
+const ROOT = process.cwd();
 
 test("local development uses deterministic localhost canonical authority", () => {
   const siteUrl = getSiteUrl({});
@@ -195,5 +200,112 @@ test("production route-specific noindex follow policy is preserved", () => {
       index: false,
       follow: true,
     },
+  );
+});
+test("public route discovery metadata emits absolute canonical and production indexing", () => {
+  const metadata = getPublicRouteDiscoveryMetadata("/about", {
+    env: {
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+  });
+
+  assert.equal(
+    String(metadata.alternates?.canonical),
+    "https://canonical.example.test/about",
+  );
+
+  assert.deepEqual(metadata.robots, {
+    index: true,
+    follow: true,
+  });
+});
+
+test("public route discovery metadata keeps production canonical but disables preview indexing", () => {
+  const metadata = getPublicRouteDiscoveryMetadata("/portfolio", {
+    env: {
+      VERCEL_ENV: "preview",
+      VERCEL_PROJECT_PRODUCTION_URL: "production.example.test",
+    },
+  });
+
+  assert.equal(
+    String(metadata.alternates?.canonical),
+    "https://production.example.test/portfolio",
+  );
+
+  assert.deepEqual(metadata.robots, {
+    index: false,
+    follow: false,
+  });
+});
+
+test("public route discovery metadata preserves production route-specific noindex follow policy", () => {
+  const metadata = getPublicRouteDiscoveryMetadata("/blog", {
+    routePolicy: {
+      index: false,
+      follow: true,
+    },
+    env: {
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+  });
+
+  assert.deepEqual(metadata.robots, {
+    index: false,
+    follow: true,
+  });
+});
+
+test("static public routes declare their reviewed canonical paths", () => {
+  const cases = [
+    ["src/app/page.tsx", 'getPublicRouteDiscoveryMetadata("/")'],
+    ["src/app/about/page.tsx", 'getPublicRouteDiscoveryMetadata("/about")'],
+    [
+      "src/app/portfolio/page.tsx",
+      'getPublicRouteDiscoveryMetadata("/portfolio")',
+    ],
+    ["src/app/contact/page.tsx", 'getPublicRouteDiscoveryMetadata("/contact")'],
+    [
+      "src/app/disclaimer/page.tsx",
+      'getPublicRouteDiscoveryMetadata("/disclaimer")',
+    ],
+  ];
+
+  for (const [relativePath, expectedCall] of cases) {
+    const content = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+
+    assert.ok(
+      content.includes(expectedCall),
+      `${relativePath} must declare ${expectedCall}`,
+    );
+  }
+});
+
+test("root layout and admin subtree enforce deployment/private robots boundaries", () => {
+  const rootLayout = fs.readFileSync(
+    path.join(ROOT, "src/app/layout.tsx"),
+    "utf8",
+  );
+
+  assert.match(
+    rootLayout,
+    /robots:\s*getDeploymentRobots\(\{\s*index:\s*true,\s*follow:\s*true,\s*\}\)/s,
+  );
+
+  const adminLayout = fs.readFileSync(
+    path.join(ROOT, "src/app/admin/layout.tsx"),
+    "utf8",
+  );
+
+  assert.match(
+    adminLayout,
+    /export const metadata: Metadata = \{\s*robots:\s*\{\s*index:\s*false,\s*follow:\s*false,\s*\},\s*\};/s,
+  );
+
+  assert.ok(
+    !adminLayout.includes("getPublicRouteDiscoveryMetadata("),
+    "Admin subtree must never receive a public canonical metadata helper.",
   );
 });
