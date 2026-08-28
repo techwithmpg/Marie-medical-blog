@@ -24,6 +24,7 @@ import {
   type PublicApprovedComment,
 } from "@/lib/public-comments";
 import { CommentSection } from "@/components/public/comment-section";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -35,28 +36,27 @@ export async function generateMetadata({
   params,
 }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const article = await getPublishedArticleBySlug(slug);
-    if (!article) {
-      return {
-        title: "Article Not Found | Marie Medere",
-      };
-    }
+  const article = await getPublishedArticleBySlug(slug);
 
-    return {
-      title: `${article.seo_title || article.title} | Marie Medere`,
-      description:
-        article.seo_description ||
-        article.excerpt ||
-        "Medical Writing Portfolio & Educational Blog by Marie Medere.",
-    };
-  } catch {
-    return {
-      title: "Articles | Marie Medere",
-      description:
-        "Medical Writing Portfolio & Educational Blog by Marie Medere.",
-    };
+  if (!article) {
+    notFound();
   }
+
+  const settings = await getPublicSiteSettings();
+  const description =
+    article.seo_description?.trim() ||
+    article.excerpt?.trim() ||
+    settings.default_seo_description?.trim() ||
+    settings.tagline?.trim() ||
+    "Medical Writing Portfolio & Educational Blog by Marie Medere.";
+
+  return {
+    title: article.seo_title?.trim() || article.title,
+    description,
+    ...getPublicRouteDiscoveryMetadata(
+      `/blog/${encodeURIComponent(article.slug)}`,
+    ),
+  };
 }
 
 export default async function ArticleDetailPage({ params }: ArticlePageProps) {
