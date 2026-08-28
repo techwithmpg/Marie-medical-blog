@@ -4,15 +4,15 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10B LOCAL IMPLEMENTATION
-- **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26
+- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10B COMPLETE / LOCAL CHECKPOINT PASS
+- **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** YES — PHASE 10B METADATA & CANONICAL URL INFRASTRUCTURE ONLY
-- **Current implementation phase:** PHASE 10B ACTIVE
+- **Application coding authorized:** NO FURTHER STAGE-10 PHASE AUTHORIZED; PHASE 10B IMPLEMENTATION COMPLETE
+- **Current implementation phase:** PHASE 10B COMPLETE / NEXT PHASE NOT AUTHORIZED
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
-- **Phase 10B status:** ACTIVE / LOCAL IMPLEMENTATION
+- **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
 - **Phase 10B scope:** SITE URL AUTHORITY + ROUTE METADATA + CANONICALS + QUERY/PAGINATION INDEXABILITY
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT AUTHORIZED
@@ -63,7 +63,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** ACTIVE / PHASE 10A COMPLETE / EXTERNAL REVIEW CORRECTION APPLIED / OWNER REVIEW PENDING — OWNER AUTHORIZED 2026-08-26
+- **Stage 10:** ACTIVE / PHASE 10B COMPLETE / LOCAL CHECKPOINT PASS / NEXT PHASE NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -1148,6 +1148,27 @@ Stage 7 is complete, verified, and merged into `main`:
   - `docs/11-DECISION-LOG.md` [UPDATED]
   - `docs/13-PROJECT-STATUS.md` [UPDATED]
 - **Current ending boundary:** Stage 10 ACTIVE at Phase 10A design/governance; D034 awaits owner review; the next permissible action is owner review, not application coding or hosted mutation
+
+## Stage-10 progress record — Phase 10B-4 Title Contract & Textual Social Metadata (2026-08-28)
+
+- **Stage:** Stage 10 — SEO, Social & Analytics
+- **Phase:** Phase 10B-4 — Title Contract & Textual Social Metadata
+- **Owner authorization:** Explicit authorization to complete, validate, commit, and push the final local Phase 10B checkpoint on `stage/10-seo-social-analytics`
+- **Canonical accepted `main`:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
+- **Starting Stage-10 head:** `1287633438451355a0d4b42b30887cf857b0f983`
+- **Freshness verification:** accepted `main`, local Stage-10 head, remote Stage-10 head, clean worktree, empty index, and dependency boundary verified before editing
+- **Title contract:** safe public `site_title` now supplies the root default and `%s | <site title>` child template; public child metadata titles are route-specific and unsuffixed
+- **Textual social metadata:** root, static routes, blog variants, topic variants, and published articles emit canonical Open Graph and Twitter text through the shared Stage-10 canonical authority
+- **Published article metadata:** stored SEO title/title and the approved description fallback chain are preserved; truthful article type, stored timestamps, and the safe public profile display name are supported without credentials or fabricated claims
+- **Private boundary:** `/admin/*` remains `noindex,nofollow`, explicitly clears public canonical/Open Graph/Twitter metadata, and contains the public title template so existing workspace titles are not duplicated
+- **Request memoization:** the safe public profile read is React request-memoized for reuse by article rendering and metadata generation without changing its public data boundary
+- **Focused verification:** 43/43 deterministic Stage-10 Phase 10B Node tests passed; the known `MODULE_TYPELESS_PACKAGE_JSON` warning remains non-blocking and `package.json` was not changed
+- **Supplemental regression run:** 108/110 repository Node tests passed; the only failures were two unrelated Stage-8 integration tests whose admin login could not reach a non-running local Supabase service, so they are not part of this metadata-only gate and no Supabase mutation was attempted
+- **Quality gate:** `npm run typecheck` PASS; `npm run lint` PASS; `npm run format:check` PASS; `git diff --check` PASS; `npm run build` PASS (18 App Router routes compiled)
+- **Dependency/schema/hosted boundary:** no dependency or lockfile changes; no schema or migration changes; no Supabase, Vercel, Search Console, or other hosted mutation
+- **Explicitly deferred:** generated social fallback image, article featured-image social selection, sitemap, robots route, JSON-LD, Analytics, Search Console, later Stage-10 validation/handoff, Stage-10 merge, and Stage 11
+- **Phase 10B audit:** all currently authorized Phase 10B site URL, metadata, title, canonical, indexability, textual social, published-article, preview-protection, admin-boundary, and focused-test requirements are complete
+- **Current ending boundary:** Phase 10B COMPLETE / LOCAL CHECKPOINT PASS; no later Stage-10 phase, hosted mutation, or merge is authorized by this record
 
 ## Stage transition rule
 

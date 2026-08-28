@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Newsreader, Source_Sans_3 } from "next/font/google";
 import { getPublicSiteSettings } from "@/lib/public-data";
-import { getDeploymentRobots, getSiteUrl } from "@/lib/site-url";
+import {
+  DEFAULT_PUBLIC_SITE_DESCRIPTION,
+  getDeploymentRobots,
+  getPublicRouteSocialMetadata,
+  getSiteTitleMetadata,
+  getSiteUrl,
+} from "@/lib/site-url";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -26,13 +32,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     settings.default_seo_description?.trim() ||
     tagline ||
-    "Medical Writing Portfolio & Educational Blog by Marie Medere.";
+    DEFAULT_PUBLIC_SITE_DESCRIPTION;
+  const title = getSiteTitleMetadata(siteTitle);
 
   return {
     metadataBase: getSiteUrl(),
-    title: siteTitle,
+    title,
     description,
     applicationName: siteTitle,
+    ...getPublicRouteSocialMetadata("/", {
+      title,
+      description,
+    }),
     robots: getDeploymentRobots({
       index: true,
       follow: true,

@@ -22,7 +22,7 @@ import {
 } from "@/lib/discovery-query";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 
-const BLOG_TITLE = "Articles | Marie Medere";
+const BLOG_TITLE = "Articles";
 const BLOG_DESCRIPTION =
   "Browse published writing and educational articles from the Marie Medere Medical Writing Portfolio & Educational Blog.";
 const BLOG_PAGE_SIZE = 6;
@@ -80,6 +80,10 @@ export async function generateMetadata({
           index: discovery.index,
           follow: true,
         },
+        social: {
+          title: BLOG_TITLE,
+          description: BLOG_DESCRIPTION,
+        },
       }),
     };
   } catch {
@@ -90,6 +94,10 @@ export async function generateMetadata({
         routePolicy: {
           index: false,
           follow: true,
+        },
+        social: {
+          title: BLOG_TITLE,
+          description: BLOG_DESCRIPTION,
         },
       }),
     };

@@ -11,11 +11,19 @@ import { buttonVariants } from "@/components/ui/button";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
+const PAGE_TITLE = "Medical Disclaimer";
+const PAGE_DESCRIPTION =
+  "Medical and educational disclaimer for Marie Medere's Medical Writing Portfolio & Educational Blog.";
+
 export const metadata: Metadata = {
-  title: "Medical Disclaimer — Marie Medere",
-  description:
-    "Medical and educational disclaimer for Marie Medere's Medical Writing Portfolio & Educational Blog.",
-  ...getPublicRouteDiscoveryMetadata("/disclaimer"),
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/disclaimer", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default function DisclaimerPage() {

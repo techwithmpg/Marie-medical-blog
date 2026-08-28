@@ -36,7 +36,7 @@ export async function generateMetadata({
   }
 
   const basePath = `/topics/${encodeURIComponent(category.slug)}`;
-  const title = `${category.name} | Topics | Marie Medere`;
+  const title = category.name;
   const description =
     category.description ||
     `Published writing and educational articles in ${category.name} by Marie Medere.`;
@@ -65,6 +65,10 @@ export async function generateMetadata({
           index: discovery.index,
           follow: true,
         },
+        social: {
+          title,
+          description,
+        },
       }),
     };
   } catch {
@@ -75,6 +79,10 @@ export async function generateMetadata({
         routePolicy: {
           index: false,
           follow: true,
+        },
+        social: {
+          title,
+          description,
         },
       }),
     };

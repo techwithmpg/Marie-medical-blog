@@ -9,11 +9,19 @@ import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { getPublicSiteSettings } from "@/lib/public-data";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 
+const PAGE_TITLE = "Contact";
+const PAGE_DESCRIPTION =
+  "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.";
+
 export const metadata: Metadata = {
-  title: "Contact — Marie Medere",
-  description:
-    "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.",
-  ...getPublicRouteDiscoveryMetadata("/contact"),
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/contact", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default async function ContactPage() {

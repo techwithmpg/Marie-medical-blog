@@ -48,7 +48,7 @@ const DEFAULT_SITE_SETTINGS: PublicSiteSettings = {
   social_links: [],
 };
 
-export async function getPublicProfile(): Promise<PublicProfile> {
+async function getPublicProfileUncached(): Promise<PublicProfile> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -80,6 +80,8 @@ export async function getPublicProfile(): Promise<PublicProfile> {
     return DEFAULT_PROFILE;
   }
 }
+
+export const getPublicProfile = cache(getPublicProfileUncached);
 
 async function getPublicSiteSettingsUncached(): Promise<PublicSiteSettings> {
   try {

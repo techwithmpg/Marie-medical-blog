@@ -14,11 +14,19 @@ import { getPublicSiteSettings } from "@/lib/public-data";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
+const PAGE_TITLE = "Selected Writing";
+const PAGE_DESCRIPTION =
+  "Selected Writing portfolio and educational publication index by Marie Medere.";
+
 export const metadata: Metadata = {
-  title: "Selected Writing — Marie Medere",
-  description:
-    "Selected Writing portfolio and educational publication index by Marie Medere.",
-  ...getPublicRouteDiscoveryMetadata("/portfolio"),
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/portfolio", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default async function PortfolioPage() {

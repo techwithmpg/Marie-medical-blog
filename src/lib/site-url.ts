@@ -11,9 +11,38 @@ export interface RouteIndexingPolicy {
   follow: boolean;
 }
 
+export interface MetadataTitleTemplate {
+  default: string;
+  template: string;
+}
+
+export interface PublicRouteSocialMetadataOptions {
+  title: string | MetadataTitleTemplate;
+  description: string;
+  type?: "website" | "article";
+  publishedTime?: string | null;
+  modifiedTime?: string | null;
+  authors?: string[];
+}
+
+export interface ArticleMetadataTextSource {
+  title: string;
+  seoTitle?: string | null;
+  excerpt?: string | null;
+  seoDescription?: string | null;
+}
+
+export interface ArticleMetadataDescriptionFallbacks {
+  defaultDescription?: string | null;
+  tagline?: string | null;
+}
+
 type VercelEnvironment = "production" | "preview" | "development";
 
 const LOCAL_SITE_URL = "http://localhost:3000";
+
+export const DEFAULT_PUBLIC_SITE_DESCRIPTION =
+  "Medical Writing Portfolio & Educational Blog by Marie Medere.";
 
 function getProcessSiteEnvironment(): SiteEnvironment {
   return {
@@ -144,26 +173,107 @@ export function getCanonicalUrl(
   return canonicalUrl;
 }
 
+export function getSiteTitleMetadata(siteTitle: string): MetadataTitleTemplate {
+  return {
+    default: siteTitle,
+    template: `%s | ${siteTitle}`,
+  };
+}
+
+export function resolveArticleMetadataText(
+  article: ArticleMetadataTextSource,
+  fallbacks: ArticleMetadataDescriptionFallbacks,
+): { title: string; description: string } {
+  const title = article.seoTitle?.trim() || article.title;
+  const description =
+    article.seoDescription?.trim() ||
+    article.excerpt?.trim() ||
+    fallbacks.defaultDescription?.trim() ||
+    fallbacks.tagline?.trim() ||
+    DEFAULT_PUBLIC_SITE_DESCRIPTION;
+
+  return {
+    title,
+    description,
+  };
+}
+
+function buildPublicRouteSocialMetadata(
+  canonicalUrl: URL,
+  options: PublicRouteSocialMetadataOptions,
+): Pick<Metadata, "openGraph" | "twitter"> {
+  const authors = options.authors
+    ?.map((author) => author.trim())
+    .filter(Boolean);
+
+  const openGraph: Metadata["openGraph"] =
+    options.type === "article"
+      ? {
+          type: "article",
+          title: options.title,
+          description: options.description,
+          url: canonicalUrl,
+          ...(options.publishedTime
+            ? { publishedTime: options.publishedTime }
+            : {}),
+          ...(options.modifiedTime
+            ? { modifiedTime: options.modifiedTime }
+            : {}),
+          ...(authors?.length ? { authors } : {}),
+        }
+      : {
+          type: "website",
+          title: options.title,
+          description: options.description,
+          url: canonicalUrl,
+        };
+
+  return {
+    openGraph,
+    twitter: {
+      card: "summary_large_image",
+      title: options.title,
+      description: options.description,
+    },
+  };
+}
+
+export function getPublicRouteSocialMetadata(
+  canonicalPath: string,
+  options: PublicRouteSocialMetadataOptions,
+  env: SiteEnvironment = getProcessSiteEnvironment(),
+): Pick<Metadata, "openGraph" | "twitter"> {
+  return buildPublicRouteSocialMetadata(
+    getCanonicalUrl(canonicalPath, env),
+    options,
+  );
+}
+
 export interface PublicRouteDiscoveryOptions {
   routePolicy?: RouteIndexingPolicy;
   env?: SiteEnvironment;
+  social?: PublicRouteSocialMetadataOptions;
 }
 
 export function getPublicRouteDiscoveryMetadata(
   canonicalPath: string,
   options: PublicRouteDiscoveryOptions = {},
-): Pick<Metadata, "alternates" | "robots"> {
+): Pick<Metadata, "alternates" | "robots" | "openGraph" | "twitter"> {
   const env = options.env ?? getProcessSiteEnvironment();
   const routePolicy = options.routePolicy ?? {
     index: true,
     follow: true,
   };
+  const canonicalUrl = getCanonicalUrl(canonicalPath, env);
 
   return {
     alternates: {
-      canonical: getCanonicalUrl(canonicalPath, env),
+      canonical: canonicalUrl,
     },
     robots: getDeploymentRobots(routePolicy, env),
+    ...(options.social
+      ? buildPublicRouteSocialMetadata(canonicalUrl, options.social)
+      : {}),
   };
 }
 

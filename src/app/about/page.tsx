@@ -17,11 +17,19 @@ import {
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
+const PAGE_TITLE = "About";
+const PAGE_DESCRIPTION =
+  "About Marie Medere, medical writing portfolio, and educational publication approach.";
+
 export const metadata: Metadata = {
-  title: "About — Marie Medere",
-  description:
-    "About Marie Medere, medical writing portfolio, and educational publication approach.",
-  ...getPublicRouteDiscoveryMetadata("/about"),
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/about", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default async function AboutPage() {

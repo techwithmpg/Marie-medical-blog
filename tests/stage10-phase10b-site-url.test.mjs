@@ -3,12 +3,16 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  DEFAULT_PUBLIC_SITE_DESCRIPTION,
   getCanonicalUrl,
   getDeploymentRobots,
   getPublicRouteDiscoveryMetadata,
+  getPublicRouteSocialMetadata,
   getSiteUrl,
+  getSiteTitleMetadata,
   isPreviewDeployment,
   isProductionDeployment,
+  resolveArticleMetadataText,
 } from "../src/lib/site-url.ts";
 
 const ROOT = process.cwd();
@@ -258,42 +262,201 @@ test("public route discovery metadata preserves production route-specific noinde
   });
 });
 
-test("static public routes declare their reviewed canonical paths", () => {
+test("site title metadata derives the root default and child template from one setting", () => {
+  assert.deepEqual(getSiteTitleMetadata("Marie Medere Editorial"), {
+    default: "Marie Medere Editorial",
+    template: "%s | Marie Medere Editorial",
+  });
+});
+
+test("website social metadata uses the reviewed canonical identity without fabricated fields", () => {
+  const metadata = getPublicRouteDiscoveryMetadata("/blog?page=2", {
+    env: {
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+    social: {
+      title: "Articles",
+      description: "Published educational writing.",
+    },
+  });
+
+  assert.deepEqual(metadata.openGraph, {
+    type: "website",
+    title: "Articles",
+    description: "Published educational writing.",
+    url: new URL("https://canonical.example.test/blog?page=2"),
+  });
+  assert.deepEqual(metadata.twitter, {
+    card: "summary_large_image",
+    title: "Articles",
+    description: "Published educational writing.",
+  });
+  assert.equal("images" in metadata.openGraph, false);
+  assert.equal("images" in metadata.twitter, false);
+  assert.equal("site" in metadata.twitter, false);
+  assert.equal("creator" in metadata.twitter, false);
+});
+
+test("root social metadata accepts the settings-derived title template", () => {
+  const title = getSiteTitleMetadata("Marie Medere Editorial");
+  const metadata = getPublicRouteSocialMetadata(
+    "/",
+    {
+      title,
+      description: "A safe publication description.",
+    },
+    {
+      SITE_URL: "https://canonical.example.test",
+    },
+  );
+
+  assert.deepEqual(metadata.openGraph?.title, title);
+  assert.deepEqual(metadata.twitter?.title, title);
+  assert.equal(
+    String(metadata.openGraph?.url),
+    "https://canonical.example.test/",
+  );
+});
+
+test("article social metadata emits truthful article fields and trims verified authors", () => {
+  const metadata = getPublicRouteSocialMetadata(
+    "/blog/synthetic-article",
+    {
+      title: "Synthetic Article",
+      description: "A deterministic test description.",
+      type: "article",
+      publishedTime: "2026-08-20T10:00:00.000Z",
+      modifiedTime: "2026-08-21T11:00:00.000Z",
+      authors: ["  Marie Medere  ", "   "],
+    },
+    {
+      SITE_URL: "https://canonical.example.test",
+    },
+  );
+
+  assert.deepEqual(metadata.openGraph, {
+    type: "article",
+    title: "Synthetic Article",
+    description: "A deterministic test description.",
+    url: new URL("https://canonical.example.test/blog/synthetic-article"),
+    publishedTime: "2026-08-20T10:00:00.000Z",
+    modifiedTime: "2026-08-21T11:00:00.000Z",
+    authors: ["Marie Medere"],
+  });
+});
+
+test("article metadata text follows the complete approved fallback chains", () => {
+  const baseArticle = {
+    title: "Stored Article Title",
+    seoTitle: "  Reviewed SEO Title  ",
+    excerpt: "  Article excerpt.  ",
+    seoDescription: "  Reviewed SEO description.  ",
+  };
+
+  assert.deepEqual(
+    resolveArticleMetadataText(baseArticle, {
+      defaultDescription: "Site description.",
+      tagline: "Site tagline.",
+    }),
+    {
+      title: "Reviewed SEO Title",
+      description: "Reviewed SEO description.",
+    },
+  );
+
+  assert.equal(
+    resolveArticleMetadataText(
+      { ...baseArticle, seoTitle: "", seoDescription: "" },
+      { defaultDescription: "Site description.", tagline: "Site tagline." },
+    ).description,
+    "Article excerpt.",
+  );
+
+  assert.equal(
+    resolveArticleMetadataText(
+      { ...baseArticle, seoDescription: null, excerpt: null },
+      { defaultDescription: " Site description. ", tagline: "Site tagline." },
+    ).description,
+    "Site description.",
+  );
+
+  assert.equal(
+    resolveArticleMetadataText(
+      { ...baseArticle, seoDescription: null, excerpt: null },
+      { defaultDescription: null, tagline: " Site tagline. " },
+    ).description,
+    "Site tagline.",
+  );
+
+  assert.equal(
+    resolveArticleMetadataText(
+      { ...baseArticle, seoDescription: null, excerpt: null },
+      { defaultDescription: null, tagline: null },
+    ).description,
+    DEFAULT_PUBLIC_SITE_DESCRIPTION,
+  );
+});
+
+test("static public routes declare unsuffixed titles, canonicals, and social metadata", () => {
   const cases = [
-    ["src/app/page.tsx", 'getPublicRouteDiscoveryMetadata("/")'],
-    ["src/app/about/page.tsx", 'getPublicRouteDiscoveryMetadata("/about")'],
+    ["src/app/about/page.tsx", "/about", "About", "About — Marie Medere"],
     [
       "src/app/portfolio/page.tsx",
-      'getPublicRouteDiscoveryMetadata("/portfolio")',
+      "/portfolio",
+      "Selected Writing",
+      "Selected Writing — Marie Medere",
     ],
-    ["src/app/contact/page.tsx", 'getPublicRouteDiscoveryMetadata("/contact")'],
+    [
+      "src/app/contact/page.tsx",
+      "/contact",
+      "Contact",
+      "Contact — Marie Medere",
+    ],
     [
       "src/app/disclaimer/page.tsx",
-      'getPublicRouteDiscoveryMetadata("/disclaimer")',
+      "/disclaimer",
+      "Medical Disclaimer",
+      "Medical Disclaimer — Marie Medere",
     ],
   ];
 
-  for (const [relativePath, expectedCall] of cases) {
+  for (const [relativePath, canonicalPath, title, oldTitle] of cases) {
     const content = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
 
+    assert.match(content, new RegExp(`const PAGE_TITLE = "${title}";`));
     assert.ok(
-      content.includes(expectedCall),
-      `${relativePath} must declare ${expectedCall}`,
+      content.includes(`getPublicRouteDiscoveryMetadata("${canonicalPath}", {`),
+      `${relativePath} must declare its canonical metadata helper`,
     );
+    assert.match(
+      content,
+      /social:\s*\{\s*title: PAGE_TITLE,\s*description: PAGE_DESCRIPTION/s,
+    );
+    assert.equal(content.includes(oldTitle), false);
   }
 });
 
-test("root layout and admin subtree enforce deployment/private robots boundaries", () => {
+test("root and homepage define settings-derived social defaults and canonical identity", () => {
   const rootLayout = fs.readFileSync(
     path.join(ROOT, "src/app/layout.tsx"),
     "utf8",
   );
+  const homePage = fs.readFileSync(path.join(ROOT, "src/app/page.tsx"), "utf8");
 
+  assert.match(rootLayout, /const title = getSiteTitleMetadata\(siteTitle\);/);
+  assert.match(
+    rootLayout,
+    /getPublicRouteSocialMetadata\("\/", \{\s*title,\s*description,/s,
+  );
   assert.match(
     rootLayout,
     /robots:\s*getDeploymentRobots\(\{\s*index:\s*true,\s*follow:\s*true,\s*\}\)/s,
   );
+  assert.match(homePage, /getPublicRouteDiscoveryMetadata\("\/"\)/);
+});
 
+test("admin subtree suppresses inherited public canonical and social metadata", () => {
   const adminLayout = fs.readFileSync(
     path.join(ROOT, "src/app/admin/layout.tsx"),
     "utf8",
@@ -301,7 +464,14 @@ test("root layout and admin subtree enforce deployment/private robots boundaries
 
   assert.match(
     adminLayout,
-    /export const metadata: Metadata = \{\s*robots:\s*\{\s*index:\s*false,\s*follow:\s*false,\s*\},\s*\};/s,
+    /title:\s*\{\s*absolute:\s*"Marie Medere Workspace",\s*template:\s*"%s"/s,
+  );
+  assert.match(adminLayout, /alternates:\s*null/);
+  assert.match(adminLayout, /openGraph:\s*null/);
+  assert.match(adminLayout, /twitter:\s*null/);
+  assert.match(
+    adminLayout,
+    /robots:\s*\{\s*index:\s*false,\s*follow:\s*false/s,
   );
 
   assert.ok(

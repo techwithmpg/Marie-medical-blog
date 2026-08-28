@@ -10,6 +10,7 @@ import {
   resolvePaginationDiscovery,
   resolveTopicDiscovery,
 } from "../src/lib/discovery-query.ts";
+import { getPublicRouteDiscoveryMetadata } from "../src/lib/site-url.ts";
 
 const readSource = (relativePath) =>
   fs.readFileSync(path.join(process.cwd(), relativePath), "utf8");
@@ -136,6 +137,64 @@ test("blog search variants take precedence over topic and pagination", () => {
   );
 });
 
+test("empty and repeated blog search parameters remain noindex clean-blog variants", () => {
+  for (const q of ["", ["one", "two"]]) {
+    assert.deepEqual(
+      resolveBlogDiscovery({
+        q,
+        topic: undefined,
+        page: undefined,
+        totalPages: 5,
+      }),
+      {
+        canonicalPath: "/blog",
+        index: false,
+      },
+    );
+  }
+});
+
+test("unknown and tracking parameters cannot enter canonical or social metadata", () => {
+  const discovery = resolveBlogDiscovery({
+    q: undefined,
+    topic: undefined,
+    page: undefined,
+    totalPages: 5,
+    utm_source: "unsafe-campaign-value",
+  });
+  const metadata = getPublicRouteDiscoveryMetadata(discovery.canonicalPath, {
+    routePolicy: {
+      index: discovery.index,
+      follow: true,
+    },
+    social: {
+      title: "Articles",
+      description: "Published educational writing.",
+    },
+    env: {
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+  });
+
+  assert.deepEqual(discovery, {
+    canonicalPath: "/blog",
+    index: true,
+  });
+  assert.equal(
+    String(metadata.alternates?.canonical),
+    "https://canonical.example.test/blog",
+  );
+  assert.equal(
+    String(metadata.openGraph?.url),
+    "https://canonical.example.test/blog",
+  );
+  assert.equal(
+    JSON.stringify(metadata).includes("unsafe-campaign-value"),
+    false,
+  );
+});
+
 test("verified blog topic filters canonicalize to the canonical topic route", () => {
   assert.deepEqual(
     resolveBlogDiscovery({
@@ -175,7 +234,7 @@ test("blog pagination indexes verified pages and rejects malformed or out-of-ran
     resolveBlogDiscovery({
       q: undefined,
       topic: undefined,
-      page: "2",
+      page: "02",
       totalPages: 3,
     }),
     {
@@ -198,6 +257,21 @@ test("blog pagination indexes verified pages and rejects malformed or out-of-ran
       },
     );
   }
+});
+
+test("topic discovery indexes its first published page", () => {
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: undefined,
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: true,
+    },
+  );
 });
 
 test("topic discovery noindexes empty topics", () => {
@@ -240,6 +314,19 @@ test("topic discovery indexes verified later pages and rejects out-of-range page
       index: false,
     },
   );
+
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: "not-a-page",
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: false,
+    },
+  );
 });
 
 test("dynamic routes reference the shared discovery metadata contract", () => {
@@ -250,15 +337,31 @@ test("dynamic routes reference the shared discovery metadata contract", () => {
   assert.match(blogRoute, /export async function generateMetadata/);
   assert.match(blogRoute, /resolveBlogDiscovery\(/);
   assert.match(blogRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(
+    blogRoute,
+    /social:\s*\{\s*title: BLOG_TITLE,\s*description: BLOG_DESCRIPTION/s,
+  );
+  assert.equal(blogRoute.includes("Articles | Marie Medere"), false);
   assert.match(topicRoute, /resolveTopicDiscovery\(/);
   assert.match(topicRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(topicRoute, /social:\s*\{\s*title,\s*description,/s);
+  assert.equal(topicRoute.includes("| Marie Medere"), false);
   assert.match(topicRoute, /notFound\(\)/);
   assert.match(articleRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(articleRoute, /resolveArticleMetadataText\(/);
+  assert.match(articleRoute, /type:\s*"article"/);
+  assert.match(articleRoute, /publishedTime:\s*article\.published_at/);
+  assert.match(articleRoute, /modifiedTime:\s*article\.updated_at/);
+  assert.match(
+    articleRoute,
+    /authors:\s*authorName\s*\?\s*\[authorName\]\s*:\s*undefined/,
+  );
   assert.match(articleRoute, /notFound\(\)/);
 });
 
 test("published public helpers are request memoized without weakening publication filters", () => {
   const publicArticles = readSource("src/lib/public-articles.ts");
+  const publicData = readSource("src/lib/public-data.ts");
 
   assert.match(publicArticles, /import \{ cache \} from "react";/);
   assert.match(publicArticles, /export const getCategoryBySlug = cache\(/);
@@ -279,4 +382,6 @@ test("published public helpers are request memoized without weakening publicatio
     /getPublishedArticleBySlugUncached[\s\S]*?\.eq\("status", "published"\)/,
   );
   assert.match(publicArticles, /\.eq\("status", "published"\)/);
+  assert.match(publicData, /import \{ cache \} from "react";/);
+  assert.match(publicData, /export const getPublicProfile = cache\(/);
 });

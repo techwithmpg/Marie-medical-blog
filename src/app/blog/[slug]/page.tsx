@@ -24,7 +24,10 @@ import {
   type PublicApprovedComment,
 } from "@/lib/public-comments";
 import { CommentSection } from "@/components/public/comment-section";
-import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
+import {
+  getPublicRouteDiscoveryMetadata,
+  resolveArticleMetadataText,
+} from "@/lib/site-url";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -42,19 +45,39 @@ export async function generateMetadata({
     notFound();
   }
 
-  const settings = await getPublicSiteSettings();
-  const description =
-    article.seo_description?.trim() ||
-    article.excerpt?.trim() ||
-    settings.default_seo_description?.trim() ||
-    settings.tagline?.trim() ||
-    "Medical Writing Portfolio & Educational Blog by Marie Medere.";
+  const [settings, profile] = await Promise.all([
+    getPublicSiteSettings(),
+    getPublicProfile(),
+  ]);
+  const { title, description } = resolveArticleMetadataText(
+    {
+      title: article.title,
+      seoTitle: article.seo_title,
+      excerpt: article.excerpt,
+      seoDescription: article.seo_description,
+    },
+    {
+      defaultDescription: settings.default_seo_description,
+      tagline: settings.tagline,
+    },
+  );
+  const authorName = profile.display_name.trim();
 
   return {
-    title: article.seo_title?.trim() || article.title,
+    title,
     description,
     ...getPublicRouteDiscoveryMetadata(
       `/blog/${encodeURIComponent(article.slug)}`,
+      {
+        social: {
+          title,
+          description,
+          type: "article",
+          publishedTime: article.published_at,
+          modifiedTime: article.updated_at,
+          authors: authorName ? [authorName] : undefined,
+        },
+      },
     ),
   };
 }
