@@ -753,6 +753,22 @@ D034 authorizes the frozen Stage-10 architecture. The project owner additionally
 
 **Approved by:** project owner — explicit approval on 2026-08-26: "I approve D034 — Stage-10 SEO, social discovery & analytics architecture, and I authorize Phase 10B local implementation. No hosted Vercel or Search Console mutation is authorized."
 
+#### Phase 10C execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10B is complete. The project owner has authorized **Phase 10C — Discovery Artifacts & Structured Data** for local implementation of:
+
+- the generated Evidence Folio social fallback;
+- the sitemap;
+- the robots route;
+- published-article `BlogPosting` JSON-LD;
+- focused tests and local quality verification.
+
+This authorization does not permit `@vercel/analytics`, Analytics integration, Vercel Analytics activation, any hosted Vercel mutation, Search Console mutation, final-domain configuration, Supabase mutation, schema changes, Stage-10 merge, Stage 11, Categories, or the Media Library.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I approve the next local Stage-10 discovery implementation phase after Phase 10B. Authorize local implementation of the Evidence Folio social fallback, sitemap, robots route, and published-article BlogPosting JSON-LD under D034. No Vercel hosted mutation, Analytics activation, Search Console mutation, final-domain configuration, Stage-10 merge, or Stage-11 work is authorized."
+
 **Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
 
 ---
