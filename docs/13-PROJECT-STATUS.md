@@ -4,20 +4,22 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10D ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10D COMPLETE / LOCAL ANALYTICS GATE PASS
 - **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28; PHASE 10C LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28; PHASE 10D PRIVACY-SAFE VERCEL ANALYTICS LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** YES — PHASE 10D LOCAL IMPLEMENTATION ONLY
-- **Current implementation phase:** PHASE 10D — PRIVACY-SAFE VERCEL ANALYTICS INTEGRATION — ACTIVE
+- **Application coding authorized:** NO FURTHER STAGE-10 PHASE AUTHORIZED; PHASE 10D IMPLEMENTATION COMPLETE
+- **Current implementation phase:** PHASE 10D COMPLETE / NEXT PHASE NOT AUTHORIZED
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
 - **Phase 10B scope:** SITE URL AUTHORITY + ROUTE METADATA + CANONICALS + QUERY/PAGINATION INDEXABILITY
 - **Phase 10C status:** COMPLETE / LOCAL DISCOVERY GATE PASS
 - **Phase 10C scope:** EVIDENCE FOLIO SOCIAL FALLBACK + SITEMAP + ROBOTS + PUBLISHED-ARTICLE BLOGPOSTING JSON-LD
-- **Phase 10D status:** ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Phase 10D status:** COMPLETE / LOCAL ANALYTICS GATE PASS
 - **Phase 10D scope:** OFFICIAL `@vercel/analytics` DEPENDENCY + MINIMAL NEXT.JS ROOT INTEGRATION + `beforeSend` PRIVACY FILTER + FOCUSED LOCAL VERIFICATION
+- **Phase 10D dependency:** `@vercel/analytics@2.0.1` — EXACT CURRENT STABLE VERSION
+- **Hosted Analytics activation:** NOT ACTIVATED / NOT AUTHORIZED
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT AUTHORIZED
 - **Categories / Media Library implementation:** NOT AUTHORIZED IN STAGE 10
@@ -67,7 +69,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** ACTIVE / PHASE 10B COMPLETE / PHASE 10C COMPLETE / PHASE 10D ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Stage 10:** ACTIVE / PHASE 10B COMPLETE / PHASE 10C COMPLETE / PHASE 10D COMPLETE / LOCAL ANALYTICS GATE PASS / NEXT PHASE NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -1221,6 +1223,23 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Hosted boundary:** hosted Vercel Analytics activation, Vercel dashboard mutation, Vercel deployment, Search Console mutation, DNS mutation, and final-domain configuration remain NOT AUTHORIZED
 - **Data and scope boundary:** no Supabase mutation, Auth or Storage change, schema or migration work, Google Analytics, Google Tag Manager, ads, pixels, heatmaps, session replay, Categories, Media Library, Stage-10 merge, or Stage 11
 - **Current ending boundary:** Phase 10D local implementation may begin only after this governance activation is committed and pushed successfully to `origin/stage/10-seo-social-analytics`
+
+## Stage-10 progress record — Phase 10D Privacy-Safe Vercel Analytics Integration (2026-08-28)
+
+- **Stage:** Stage 10 — SEO, Social & Analytics
+- **Phase:** Phase 10D — Privacy-Safe Vercel Analytics Integration
+- **Governance activation commit:** `71745fd9d61766714cbdfdf2b3a689d76ec91954`
+- **Official guidance verification:** Vercel's current package guidance confirms `@vercel/analytics/next`, `<Analytics />`, `BeforeSendEvent`, `beforeSend`, returning `null` to suppress an event, and returning a modified URL event; npm `latest` independently resolved to stable `2.0.1`; installed Next.js 16.3.2 documentation confirmed a narrow Client Component may be rendered from the Server root layout
+- **Dependency:** exact `@vercel/analytics@2.0.1`; one direct dependency and one lockfile package node added; no alternative Analytics, SEO, Speed Insights, consent, tracking, or unrelated dependency added
+- **Integration:** `PrivacySafeAnalytics` is the only new Client Component boundary and renders the official `<Analytics beforeSend={sanitizeAnalyticsEvent} />` from the root Server Component; no page, shell, or root-layout client conversion
+- **Privacy filter:** automatic page views only; exact static public routes and canonical `/blog/{slug}` or `/topics/{slug}` patterns may pass; custom events, admin/login, private/draft/preview identifiers, malformed/relative/non-HTTP(S)/credential-bearing URLs, API/internal/metadata paths, and all unclassifiable routes return `null`; permitted URLs retain normalized origin plus pathname only, with complete query and fragment removal
+- **Focused verification:** Phase 10B 43/43 PASS; Phase 10C 25/25 PASS; Phase 10D 18/18 PASS; known `MODULE_TYPELESS_PACKAGE_JSON` warning remains non-blocking and was not changed
+- **Supplemental repository verification:** 151/153 Node tests passed; the only failures were the two unchanged Stage-8 end-to-end tests whose admin authentication could not reach the non-running local Supabase service; no local or hosted Supabase mutation was attempted
+- **Quality gate:** `npm run typecheck` PASS; `npm run lint` PASS; `npm run format:check` PASS; `git diff --check` PASS; `npm run build` PASS (Next.js 16.3.2, all 18 generated routes)
+- **Browser/local verification:** built homepage and `/admin/login` returned HTTP 200 with expected titles, visible bodies, no horizontal overflow, and no page/hydration exception under synthetic local-only Supabase client configuration; the only resource failures were expected local 404 responses for the unavailable `/_vercel/insights/script.js` hosted endpoint
+- **Security and hosted boundary:** no query, fragment, admin, login, draft/private, commenter, contact-message, auth/session, user-ID, credential, service-role, or custom-event data is transmitted by the filter; no Vercel dashboard, deployment, Analytics activation, Search Console, DNS, domain, Supabase, Auth, Storage, schema, or migration mutation occurred
+- **Explicitly deferred:** hosted Vercel Analytics activation, Search Console, final-domain configuration, Categories, Media Library, later Stage-10 work, Stage-10 merge, and Stage 11
+- **Current ending boundary:** Phase 10D COMPLETE / LOCAL ANALYTICS GATE PASS; hosted Analytics remains NOT ACTIVATED / NOT AUTHORIZED and no next Stage-10 phase is automatically authorized
 
 ## Stage transition rule
 

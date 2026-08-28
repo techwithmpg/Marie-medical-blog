@@ -502,10 +502,19 @@ test("article JSON-LD is server-rendered without reader or private fields", () =
   );
 });
 
-test("Phase 10C introduces no Analytics, dependency, schema, or hosted mutation", () => {
-  const packageJson = readSource("package.json");
-  const changedFiles = readSource("src/app/layout.tsx");
+test("Phase 10C discovery modules remain decoupled from Analytics", () => {
+  const discoverySources = [
+    "src/app/opengraph-image.tsx",
+    "src/app/robots.ts",
+    "src/app/sitemap.ts",
+    "src/app/blog/[slug]/page.tsx",
+    "src/lib/discovery-artifacts.ts",
+  ]
+    .map(readSource)
+    .join("\n");
 
-  assert.doesNotMatch(packageJson, /@vercel\/analytics/);
-  assert.doesNotMatch(changedFiles, /<Analytics|beforeSend/);
+  assert.doesNotMatch(
+    discoverySources,
+    /@vercel\/analytics|<Analytics|beforeSend|\btrack\s*\(/,
+  );
 });

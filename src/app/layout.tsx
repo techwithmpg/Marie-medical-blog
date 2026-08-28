@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Newsreader, Source_Sans_3 } from "next/font/google";
+import { PrivacySafeAnalytics } from "@/components/analytics/privacy-safe-analytics";
 import { getPublicSiteSettings } from "@/lib/public-data";
 import {
   DEFAULT_PUBLIC_SITE_DESCRIPTION,
@@ -64,6 +65,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-[#7B3F35]/15 selection:text-[#242321]">
         {children}
+        <PrivacySafeAnalytics />
       </body>
     </html>
   );
