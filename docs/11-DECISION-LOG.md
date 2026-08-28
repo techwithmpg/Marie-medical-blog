@@ -784,6 +784,24 @@ This authorization does not permit hosted Vercel Analytics activation, Vercel da
 
 **Approved by:** project owner — explicit approval on 2026-08-28: "I authorize the next local Stage-10 phase for privacy-safe Vercel Analytics integration under D034. Authorize installation of the official `@vercel/analytics` dependency, local Next.js integration, the approved `beforeSend` privacy filter, focused tests, and local quality verification. No hosted Vercel Analytics activation, Search Console mutation, final-domain configuration, Categories/Media implementation, Stage-10 merge, or Stage-11 work is authorized."
 
+#### Phase 10E execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10D is complete. The project owner has authorized **Phase 10E — Full Stage-10 Verification & Closeout** for:
+
+- local Supabase startup only where required by the existing integration and end-to-end test harness, with the established `127.0.0.1:54321` / `localhost:54321` local-only guard;
+- complete Stage-10 regression, rendered metadata/discovery, and Analytics privacy verification;
+- browser, accessibility, responsive, and visual verification;
+- production-build verification; and
+- Stage-10 closeout documentation.
+
+This is a verification and closeout phase, not authorization for new Stage-10 features. Any verified Stage-10 defect may receive only the smallest correction and regression coverage within D034.
+
+This authorization does not permit hosted Vercel Analytics activation, Vercel dashboard mutation, Search Console mutation, DNS mutation, final-domain configuration, hosted Supabase mutation, schema or migration changes, Categories, the Media Library, Stage-10 merge, or Stage 11.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I authorize Phase 10E — Full Stage-10 Verification & Closeout. Authorize local Supabase startup where required for the existing integration/E2E test suite, complete Stage-10 regression testing, rendered metadata/discovery validation, Analytics privacy verification, browser/accessibility/visual checks, production build verification, and Stage-10 closeout documentation. No hosted Vercel Analytics activation, Search Console mutation, final-domain configuration, Categories/Media implementation, Stage-10 merge, or Stage-11 work is authorized."
+
 **Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
 
 ---
