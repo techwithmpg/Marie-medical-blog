@@ -299,7 +299,7 @@ export function getPublicRouteDiscoveryMetadata(
 
   return {
     alternates: {
-      canonical: canonicalUrl,
+      canonical: canonicalUrl.toString(),
     },
     robots: getDeploymentRobots(routePolicy, env),
     ...(options.social

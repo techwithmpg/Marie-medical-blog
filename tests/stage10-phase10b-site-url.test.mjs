@@ -216,7 +216,7 @@ test("public route discovery metadata emits absolute canonical and production in
   });
 
   assert.equal(
-    String(metadata.alternates?.canonical),
+    metadata.alternates?.canonical,
     "https://canonical.example.test/about",
   );
 
@@ -235,7 +235,7 @@ test("public route discovery metadata keeps production canonical but disables pr
   });
 
   assert.equal(
-    String(metadata.alternates?.canonical),
+    metadata.alternates?.canonical,
     "https://production.example.test/portfolio",
   );
 

@@ -182,7 +182,7 @@ test("unknown and tracking parameters cannot enter canonical or social metadata"
     index: true,
   });
   assert.equal(
-    String(metadata.alternates?.canonical),
+    metadata.alternates?.canonical,
     "https://canonical.example.test/blog",
   );
   assert.equal(
@@ -196,18 +196,30 @@ test("unknown and tracking parameters cannot enter canonical or social metadata"
 });
 
 test("verified blog topic filters canonicalize to the canonical topic route", () => {
-  assert.deepEqual(
-    resolveBlogDiscovery({
-      q: undefined,
-      topic: "heart-health",
-      page: "4",
-      totalPages: 8,
-      canonicalTopicSlug: "heart-health",
-    }),
-    {
-      canonicalPath: "/topics/heart-health",
-      index: false,
+  const discovery = resolveBlogDiscovery({
+    q: undefined,
+    topic: "heart-health",
+    page: "4",
+    totalPages: 8,
+    canonicalTopicSlug: "heart-health",
+  });
+
+  assert.deepEqual(discovery, {
+    canonicalPath: "/topics/heart-health",
+    index: false,
+  });
+
+  const metadata = getPublicRouteDiscoveryMetadata(discovery.canonicalPath, {
+    env: {
+      NODE_ENV: "production",
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
     },
+  });
+
+  assert.equal(
+    metadata.alternates?.canonical,
+    "https://canonical.example.test/topics/heart-health",
   );
 });
 
