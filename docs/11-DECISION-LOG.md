@@ -769,6 +769,21 @@ This authorization does not permit `@vercel/analytics`, Analytics integration, V
 
 **Approved by:** project owner — explicit approval on 2026-08-28: "I approve the next local Stage-10 discovery implementation phase after Phase 10B. Authorize local implementation of the Evidence Folio social fallback, sitemap, robots route, and published-article BlogPosting JSON-LD under D034. No Vercel hosted mutation, Analytics activation, Search Console mutation, final-domain configuration, Stage-10 merge, or Stage-11 work is authorized."
 
+#### Phase 10D execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10C is complete. The project owner has authorized **Phase 10D — Privacy-Safe Vercel Analytics Integration** for local implementation of:
+
+- the official `@vercel/analytics` dependency;
+- a minimal local Next.js Analytics component integration;
+- the D034-approved `beforeSend` privacy filter;
+- focused tests and local quality verification.
+
+This authorization does not permit hosted Vercel Analytics activation, Vercel dashboard mutation, Vercel deployment, Search Console mutation, DNS mutation, final-domain configuration, Supabase mutation, Auth or Storage changes, schema or migration work, custom Analytics events, Google Analytics, Google Tag Manager, ads or pixels, heatmaps or session replay, Categories, the Media Library, Stage-10 merge, or Stage 11.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I authorize the next local Stage-10 phase for privacy-safe Vercel Analytics integration under D034. Authorize installation of the official `@vercel/analytics` dependency, local Next.js integration, the approved `beforeSend` privacy filter, focused tests, and local quality verification. No hosted Vercel Analytics activation, Search Console mutation, final-domain configuration, Categories/Media implementation, Stage-10 merge, or Stage-11 work is authorized."
+
 **Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
 
 ---

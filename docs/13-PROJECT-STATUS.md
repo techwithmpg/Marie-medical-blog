@@ -4,18 +4,20 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10C COMPLETE / LOCAL DISCOVERY GATE PASS
-- **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28; PHASE 10C LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28
+- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10D ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28; PHASE 10C LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28; PHASE 10D PRIVACY-SAFE VERCEL ANALYTICS LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** NO FURTHER STAGE-10 PHASE AUTHORIZED; PHASE 10C IMPLEMENTATION COMPLETE
-- **Current implementation phase:** PHASE 10C COMPLETE / NEXT PHASE NOT AUTHORIZED
+- **Application coding authorized:** YES — PHASE 10D LOCAL IMPLEMENTATION ONLY
+- **Current implementation phase:** PHASE 10D — PRIVACY-SAFE VERCEL ANALYTICS INTEGRATION — ACTIVE
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
 - **Phase 10B scope:** SITE URL AUTHORITY + ROUTE METADATA + CANONICALS + QUERY/PAGINATION INDEXABILITY
 - **Phase 10C status:** COMPLETE / LOCAL DISCOVERY GATE PASS
 - **Phase 10C scope:** EVIDENCE FOLIO SOCIAL FALLBACK + SITEMAP + ROBOTS + PUBLISHED-ARTICLE BLOGPOSTING JSON-LD
+- **Phase 10D status:** ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Phase 10D scope:** OFFICIAL `@vercel/analytics` DEPENDENCY + MINIMAL NEXT.JS ROOT INTEGRATION + `beforeSend` PRIVACY FILTER + FOCUSED LOCAL VERIFICATION
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT AUTHORIZED
 - **Categories / Media Library implementation:** NOT AUTHORIZED IN STAGE 10
@@ -65,7 +67,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** ACTIVE / PHASE 10C COMPLETE / LOCAL DISCOVERY GATE PASS / NEXT PHASE NOT AUTHORIZED
+- **Stage 10:** ACTIVE / PHASE 10B COMPLETE / PHASE 10C COMPLETE / PHASE 10D ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -1204,6 +1206,21 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Dependency/schema/hosted boundary:** no dependency or lockfile changes; no schema or migration changes; no Supabase, Vercel, Analytics, Search Console, DNS, final-domain, or other hosted mutation
 - **Explicitly deferred:** local Vercel Analytics integration, hosted Analytics activation, Search Console, final-domain configuration, later Stage-10 work, Stage-10 merge, Stage 11, Categories, and the Media Library
 - **Current ending boundary:** Phase 10C COMPLETE / LOCAL DISCOVERY GATE PASS; no later Stage-10 phase, hosted operation, Stage-10 merge, or Stage 11 is authorized by this record
+
+## Stage-10 progress record — Phase 10D Activation (2026-08-28)
+
+- **Stage:** Stage 10 — SEO, Social & Analytics
+- **Phase:** Phase 10D — Privacy-Safe Vercel Analytics Integration
+- **Prior phases:** Phase 10B COMPLETE / LOCAL QUALITY GATE PASS; Phase 10C COMPLETE / LOCAL DISCOVERY GATE PASS
+- **Owner authorization:** Explicit local authorization to install the official `@vercel/analytics` dependency, add minimal Next.js integration with the D034-approved `beforeSend` privacy filter, add focused tests, and run local quality verification
+- **Canonical accepted `main`:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
+- **Starting Stage-10 head:** `ec928435545f46f12c5e653e2bf993a60c654349`
+- **Authorization state:** ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Dependency boundary:** only the official stable `@vercel/analytics` package is authorized; its exact current stable version must be verified before installation
+- **Privacy boundary:** automatic public page views only; permitted URLs transmit origin plus pathname only; admin, login, private, draft, malformed, non-HTTP(S), and unclassifiable URLs fail closed; all query strings and fragments are removed; no custom events or identity enrichment
+- **Hosted boundary:** hosted Vercel Analytics activation, Vercel dashboard mutation, Vercel deployment, Search Console mutation, DNS mutation, and final-domain configuration remain NOT AUTHORIZED
+- **Data and scope boundary:** no Supabase mutation, Auth or Storage change, schema or migration work, Google Analytics, Google Tag Manager, ads, pixels, heatmaps, session replay, Categories, Media Library, Stage-10 merge, or Stage 11
+- **Current ending boundary:** Phase 10D local implementation may begin only after this governance activation is committed and pushed successfully to `origin/stage/10-seo-social-analytics`
 
 ## Stage transition rule
 
