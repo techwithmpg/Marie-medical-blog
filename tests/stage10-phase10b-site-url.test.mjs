@@ -13,6 +13,7 @@ import {
   isPreviewDeployment,
   isProductionDeployment,
   resolveArticleMetadataText,
+  SOCIAL_FALLBACK_ALT,
 } from "../src/lib/site-url.ts";
 
 const ROOT = process.cwd();
@@ -286,14 +287,28 @@ test("website social metadata uses the reviewed canonical identity without fabri
     title: "Articles",
     description: "Published educational writing.",
     url: new URL("https://canonical.example.test/blog?page=2"),
+    images: [
+      {
+        url: "https://canonical.example.test/opengraph-image",
+        alt: SOCIAL_FALLBACK_ALT,
+        width: 1200,
+        height: 630,
+      },
+    ],
   });
   assert.deepEqual(metadata.twitter, {
     card: "summary_large_image",
     title: "Articles",
     description: "Published educational writing.",
+    images: [
+      {
+        url: "https://canonical.example.test/opengraph-image",
+        alt: SOCIAL_FALLBACK_ALT,
+        width: 1200,
+        height: 630,
+      },
+    ],
   });
-  assert.equal("images" in metadata.openGraph, false);
-  assert.equal("images" in metadata.twitter, false);
   assert.equal("site" in metadata.twitter, false);
   assert.equal("creator" in metadata.twitter, false);
 });
@@ -343,6 +358,14 @@ test("article social metadata emits truthful article fields and trims verified a
     publishedTime: "2026-08-20T10:00:00.000Z",
     modifiedTime: "2026-08-21T11:00:00.000Z",
     authors: ["Marie Medere"],
+    images: [
+      {
+        url: "https://canonical.example.test/opengraph-image",
+        alt: SOCIAL_FALLBACK_ALT,
+        width: 1200,
+        height: 630,
+      },
+    ],
   });
 });
 

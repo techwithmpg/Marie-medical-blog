@@ -59,6 +59,14 @@ export interface PublicBlogViewData {
   totalPages: number;
 }
 
+export interface PublicSitemapArticle {
+  slug: string;
+  status: string;
+  published_at: string | null;
+  updated_at: string | null;
+  topic_slug: string | null;
+}
+
 export function sanitizeSearchQuery(raw: string | undefined | null): string {
   if (!raw) return "";
 
@@ -452,6 +460,34 @@ async function getPublishedArticleBySlugUncached(
 export const getPublishedArticleBySlug = cache(
   getPublishedArticleBySlugUncached,
 );
+
+export async function getPublishedSitemapArticles(): Promise<
+  PublicSitemapArticle[]
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("articles")
+    .select("slug, status, published_at, updated_at, categories ( slug )")
+    .eq("status", "published");
+
+  if (error) {
+    throw new Error("Unable to load published sitemap articles.");
+  }
+
+  return (data || []).map((row) => {
+    const category = Array.isArray(row.categories)
+      ? row.categories[0]
+      : row.categories;
+
+    return {
+      slug: row.slug,
+      status: row.status,
+      published_at: row.published_at,
+      updated_at: row.updated_at,
+      topic_slug: category?.slug || null,
+    };
+  });
+}
 
 export async function getFeaturedPublishedArticle(): Promise<PublicArticleSummary | null> {
   const supabase = await createClient();

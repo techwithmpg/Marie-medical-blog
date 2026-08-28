@@ -1,5 +1,9 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import {
+  resolvePublicDiscoveryImage,
+  type PublicDiscoveryImage,
+} from "@/lib/discovery-artifacts";
 
 export interface PublicProfile {
   display_name: string;
@@ -148,6 +152,38 @@ export async function getPublicAssetUrl(
     return null;
   }
 }
+
+export interface PublicArticleAssetData {
+  publicUrl: string | null;
+  discoveryImage: PublicDiscoveryImage | null;
+}
+
+async function getPublicArticleAssetDataUncached(
+  storagePath: string | null | undefined,
+  alt: string | null | undefined,
+): Promise<PublicArticleAssetData> {
+  if (!storagePath?.trim()) {
+    return {
+      publicUrl: null,
+      discoveryImage: null,
+    };
+  }
+
+  const publicUrl = await getPublicAssetUrl(storagePath);
+
+  return {
+    publicUrl,
+    discoveryImage: resolvePublicDiscoveryImage({
+      storagePath,
+      alt,
+      publicUrl,
+    }),
+  };
+}
+
+export const getPublicArticleAssetData = cache(
+  getPublicArticleAssetDataUncached,
+);
 
 export async function getPublicCvUrl(
   cvStoragePath: string | null,

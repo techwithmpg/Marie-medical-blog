@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
 
+export const SOCIAL_FALLBACK_PATH = "/opengraph-image";
+export const SOCIAL_FALLBACK_ALT =
+  "Marie Medere — Medical Writing Portfolio & Educational Blog, presented as an Evidence Folio editorial card.";
+
+export interface PublicSocialImage {
+  url: string;
+  alt: string;
+}
+
 export interface SiteEnvironment {
   SITE_URL?: string;
   VERCEL_PROJECT_PRODUCTION_URL?: string;
@@ -23,6 +32,8 @@ export interface PublicRouteSocialMetadataOptions {
   publishedTime?: string | null;
   modifiedTime?: string | null;
   authors?: string[];
+  image?: PublicSocialImage | null;
+  useMetadataFileImage?: boolean;
 }
 
 export interface ArticleMetadataTextSource {
@@ -205,6 +216,23 @@ function buildPublicRouteSocialMetadata(
   const authors = options.authors
     ?.map((author) => author.trim())
     .filter(Boolean);
+  const socialImage = options.image
+    ? options.image
+    : {
+        url: new URL(SOCIAL_FALLBACK_PATH, canonicalUrl).toString(),
+        alt: SOCIAL_FALLBACK_ALT,
+        width: 1200,
+        height: 630,
+      };
+  const images = options.useMetadataFileImage
+    ? {}
+    : {
+        images: [
+          {
+            ...socialImage,
+          },
+        ],
+      };
 
   const openGraph: Metadata["openGraph"] =
     options.type === "article"
@@ -220,12 +248,14 @@ function buildPublicRouteSocialMetadata(
             ? { modifiedTime: options.modifiedTime }
             : {}),
           ...(authors?.length ? { authors } : {}),
+          ...images,
         }
       : {
           type: "website",
           title: options.title,
           description: options.description,
           url: canonicalUrl,
+          ...images,
         };
 
   return {
@@ -234,6 +264,7 @@ function buildPublicRouteSocialMetadata(
       card: "summary_large_image",
       title: options.title,
       description: options.description,
+      ...images,
     },
   };
 }

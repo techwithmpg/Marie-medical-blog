@@ -15,7 +15,7 @@ import {
 import {
   getPublicProfile,
   getPublicSiteSettings,
-  getPublicAssetUrl,
+  getPublicArticleAssetData,
   type PublicProfile,
   type PublicSiteSettings,
 } from "@/lib/public-data";
@@ -26,8 +26,14 @@ import {
 import { CommentSection } from "@/components/public/comment-section";
 import {
   getPublicRouteDiscoveryMetadata,
+  getCanonicalUrl,
   resolveArticleMetadataText,
 } from "@/lib/site-url";
+import {
+  buildBlogPostingJsonLd,
+  serializeJsonLd,
+  type PublicDiscoveryImage,
+} from "@/lib/discovery-artifacts";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -45,9 +51,13 @@ export async function generateMetadata({
     notFound();
   }
 
-  const [settings, profile] = await Promise.all([
+  const [settings, profile, assetData] = await Promise.all([
     getPublicSiteSettings(),
     getPublicProfile(),
+    getPublicArticleAssetData(
+      article.featured_image_path,
+      article.featured_image_alt,
+    ),
   ]);
   const { title, description } = resolveArticleMetadataText(
     {
@@ -76,6 +86,7 @@ export async function generateMetadata({
           publishedTime: article.published_at,
           modifiedTime: article.updated_at,
           authors: authorName ? [authorName] : undefined,
+          image: assetData.discoveryImage,
         },
       },
     ),
@@ -101,27 +112,32 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   let relatedArticles: PublicArticleSummary[] = [];
   let featuredImageUrl: string | null = null;
   let approvedComments: PublicApprovedComment[] = [];
+  let discoveryImage: PublicDiscoveryImage | null = null;
 
   try {
     const [
       fetchedProfile,
       fetchedSettings,
       fetchedRelated,
-      fetchedImageUrl,
       fetchedComments,
+      fetchedAssetData,
     ] = await Promise.all([
       getPublicProfile(),
       getPublicSiteSettings(),
       getRelatedPublishedArticles(article.id, article.category_id, 3),
-      getPublicAssetUrl(article.featured_image_path),
       getApprovedCommentsByArticleId(article.id),
+      getPublicArticleAssetData(
+        article.featured_image_path,
+        article.featured_image_alt,
+      ),
     ]);
 
     profile = fetchedProfile;
     settings = fetchedSettings;
     relatedArticles = fetchedRelated;
-    featuredImageUrl = fetchedImageUrl;
     approvedComments = fetchedComments;
+    featuredImageUrl = fetchedAssetData.publicUrl;
+    discoveryImage = fetchedAssetData.discoveryImage;
   } catch {
     profile = {
       display_name: "Marie Medere",
@@ -146,6 +162,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     relatedArticles = [];
     featuredImageUrl = null;
     approvedComments = [];
+    discoveryImage = null;
   }
 
   const hasValidImage = Boolean(
@@ -153,9 +170,38 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     article.featured_image_alt &&
     article.featured_image_alt.trim().length > 0,
   );
+  const { description } = resolveArticleMetadataText(
+    {
+      title: article.title,
+      seoTitle: article.seo_title,
+      excerpt: article.excerpt,
+      seoDescription: article.seo_description,
+    },
+    {
+      defaultDescription: settings.default_seo_description,
+      tagline: settings.tagline,
+    },
+  );
+  const articleCanonicalUrl = getCanonicalUrl(
+    `/blog/${encodeURIComponent(article.slug)}`,
+  );
+  const articleJsonLd = buildBlogPostingJsonLd({
+    headline: article.title,
+    description,
+    canonicalUrl: articleCanonicalUrl,
+    publishedAt: article.published_at,
+    updatedAt: article.updated_at,
+    authorName: profile.display_name,
+    authorUrl: getCanonicalUrl("/about"),
+    image: discoveryImage,
+  });
 
   return (
     <article className="mx-auto max-w-4xl space-y-12 sm:space-y-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
+      />
       {/* Article Header */}
       <ArticleHeader
         title={article.title}

@@ -4,17 +4,17 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10B COMPLETE / PHASE 10C ACTIVE
+- **Current stage:** Stage 10 — SEO, Social & Analytics — ACTIVE / PHASE 10C COMPLETE / LOCAL DISCOVERY GATE PASS
 - **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28; PHASE 10C LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** YES — PHASE 10C DISCOVERY ARTIFACTS & STRUCTURED DATA ONLY
-- **Current implementation phase:** PHASE 10C ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Application coding authorized:** NO FURTHER STAGE-10 PHASE AUTHORIZED; PHASE 10C IMPLEMENTATION COMPLETE
+- **Current implementation phase:** PHASE 10C COMPLETE / NEXT PHASE NOT AUTHORIZED
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
 - **Phase 10B scope:** SITE URL AUTHORITY + ROUTE METADATA + CANONICALS + QUERY/PAGINATION INDEXABILITY
-- **Phase 10C status:** ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Phase 10C status:** COMPLETE / LOCAL DISCOVERY GATE PASS
 - **Phase 10C scope:** EVIDENCE FOLIO SOCIAL FALLBACK + SITEMAP + ROBOTS + PUBLISHED-ARTICLE BLOGPOSTING JSON-LD
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT AUTHORIZED
@@ -65,7 +65,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** ACTIVE / PHASE 10B COMPLETE / PHASE 10C ACTIVE / LOCAL IMPLEMENTATION AUTHORIZED
+- **Stage 10:** ACTIVE / PHASE 10C COMPLETE / LOCAL DISCOVERY GATE PASS / NEXT PHASE NOT AUTHORIZED
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -1185,6 +1185,25 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Hosted and data boundary:** no Vercel Analytics activation, hosted Vercel mutation, Search Console mutation, final-domain configuration, Supabase mutation, or schema change is authorized
 - **Scope boundary:** no Categories, Media Library, Stage-10 merge, Stage 11, or later Stage-10 phase is authorized
 - **Current ending boundary:** Phase 10C local implementation may begin only after this governance activation is committed and pushed successfully to `origin/stage/10-seo-social-analytics`
+
+## Stage-10 progress record — Phase 10C Discovery Artifacts & Structured Data (2026-08-28)
+
+- **Stage:** Stage 10 — SEO, Social & Analytics
+- **Phase:** Phase 10C — Discovery Artifacts & Structured Data
+- **Governance activation commit:** `5ec86bf98b373493fdfdd7a9b16a27da53d8733a`
+- **Implementation:** framework-native 1200×630 Evidence Folio Open Graph fallback; canonical Open Graph/Twitter fallback propagation with valid public article featured-image preference; absolute canonical sitemap; environment-aware robots route; and safe published-article `BlogPosting` JSON-LD
+- **Social fallback:** deterministic `image/png` rendered without network dependencies from the approved parchment, paper, primary/muted ink, oxide, and deep-sage palette with folio and reference-ledger devices; only verified static publication language is present
+- **Published image boundary:** only article-scoped public-assets JPEG, PNG, or WebP URLs with truthful non-empty alt text may override the social fallback or enter article structured data; private, signed, data, malformed, or unsupported image candidates fail closed
+- **Sitemap boundary:** the six approved static public routes plus valid published article and non-empty topic routes; published-only minimal data selection; no admin, draft, private, query, filter, tracking, or pagination entries; dynamic read failure reports an operational error and returns the static public set
+- **Robots boundary:** production allows `/`, disallows `/admin` and `/admin/`, and includes the canonical sitemap without a host directive; preview/local disallows `/` and omits sitemap and host
+- **Structured-data boundary:** server-rendered `BlogPosting` from visible published facts only, safely serialized with less-than escaping; unverified publisher, organization, credentials, medical types, claims, comments, and private data are omitted
+- **Focused verification:** 43/43 Phase 10B regression tests passed; 25/25 Phase 10C discovery tests passed; the known `MODULE_TYPELESS_PACKAGE_JSON` warning remains non-blocking and `package.json` was not changed
+- **Supplemental repository verification:** 133/135 Node tests passed; the only failures were the two unchanged Stage-8 end-to-end tests whose admin authentication could not reach the non-running local Supabase service; no local or hosted Supabase mutation was attempted
+- **Quality gate:** `npm run typecheck` PASS; `npm run lint` PASS; `npm run format:check` PASS; `git diff --check` PASS; `npm run build` PASS
+- **Rendered-output verification:** generated PNG returned HTTP 200 as `image/png` at exactly 1200×630 and passed visual inspection for legibility, clipping, whitespace, editorial restraint, approved colors, and truthful content; child public metadata, static-fallback sitemap, preview robots, and admin redirect/noindex output were inspected from the running production server
+- **Dependency/schema/hosted boundary:** no dependency or lockfile changes; no schema or migration changes; no Supabase, Vercel, Analytics, Search Console, DNS, final-domain, or other hosted mutation
+- **Explicitly deferred:** local Vercel Analytics integration, hosted Analytics activation, Search Console, final-domain configuration, later Stage-10 work, Stage-10 merge, Stage 11, Categories, and the Media Library
+- **Current ending boundary:** Phase 10C COMPLETE / LOCAL DISCOVERY GATE PASS; no later Stage-10 phase, hosted operation, Stage-10 merge, or Stage 11 is authorized by this record
 
 ## Stage transition rule
 

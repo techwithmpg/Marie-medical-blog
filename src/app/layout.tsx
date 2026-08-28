@@ -43,6 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ...getPublicRouteSocialMetadata("/", {
       title,
       description,
+      useMetadataFileImage: true,
     }),
     robots: getDeploymentRobots({
       index: true,
