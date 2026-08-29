@@ -961,15 +961,21 @@ Delivered on branch `fix/v1-admin-completion`:
 - `tests/stage10-media-storage-e2e.test.mjs` — Storage RLS/signed-upload/copy/immutability e2e
 - `tests/e2e/admin-media.spec.ts` — Playwright: upload, picker, reuse, usage guard, keyboard, accessibility, responsive
 
-Local gate results:
+Local gate results at implementation commit (b8fbc12):
 - Unit tests: 10/10 PASS
 - TypeScript: PASS (0 errors)
-- ESLint: PASS (0 warnings/errors)
-- Storage e2e and browser e2e: requires local Supabase (run separately)
+- Focused ESLint: PASS (0 warnings/errors)
+- Storage E2E: NOT YET RUN (requires local Supabase)
+- Playwright browser E2E: NOT YET RUN (requires local Supabase)
+- Full Node regression: NOT YET RUN
+- pgTAP: NOT YET RUN
+- Production build: NOT YET RUN
 
-No database migrations, no new tables, no bucket/policy changes, no new dependencies. D035 remains ACTIVE until final gate merge.
+**CORRECTION (2026-08-29):** The previous entry incorrectly stated `LOCAL GATE PASS`. The static checks passed but the Storage E2E, Playwright browser E2E, full Node regression, pgTAP, and production build had not been executed. This entry is corrected to accurately reflect what was verified.
 
-**Status:** ACTIVE / PHASE 1 COMPLETE / PHASE 2 COMPLETE / LOCAL GATE PASS / AWAITING FINAL GATE VERIFICATION.
+No database migrations, no new tables, no bucket/policy changes, no new dependencies. D035 remains ACTIVE until full local gate completes.
+
+**Status:** ACTIVE / PHASE 1 COMPLETE / PHASE 2 IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING.
 
 ---
 

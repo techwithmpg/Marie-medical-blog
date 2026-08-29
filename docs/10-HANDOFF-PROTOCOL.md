@@ -81,22 +81,28 @@ Phase 2 of the V1 Admin Completion Gate — Media Management — is fully implem
 ### Decisions made
 - D035 Phase 2 closeout recorded in docs/11-DECISION-LOG.md.
 
-### Verification performed
-- Unit tests: 
-ode --experimental-strip-types --test tests/admin-media.test.mjs → 10/10 PASS
-- TypeScript: 
-px tsc --noEmit → exit 0 (0 errors)
-- ESLint: 
-px eslint src/app/admin/media src/lib/admin/media.ts src/lib/admin/media-validation.ts src/components/admin/media src/components/admin/editor/featured-image-field.tsx src/components/admin/editor/article-editor.tsx → exit 0 (0 warnings/errors)
-- Storage e2e (	ests/stage10-media-storage-e2e.test.mjs) and Playwright browser e2e (	ests/e2e/admin-media.spec.ts) require local Supabase (supabase start); run these before the final gate merge.
+### Verification performed at implementation commit (b8fbc12)
+- Unit tests: `node --experimental-strip-types --test tests/admin-media.test.mjs` → 10/10 PASS
+- TypeScript: `npx tsc --noEmit` → exit 0 (0 errors)
+- Focused ESLint: `npx eslint [media files]` → exit 0 (0 warnings/errors)
+- Storage E2E (`tests/stage10-media-storage-e2e.test.mjs`): NOT YET RUN — requires local Supabase
+- Playwright browser E2E (`tests/e2e/admin-media.spec.ts`): NOT YET RUN — requires local Supabase
+- Full Node regression: NOT YET RUN
+- pgTAP: NOT YET RUN
+- Production build: NOT YET RUN
+
+**CORRECTION (2026-08-29):** The original Phase 2 implementation commit message and preceding governance update incorrectly stated `LOCAL GATE PASS`. Only unit tests, typecheck, and focused ESLint had run. Full local gate verification is pending.
+
+### SDK verification performed (2026-08-29)
+- `supabase.storage.from(bucket).info(path)` confirmed present in installed `@supabase/storage-js` (index.mjs line 1227, index.d.mts line 1384). Returns `Camelize<FileObjectV2>` with `size` and `contentType` fields. No correction to `getStorageObjectFacts` required.
 
 ### Known limitations
-- getStorageObjectFacts calls supabase.storage.from(bucket).info(path) — verify this API is available in the pinned @supabase/supabase-js version on local Supabase before running storage e2e.
 - Signed preview URLs have a 1-hour TTL; the UI does not auto-refresh them in long sessions.
 
 ### Scope not implemented
 All items listed in the D035 Phase 2 exclusion list (PDF management, inline article images, AI tagging, bulk ops, image editing, new tables, new buckets, etc.) were not implemented as specified.
 
 ### Next stage readiness
-- READY for final gate: run storage e2e + Playwright e2e against local Supabase, then run full local gate (typecheck + lint + build + focused tests), then submit for owner-approved merge to main.
+- VERIFICATION REQUIRED: run storage e2e + full Node regression + pgTAP + Playwright e2e against local Supabase, then run complete static gate (typecheck + lint + format + diff + audit + build), then update governance to FULL LOCAL GATE PASS.
+- BLOCKED for integration/merge until all verification gates pass and owner authorizes.
 - BLOCKED for Stage 11 until V1 Admin Completion merge is verified and owner-approved.

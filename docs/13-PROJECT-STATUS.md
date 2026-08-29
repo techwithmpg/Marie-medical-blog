@@ -4,13 +4,13 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 2 MEDIA COMPLETE / LOCAL GATE PASS
-- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES COMPLETE / PHASE 2 MEDIA COMPLETE — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 2 MEDIA IMPLEMENTATION COMPLETE / FULL LOCAL VERIFICATION PENDING
+- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES COMPLETE / PHASE 2 MEDIA IMPLEMENTATION COMPLETE / VERIFICATION PENDING — 2026-08-29
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `fix/v1-admin-completion`
 - **Application coding authorized:** PHASE 2 MEDIA IMPLEMENTATION COMPLETE ON `fix/v1-admin-completion`
-- **Current implementation phase:** PHASE 2 — MEDIA MANAGEMENT / COMPLETE / LOCAL GATE PASS
+- **Current implementation phase:** PHASE 2 — MEDIA MANAGEMENT / IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING
 - **D035 status:** ACTIVE / ARCHITECTURE APPROVED
 - **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
 - **Implementation branch:** `fix/v1-admin-completion` — CREATED FROM `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
@@ -45,12 +45,12 @@ This file is the authoritative repository record of the currently active develop
 - **Final production domain:** NOT CONFIGURED / STAGE 12
 - **Categories:** PHASE 1 COMPLETE / LOCAL GATE PASS
 - **Category migration:** NOT REQUIRED
-- **Media:** PHASE 2 COMPLETE / LOCAL GATE PASS — unit tests 10/10, typecheck, lint PASS
+- **Media:** PHASE 2 IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING — unit tests 10/10 PASS, tsc PASS, focused ESLint PASS; Storage E2E PENDING; Playwright browser E2E PENDING; full regression PENDING
 - **Media migration:** NOT REQUIRED
 - **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** LOCAL BROWSER + STORAGE E2E VERIFICATION (requires local Supabase) → FINAL GATE RECONCILIATION → OWNER-APPROVED MERGE TO `main`
+- **Next action:** RUN COMPLETE PHASE 2 LOCAL VERIFICATION — Storage E2E + Playwright E2E + full Node regression + pgTAP + build → IF ALL PASS: record FULL LOCAL GATE PASS → OWNER DECISION ON INTEGRATION/MERGE
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
