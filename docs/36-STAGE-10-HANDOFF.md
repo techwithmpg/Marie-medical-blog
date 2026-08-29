@@ -6,9 +6,9 @@
 
 ## Objective completed
 
-Stage 10 is locally complete on `stage/10-seo-social-analytics`. D034 and the Phase 10A design freeze established one canonical authority and the metadata, discovery, structured-data, social-image, and privacy-safe Analytics contracts. Phases 10B–10D implemented those contracts. Phase 10E exercised the complete local database, security, Node, rendered metadata, browser, accessibility, visual, dependency, and production-build gates. One rendered cross-route canonical defect found during Phase 10E was corrected narrowly and covered by a strengthened regression assertion.
+Stage 10 is complete and merged into `main`. D034 and the Phase 10A design freeze established one canonical authority and the metadata, discovery, structured-data, social-image, and privacy-safe Analytics contracts. Phases 10B–10D implemented those contracts. Phase 10E exercised the complete local database, security, Node, rendered metadata, browser, accessibility, visual, dependency, and production-build gates. One rendered cross-route canonical defect found during Phase 10E was corrected narrowly and covered by a strengthened regression assertion.
 
-This handoff is a local implementation and verification checkpoint. It is not launch completion, hosted Analytics activation, Search Console execution, final-domain acceptance, or merge authorization.
+The project owner authorized the Stage-10 merge and post-merge verification on 2026-08-29. This remains neither launch completion nor authorization for hosted Analytics activation, Search Console execution, final-domain acceptance, Categories/Media, or Stage 11.
 
 ## Repository checkpoints
 
@@ -17,7 +17,11 @@ This handoff is a local implementation and verification checkpoint. It is not la
 - Phase 10E starting implementation head: `159458093fb3e11d5b09a17014ec952eee941307`
 - Phase 10E authorization commit: `51dbcedff08e0c1101a75c6a6da03923277f86f7`
 - Phase 10E corrective commit: `62a15af` (`fix: preserve cross-route canonical URLs`)
-- Stage-10 merge: NOT AUTHORIZED / NOT PERFORMED
+- Approved Stage-10 branch head: `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
+- Stage-10 merge commit: `110a58d1de20648f408d49e4fd34e11969719501`
+- Merge first parent: `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
+- Merge second parent: `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
+- Stage-10 merge: COMPLETE / EXPLICIT PROJECT-OWNER APPROVAL / 2026-08-29
 
 ## Phase completion
 
@@ -42,6 +46,8 @@ None. Stage 10 added no schema, migration, RLS, Auth, or Storage change. Phase 1
 ## Environment changes
 
 No committed environment variable was added or removed. Production-classified local verification used the existing `SITE_URL` / `VERCEL_PROJECT_PRODUCTION_URL` contract with the synthetic host `https://publication.example.test`; this is not a configured or approved final domain.
+
+Before merge, three untracked root Docker files were audited as a valid but redundant local experiment, preserved byte-for-byte in an access-restricted external scratch archive, and removed from the repository worktree by archival move. They were not Stage-10 work, were never committed, and are not canonical project tooling. Docker remains required as the runtime for the project-local Supabase CLI; tracked `supabase/config.toml`, committed migrations/seed, and the port-`54321` local-only guard remain authoritative.
 
 ## Dependency and configuration result
 
@@ -111,6 +117,21 @@ Rendered verification found that a blog topic filter produced the correct topic 
 - `npm audit --omit=dev --audit-level=high`: PASS — 0 vulnerabilities.
 - `npm run build`: PASS — Next.js 16.3.2 production build compiled all 18 App Router routes.
 
+## Owner-authorized merge and post-merge verification
+
+- Owner merge authorization: CONFIRMED — 2026-08-29.
+- Normal non-fast-forward merge: PASS; meaningful Stage-10 history preserved in merge commit `110a58d1de20648f408d49e4fd34e11969719501`.
+- Phase 10B/10C/10D focused tests: 86/86 PASS.
+- Complete repository Node suite: 153/153 PASS.
+- Local pgTAP: 323/323 PASS; application-owned `public` and `private` schema lint: no errors.
+- Playwright Chromium: 15/15 PASS after a clean committed-fixture reset using process-scoped values resolved from the guarded local CLI stack.
+- Accessibility: 0 serious and 0 critical axe violations; keyboard/focus and runtime guards PASS.
+- Rendered production-classified checks: title, description, canonical, OG/Twitter, Evidence Folio fallback, sitemap, robots, `BlogPosting`, admin noindex, and Analytics request wiring PASS.
+- Phase 10E regression: `/blog?topic=clinical-communications` renders the canonical `https://publication.example.test/topics/clinical-communications`, not `/blog`.
+- Analytics privacy: public allowlist, query/fragment stripping, admin/login/private/draft/malformed rejection, and custom-event rejection PASS; hosted Analytics remains inactive.
+- Final static gates: typecheck, lint, format check, `git diff --check`, production audit (0 vulnerabilities), and 18-route build PASS.
+- No hosted Supabase mutation, Vercel dashboard mutation, Search Console operation, DNS/domain configuration, secret commit, or unrelated product implementation occurred.
+
 ## Stage-10 requirement matrix
 
 | Requirement | Classification |
@@ -142,7 +163,7 @@ Rendered verification found that a blog topic filter produced the correct topic 
 - Search Console property creation, ownership verification, sitemap submission, and indexing requests were not executed.
 - The final production/custom domain remains unconfigured and must not be inferred from the synthetic verification host.
 - Categories and Media Library remain intentionally unimplemented and outside Stage 10.
-- The stage branch is not merged. Merge into `main` requires a separate owner decision.
+- Stage 10 is merged into `main`; the Stage-10 branch/worktree remain preserved for owner review.
 - Stage 11 is not active and no next development work is automatically authorized.
 
 ## Decisions made
@@ -152,11 +173,11 @@ Rendered verification found that a blog topic filter produced the correct topic 
 
 ## Next stage readiness
 
-- Stage-10 local implementation: READY / FULL LOCAL GATE PASS.
-- Owner merge review: READY FOR OWNER DECISION.
+- Stage-10 implementation and merge: COMPLETE / POST-MERGE GATE PASS.
+- Canonical `main`: current clean `origin/main` after Stage-10 post-merge governance reconciliation; resolve live.
 - Hosted launch operations: BLOCKED BY EXPLICIT OWNER GATES.
 - Stage 11: NOT AUTHORIZED.
 
 ## Rule for the next agent
 
-Read this handoff, D034, and the live-context manifest before modifying Stage-10 output. Do not activate hosted Analytics, mutate Search Console/DNS/domain settings, merge Stage 10, implement Categories/Media, or begin Stage 11 without new explicit owner authorization.
+Read this handoff, D034, and the live-context manifest before further work. Do not activate hosted Analytics, mutate Search Console/DNS/domain settings, implement Categories/Media, or begin Stage 11 without new explicit owner authorization.

@@ -4,12 +4,12 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — LOCAL IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / READY FOR OWNER MERGE DECISION
-- **Stage authorization:** D034 APPROVED + PHASE 10B LOCAL IMPLEMENTATION AUTHORIZED BY PROJECT OWNER — 2026-08-26; PHASE 10B-4 FINAL LOCAL CHECKPOINT AUTHORIZED — 2026-08-28; PHASE 10C LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28; PHASE 10D PRIVACY-SAFE VERCEL ANALYTICS LOCAL IMPLEMENTATION AUTHORIZED — 2026-08-28; PHASE 10E FULL STAGE-10 LOCAL VERIFICATION & CLOSEOUT AUTHORIZED — 2026-08-28
+- **Current stage:** Stage 10 — SEO, Social & Analytics — COMPLETE / MERGED / POST-MERGE GATE PASS / NEXT WORK NOT AUTHORIZED
+- **Stage authorization:** D034 APPROVED + PHASES 10B–10E OWNER AUTHORIZED; STAGE-10 MERGE AND POST-MERGE VERIFICATION EXPLICITLY OWNER AUTHORIZED — 2026-08-29
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
-- **Active working branch:** `stage/10-seo-social-analytics`
-- **Application coding authorized:** NONE — STAGE-10 LOCAL IMPLEMENTATION COMPLETE; MERGE AND ALL NEXT WORK REMAIN OWNER-GATED
-- **Current implementation phase:** PHASE 10E — FULL STAGE-10 VERIFICATION & CLOSEOUT — COMPLETE
+- **Active working branch:** `main`
+- **Application coding authorized:** NONE — STAGE 10 COMPLETE; NO NEXT IMPLEMENTATION STAGE AUTHORIZED
+- **Current implementation phase:** STAGE-10 POST-MERGE GOVERNANCE RECONCILIATION — COMPLETE
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
@@ -24,13 +24,24 @@ This file is the authoritative repository record of the currently active develop
 - **Phase 10E activation commit:** `51dbcedff08e0c1101a75c6a6da03923277f86f7`
 - **Phase 10E corrective commit:** `62a15af` — rendered cross-route canonical serialization
 - **Phase 10E closeout commit:** `665aaab5a23f0116deecc5b246bc0674a286f9f7`
-- **Stage-10 merge candidate:** current clean remote `stage/10-seo-social-analytics` HEAD after Phase 10E closeout; resolve live immediately before owner-authorized merge
+- **Stage-10 approved branch head:** `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
 - **Stage-10 handoff:** `docs/36-STAGE-10-HANDOFF.md`
-- **Stage-10 merge:** NOT AUTHORIZED / NOT PERFORMED
+- **Stage-10 merge:** MERGED INTO `main` WITH EXPLICIT PROJECT-OWNER APPROVAL — 2026-08-29
+- **Stage-10 merge commit:** `110a58d1de20648f408d49e4fd34e11969719501`
+- **Stage-10 merge parents:**
+  - first parent: `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
+  - second parent: `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
+- **Stage-10 post-merge gate:** PASS — focused 86/86; Node 153/153; pgTAP 323/323; application-schema lint clean; Playwright 15/15; axe serious/critical 0/0; typecheck, lint, format, diff check, production audit, rendered verification, and 18-route build PASS
+- **Canonical main:** current clean `origin/main` after Stage-10 post-merge governance reconciliation; resolve live
+- **Canonical local database workflow:** Docker-compatible runtime + project-local Supabase CLI + tracked `supabase/config.toml`; local API port `54321`
+- **Redundant Docker experiment:** NOT STAGE-10 WORK / ARCHIVED EXTERNALLY BEFORE MERGE / NOT CANONICAL TOOLING / NOT COMMITTED
 - **Hosted Analytics activation:** NOT ACTIVATED / NOT AUTHORIZED
 - **Vercel hosted mutation:** NOT AUTHORIZED
-- **Google Search Console mutation:** NOT AUTHORIZED
-- **Categories / Media Library implementation:** NOT AUTHORIZED IN STAGE 10
+- **Google Search Console mutation:** NOT EXECUTED / DEFERRED
+- **Final production domain:** NOT CONFIGURED / STAGE 12
+- **Categories:** NOT IMPLEMENTED / NOT AUTHORIZED
+- **Media Library:** NOT IMPLEMENTED / NOT AUTHORIZED
+- **Stage 11:** NOT AUTHORIZED
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
@@ -77,7 +88,7 @@ This file is the authoritative repository record of the currently active develop
 - **Stage-9 merge parents:**
   - first parent: `d7efeb7687e3d98f6af94c06300027b6275022ef`
   - second parent: `c3bc682ec401959745e17037124a1f1381302997`
-- **Stage 10:** LOCAL IMPLEMENTATION COMPLETE / PHASE 10B COMPLETE / PHASE 10C COMPLETE / PHASE 10D COMPLETE / PHASE 10E COMPLETE / FULL LOCAL GATE PASS / MERGE NOT AUTHORIZED
+- **Stage 10:** COMPLETE / MERGED / FULL LOCAL GATE PASS / POST-MERGE GATE PASS
 - **Stage-8 status:** COMPLETE / MERGED / GATE PASS
 - **Stage-8 approved branch head:** `fa06f386d2b69f64d9762120b95408226fea6b2c`
 - **Stage-8 merge commit:** `e03b199e9a664e2ff2ce3f169ff286a7513e5ccb`
@@ -1282,9 +1293,20 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Quality/build gate:** typecheck PASS; lint PASS; format check PASS; `git diff --check` PASS; Next.js 16.3.2 production build PASS (18 routes)
 - **Local cleanup:** local database restored to committed synthetic seed state; project-local Supabase stack stopped
 - **Handoff:** `docs/36-STAGE-10-HANDOFF.md`
-- **Stage-10 status:** LOCAL IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / READY FOR OWNER MERGE DECISION
-- **Hosted/deferred boundary:** Analytics NOT ACTIVATED; Search Console NOT EXECUTED; final domain NOT CONFIGURED; Categories/Media NOT IMPLEMENTED; Stage-10 merge NOT AUTHORIZED; Stage 11 NOT AUTHORIZED
-- **Current ending boundary:** owner merge decision only; no merge or next development work is authorized by this closeout
+- **Stage-10 status at Phase 10E closeout:** LOCAL IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / READY FOR OWNER MERGE DECISION
+- **Hosted/deferred boundary at Phase 10E closeout:** Analytics NOT ACTIVATED; Search Console NOT EXECUTED; final domain NOT CONFIGURED; Categories/Media NOT IMPLEMENTED; Stage-10 merge NOT AUTHORIZED; Stage 11 NOT AUTHORIZED
+- **Phase 10E ending boundary:** owner merge decision only; no merge or next development work was authorized by that closeout checkpoint
+
+## Stage-10 merge and post-merge reconciliation record (2026-08-29)
+
+- **Owner authorization:** explicit approval to archive the redundant Docker experiment, merge the approved Stage-10 head, run the full local-only post-merge gate, and reconcile governance
+- **Approved Stage-10 head:** `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
+- **Normal merge commit:** `110a58d1de20648f408d49e4fd34e11969719501`
+- **Merge parents:** first `33736919c1cb5208faaf3d0ca63d9796fc98db3d`; second `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`
+- **Post-merge gate:** PASS — focused 86/86; Node 153/153; pgTAP 323/323; application-schema lint clean; Playwright 15/15; axe serious/critical 0/0; static quality, production audit, rendered SEO/Analytics, and 18-route build PASS
+- **Local development truth:** Docker-compatible runtime remains required; project-local Supabase CLI and tracked `supabase/config.toml` remain canonical; hard local API port is `54321`; archived compose experiment is not canonical tooling
+- **Canonical main:** current clean `origin/main` after Stage-10 post-merge governance reconciliation; resolve live
+- **Current ending boundary:** Stage 10 COMPLETE / MERGED / POST-MERGE GATE PASS; hosted Analytics, Search Console, final domain, Categories, Media Library, Stage 11, and all next implementation work remain unauthorized or deferred
 
 ## Stage transition rule
 

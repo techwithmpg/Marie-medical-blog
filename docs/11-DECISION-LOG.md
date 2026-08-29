@@ -819,6 +819,21 @@ This authorization does not permit hosted Vercel Analytics activation, Vercel da
 
 **Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
 
+#### Stage-10 owner-authorized merge execution addendum
+
+**Date:** 2026-08-29
+
+1. The project owner explicitly authorized merging the clean remote `stage/10-seo-social-analytics` head into the accepted `main`, followed by the required local-only post-merge verification and governance reconciliation.
+2. The approved Stage-10 branch head was `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`; accepted pre-merge `main` was `33736919c1cb5208faaf3d0ca63d9796fc98db3d`; the live relationship was 0 main-only / 16 Stage-10-only commits with that accepted `main` as merge base.
+3. Three untracked root Docker files were independently audited as a valid but redundant local experiment, preserved byte-for-byte in an access-restricted external scratch archive, and moved out before merge. They were never part of Stage 10 or Git history and were not committed.
+4. Docker remains required as the runtime for canonical local Supabase CLI development. The project-local Supabase CLI, tracked `supabase/config.toml`, committed migrations/seed, and hard local API guard on port `54321` remain authoritative; the archived custom compose/self-hosting experiment is not canonical tooling.
+5. Normal non-fast-forward merge commit `110a58d1de20648f408d49e4fd34e11969719501` (`merge: complete stage 10 seo social analytics`) was created with first parent `33736919c1cb5208faaf3d0ca63d9796fc98db3d` and second parent `b4cbd713b8e2f82ccbc93431106aa4825f9d11e5`, preserving Stage-10 history.
+6. Post-merge verification used only the guarded project-local Supabase CLI stack and committed synthetic fixtures. Results: Phase 10B/10C/10D focused tests 86/86; complete Node suite 153/153; pgTAP 323/323; `public`/`private` schema lint with no errors; Playwright 15/15; axe serious/critical violations 0/0; typecheck, lint, format check, `git diff --check`, production dependency audit (0 vulnerabilities), rendered SEO/Analytics checks, and the 18-route production build all PASS.
+7. The rendered topic-filter canonical remains the intended `/topics/{slug}`, not `/blog`; the built local production runtime rendered the representative article successfully and requested the expected Vercel Insights script.
+8. Hosted Vercel Analytics was not activated. Search Console, final-domain/DNS work, hosted Supabase mutation, Categories, Media Library, Stage 11, and all next implementation work remain unauthorized or deferred.
+
+**Status:** ACTIVE / STAGE 10 COMPLETE / MERGED / POST-MERGE GATE PASS.
+
 ---
 
 ## New decision template
