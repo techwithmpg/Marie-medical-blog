@@ -4,12 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Stage 10 — SEO, Social & Analytics — COMPLETE / MERGED / POST-MERGE GATE PASS / NEXT WORK NOT AUTHORIZED
-- **Stage authorization:** D034 APPROVED + PHASES 10B–10E OWNER AUTHORIZED; STAGE-10 MERGE AND POST-MERGE VERIFICATION EXPLICITLY OWNER AUTHORIZED — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion Gate — Categories + Media — DESIGN APPROVED / IMPLEMENTATION PENDING OWNER AUTHORIZATION
+- **Stage authorization:** D035 ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED — 2026-08-29
+- **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `main`
-- **Application coding authorized:** NONE — STAGE 10 COMPLETE; NO NEXT IMPLEMENTATION STAGE AUTHORIZED
-- **Current implementation phase:** STAGE-10 POST-MERGE GOVERNANCE RECONCILIATION — COMPLETE
+- **Application coding authorized:** NONE — D035 GOVERNANCE/DESIGN ACTIVATION ONLY
+- **Current implementation phase:** GOVERNANCE/DESIGN ACTIVATION COMPLETE / IMPLEMENTATION PENDING OWNER AUTHORIZATION
+- **D035 status:** ACTIVE / ARCHITECTURE APPROVED
+- **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
+- **Recommended future implementation branch:** `fix/v1-admin-completion` — NOT CREATED / NOT AUTHORIZED
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
@@ -39,9 +43,14 @@ This file is the authoritative repository record of the currently active develop
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT EXECUTED / DEFERRED
 - **Final production domain:** NOT CONFIGURED / STAGE 12
-- **Categories:** NOT IMPLEMENTED / NOT AUTHORIZED
-- **Media Library:** NOT IMPLEMENTED / NOT AUTHORIZED
-- **Stage 11:** NOT AUTHORIZED
+- **Categories:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
+- **Category migration:** NOT REQUIRED
+- **Media:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
+- **Media migration:** NOT REQUIRED
+- **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
+- **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
+- **Stage 12:** NOT AUTHORIZED
+- **Next action:** EXPLICIT OWNER AUTHORIZATION FOR `fix/v1-admin-completion` IMPLEMENTATION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
@@ -1307,6 +1316,20 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Local development truth:** Docker-compatible runtime remains required; project-local Supabase CLI and tracked `supabase/config.toml` remain canonical; hard local API port is `54321`; archived compose experiment is not canonical tooling
 - **Canonical main:** current clean `origin/main` after Stage-10 post-merge governance reconciliation; resolve live
 - **Current ending boundary:** Stage 10 COMPLETE / MERGED / POST-MERGE GATE PASS; hosted Analytics, Search Console, final domain, Categories, Media Library, Stage 11, and all next implementation work remain unauthorized or deferred
+
+## Pre-Stage-11 V1 Admin Completion Gate — D035 governance activation (2026-08-29)
+
+- **Owner authorization:** governance/design activation only for the omitted frozen V1 Categories and Media administrative capabilities
+- **Canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
+- **Active working branch:** `main`
+- **Decision:** D035 ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED
+- **Design:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
+- **Categories:** existing schema, RLS, grants, constraints, trigger, and `ON DELETE RESTRICT` relationship retained; immutable post-create slug; no migration or new RPC required
+- **Media:** Supabase Storage remains canonical; private `library/` uploads, signed preview, destination-compatible article-owned reuse copies, and guarded deletion; no metadata table, bucket/policy change, migration, or hosted mutation required
+- **Stage-plan correction:** the Pre-Stage-11 gate is inserted without renumbering Stage 11 or Stage 12
+- **Implementation phases 2–5:** NOT AUTHORIZED
+- **Recommended future branch:** `fix/v1-admin-completion` — NOT CREATED
+- **Current ending boundary:** explicit owner authorization is required before application implementation; Stage 11 and Stage 12 remain blocked/not authorized
 
 ## Stage transition rule
 

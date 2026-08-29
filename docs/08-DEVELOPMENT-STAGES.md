@@ -119,6 +119,23 @@ Deliver:
 - Search Console launch instructions
 Gate: representative pages validate and private/admin URLs are excluded appropriately.
 
+## Pre-Stage-11 V1 Admin Completion Gate — Categories + Media [CRITICAL]
+Deliver:
+- `/admin/categories` management using the existing Category schema and RLS
+- immutable post-create category slugs for canonical topic URL stability
+- referenced-category deletion protection
+- `/admin/media` image inventory across private draft and public published assets
+- private-by-default image upload
+- article-owned copy-based featured-image reuse
+- article reuse restricted to the canonical draft-assets image MIME and 5 MB limits
+- private preview and referenced-asset deletion protection
+- Categories and Media integration with the existing Evidence Folio admin navigation and article workflow
+- governance closeout and handoff before Stage 11
+Gate:
+Category and Media management are functional for Marie; public topic discovery and the Stage-8 article-image lifecycle remain correct; anonymous and non-admin boundaries pass; referenced assets and categories cannot be deleted; complete regression, accessibility, responsive, security, and production-build gates pass; no known frozen V1 admin capability remains unimplemented.
+
+This gate corrects omissions of frozen V1 scope. It does not renumber Stage 11 or Stage 12 and does not authorize Stage-11 hardening or Stage-12 launch/content work.
+
 ## Stage 11 — Quality, security & production hardening [CRITICAL]
 Deliver:
 - accessibility review

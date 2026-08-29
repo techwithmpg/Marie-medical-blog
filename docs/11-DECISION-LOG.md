@@ -834,6 +834,69 @@ This authorization does not permit hosted Vercel Analytics activation, Vercel da
 
 **Status:** ACTIVE / STAGE 10 COMPLETE / MERGED / POST-MERGE GATE PASS.
 
+### ACTIVE — D035 — V1 Admin Completion Gate: Categories & Media
+**Date:** 2026-08-29
+
+**Decision:**
+
+The Pre-Stage-11 V1 Admin Completion Gate uses the architecture frozen in `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`:
+
+1. Category management and Media management are frozen V1 requirements.
+2. Their absence after Stage 10 is an implementation omission, not a scope expansion.
+3. `Pre-Stage-11 V1 Admin Completion Gate — Categories + Media` is inserted between Stage 10 and Stage 11.
+4. Stage 11 and Stage 12 retain their existing numbers.
+5. Categories reuse the existing `public.categories` table, RLS, grants, constraints, timestamp trigger, and `articles.category_id ON DELETE RESTRICT` relationship.
+6. No Category migration or new RPC is required.
+7. `/admin/categories` provides list, create, name editing, description editing, an immutable post-create slug, article usage indication, and guarded deletion.
+8. Referenced categories cannot be deleted.
+9. V1 has no bulk category reassignment subsystem.
+10. Media management uses Supabase Storage as the canonical inventory.
+11. No `public.media` metadata table is introduced.
+12. `/admin/media` is an image-management surface only.
+13. General uploads enter private `draft-assets/library/{uuid}-{sanitizedFilename}`.
+14. General uploads are private by default.
+15. Private preview uses short-lived signed URLs.
+16. The existing Stage-8 article asset lifecycle remains canonical.
+17. Reusing Media creates a new article-owned private object at `articles/{articleId}/featured/{uuid}-{filename}`.
+18. Articles do not intentionally share one physical featured-image object.
+19. Article reuse eligibility honors the destination `draft-assets` constraints: only JPEG, PNG, WebP, or AVIF images no larger than 5 MB are selectable. Otherwise appropriate images over 5 MB remain visible but not selectable; PDFs are outside the V1 Media surface; unsupported MIME types are not selectable. Existing bucket limits are not weakened or enlarged, and no image-processing or compression subsystem is introduced.
+20. In-use assets cannot be deleted.
+21. Usage checks include `articles.featured_image_path`, `profiles.cv_storage_path` defensively, and any later approved persisted Storage-path field.
+22. No Media migration is required.
+23. No Storage-policy or bucket change is required.
+24. No hosted Supabase migration is required.
+25. Server Components remain the default for loading and routes.
+26. Mutations use Server Actions with an independent `requireAdmin()` authorization check.
+27. Media upload preparation independently uses `requireAdmin()` before issuing a path-specific signed upload token.
+28. No privileged secret enters the browser.
+29. Stage 11 remains blocked until this gate is fully implemented, tested, reconciled, merged, and verified.
+30. Explicit exclusions are a generic DAM, folder-management product, bulk asset operations, image editor, AI tagging, AI alt generation, inline article images, document-management system, Stage 11 implementation, Stage 12 content, final domain/DNS, Search Console, and hosted Analytics activation.
+
+Category slugs are freely generated or manually edited within the Create Category form, but become immutable when the category is created. If a new unused category has an incorrect slug, the V1 correction path is deletion followed by recreation. No category slug history or redirect subsystem is introduced.
+
+The recommended future implementation branch is `fix/v1-admin-completion`, consistent with D011. This decision does not create that branch or authorize implementation.
+
+**Reason:**
+
+Categories and Media were frozen V1 administrative capabilities but remained unimplemented after Stage 10. The existing database and Storage foundations already support a narrow single-author solution. An immutable post-create category slug avoids unverifiable historical-URL changes without adding redirects or schema, while destination-compatible Media reuse preserves the private Stage-8 article lifecycle and existing bucket constraints.
+
+**Alternatives considered:**
+
+- Deferring Categories and Media until after Stage 11 (rejected: Stage 11 must not certify a V1 with known frozen administrative omissions).
+- Allowing category slugs to change while no current article references the category (rejected: current references cannot prove a URL was never previously public).
+- Adding category slug history and redirects (rejected: unnecessary V1 schema and routing complexity).
+- Introducing a `public.media` metadata table or generic DAM (rejected: Supabase Storage inventory is sufficient for this single-author scope).
+- Sharing one physical featured-image object among articles (rejected: conflicts with the copy-first article ownership and compensation lifecycle).
+- Enlarging `draft-assets` limits or adding image processing so larger assets can be reused (rejected: changes the accepted Storage boundary and adds an unauthorized subsystem).
+
+**Impact:**
+
+D035 activates the governance/design gate only. Categories and Media remain unimplemented. Application code, tests, migrations, Supabase configuration, hosted Supabase, Storage objects, dependencies, Stage 11, Stage 12, final-domain/DNS work, Search Console operations, and hosted Analytics activation remain unauthorized. A later explicit owner authorization is required before creating `fix/v1-admin-completion` or implementing phases 2–5 of the design.
+
+**Approved by:** project owner — explicit approval on 2026-08-29: "I approve the Pre-Stage-11 V1 Admin Completion Gate — Categories + Media architecture, subject to the two hardening refinements below."
+
+**Status:** ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED.
+
 ---
 
 ## New decision template
