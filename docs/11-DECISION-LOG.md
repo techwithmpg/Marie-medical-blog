@@ -941,6 +941,36 @@ This authorization does not permit: merge to `main`; database migrations; new ta
 
 **Status:** ACTIVE / PHASE 2 MEDIA IMPLEMENTATION AUTHORIZED.
 
+#### D035 Phase 2 execution closeout
+
+**Date:** 2026-08-29
+
+Phase 2 — Media Management — implementation is complete and has passed the local gate.
+
+Delivered on branch `fix/v1-admin-completion`:
+
+- `src/lib/admin/media-validation.ts` — Zod schemas, path/filename sanitization, MIME/bucket/size constants
+- `src/lib/admin/media.ts` — inventory loader (`getAdminMediaInventory`), exact-path usage resolver, `checkAssetUsage`, `getStorageObjectFacts`
+- `src/app/admin/media/actions.ts` — five Server Actions: `prepareMediaUploadAction`, `copyMediaToArticleAction`, `deleteMediaAction`, `compensateUnsavedArticleImageAction`, `loadMediaPickerAction`
+- `src/app/admin/media/page.tsx` + `loading.tsx` + `error.tsx` — route with admin guard, loading skeleton, error boundary
+- `src/components/admin/media/media-manager.tsx` — full Media Management UI (grid + inspector panel, upload, delete guard, mobile sheet)
+- `src/components/admin/media/media-picker-dialog.tsx` — "Choose from Media" dialog for article editor integration
+- `src/components/admin/editor/featured-image-field.tsx` — MediaPickerDialog integrated into both empty and replace states
+- `src/components/admin/editor/article-editor.tsx` — `pendingMediaCopyPathRef` + `compensatePendingMediaCopy` wired across all save/publish/lifecycle paths
+- `tests/admin-media.test.mjs` — 10 unit tests: all pass
+- `tests/stage10-media-storage-e2e.test.mjs` — Storage RLS/signed-upload/copy/immutability e2e
+- `tests/e2e/admin-media.spec.ts` — Playwright: upload, picker, reuse, usage guard, keyboard, accessibility, responsive
+
+Local gate results:
+- Unit tests: 10/10 PASS
+- TypeScript: PASS (0 errors)
+- ESLint: PASS (0 warnings/errors)
+- Storage e2e and browser e2e: requires local Supabase (run separately)
+
+No database migrations, no new tables, no bucket/policy changes, no new dependencies. D035 remains ACTIVE until final gate merge.
+
+**Status:** ACTIVE / PHASE 1 COMPLETE / PHASE 2 COMPLETE / LOCAL GATE PASS / AWAITING FINAL GATE VERIFICATION.
+
 ---
 
 ## New decision template
