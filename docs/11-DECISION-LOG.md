@@ -927,6 +927,20 @@ Media remains **DESIGN APPROVED / IMPLEMENTATION NOT AUTHORIZED**. D035 remains 
 
 **Status:** ACTIVE / PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS / MEDIA NOT AUTHORIZED.
 
+#### D035 Phase 2 execution authorization addendum
+
+**Date:** 2026-08-29
+
+The project owner authorizes **Phase 2 — Media Management** implementation on `fix/v1-admin-completion`, continuing from the local-gate-passed Phase 1 Categories baseline (`9b9b504a4977f154b5a2ccfd67133f4cf0dad483`).
+
+Authorized work is limited to `/admin/media`, Media inventory loaders and transient view models, private-by-default signed uploads (`draft-assets/library/{uuid}-{sanitizedFilename}`), private signed previews vs public URLs, exact-path usage resolution across `articles.featured_image_path` and `profiles.cv_storage_path`, guarded deletion of unreferenced assets, article-owned private image reuse (`draft-assets/articles/{articleId}/featured/{uuid}-{sanitizedFilename}` via native same-bucket or cross-bucket `copy`), featured-image editor integration, compensation for unsaved article image candidates, focused Media unit/integration and browser tests, and local-only Supabase/Storage verification.
+
+This authorization does not permit: merge to `main`; database migrations; new tables (`public.media` is prohibited); Storage bucket or policy changes; hosted Supabase mutation; dependency additions; generic DAM functionality; folders; bulk operations; image editing/compression; AI tagging; AI alt generation; inline article images; PDF/document management; Stage 11; Stage 12; hosted Analytics activation; Search Console operations; or final-domain/DNS work.
+
+**Approved by:** project owner — explicit Phase 2 authorization on 2026-08-29.
+
+**Status:** ACTIVE / PHASE 2 MEDIA IMPLEMENTATION AUTHORIZED.
+
 ---
 
 ## New decision template
