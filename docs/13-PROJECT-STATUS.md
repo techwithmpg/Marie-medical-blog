@@ -4,16 +4,16 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion Gate — Categories + Media — DESIGN APPROVED / IMPLEMENTATION PENDING OWNER AUTHORIZATION
-- **Stage authorization:** D035 ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 1 CATEGORIES ACTIVE
+- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES IMPLEMENTATION AUTHORIZED — 2026-08-29
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
-- **Active working branch:** `main`
-- **Application coding authorized:** NONE — D035 GOVERNANCE/DESIGN ACTIVATION ONLY
-- **Current implementation phase:** GOVERNANCE/DESIGN ACTIVATION COMPLETE / IMPLEMENTATION PENDING OWNER AUTHORIZATION
+- **Active working branch:** `fix/v1-admin-completion`
+- **Application coding authorized:** PHASE 1 CATEGORIES ONLY
+- **Current implementation phase:** PHASE 1 — CATEGORY MANAGEMENT / ACTIVE
 - **D035 status:** ACTIVE / ARCHITECTURE APPROVED
 - **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
-- **Recommended future implementation branch:** `fix/v1-admin-completion` — NOT CREATED / NOT AUTHORIZED
+- **Implementation branch:** `fix/v1-admin-completion` — CREATED FROM `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
@@ -43,14 +43,14 @@ This file is the authoritative repository record of the currently active develop
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT EXECUTED / DEFERRED
 - **Final production domain:** NOT CONFIGURED / STAGE 12
-- **Categories:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
+- **Categories:** IMPLEMENTATION AUTHORIZED / PHASE 1 ACTIVE / NOT YET COMPLETE
 - **Category migration:** NOT REQUIRED
 - **Media:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
 - **Media migration:** NOT REQUIRED
 - **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** EXPLICIT OWNER AUTHORIZATION FOR `fix/v1-admin-completion` IMPLEMENTATION
+- **Next action:** IMPLEMENT AND VERIFY PHASE 1 CATEGORIES; MEDIA REQUIRES A LATER EXPLICIT OWNER DECISION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`

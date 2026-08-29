@@ -897,6 +897,22 @@ D035 activates the governance/design gate only. Categories and Media remain unim
 
 **Status:** ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED.
 
+#### D035 Phase 1 execution authorization addendum
+
+**Date:** 2026-08-29
+
+The project owner authorizes **Phase 1 — Category Management** implementation on `fix/v1-admin-completion`, based exactly on accepted `main` commit `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`.
+
+Authorized work is limited to `/admin/categories`, focused Category loaders and validation, independently authorized Server Actions, Evidence Folio Category UI, navigation verification, targeted revalidation, focused tests, local-only Supabase verification when required, and Phase-1 governance closeout.
+
+This authorization does not permit Media implementation or `/admin/media`; any database migration, schema, RLS, grant, Storage bucket, or Storage policy change; hosted Supabase mutation; dependency installation; merge to `main`; Stage 11; Stage 12; hosted Analytics activation; Search Console operations; or final-domain/DNS work.
+
+Category implementation requires no migration and no new RPC. Existing Category RLS/grants and `articles.category_id ON DELETE RESTRICT` remain authoritative. Media remains DESIGN APPROVED / IMPLEMENTATION NOT AUTHORIZED, and Stage 11 remains blocked.
+
+**Approved by:** project owner — explicit Phase 1 authorization on 2026-08-29.
+
+**Status:** ACTIVE / PHASE 1 CATEGORIES IMPLEMENTATION AUTHORIZED.
+
 ---
 
 ## New decision template
