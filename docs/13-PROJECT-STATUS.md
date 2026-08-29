@@ -4,13 +4,13 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 1 CATEGORIES ACTIVE
-- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES IMPLEMENTATION AUTHORIZED — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS
+- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES COMPLETE / MEDIA NOT AUTHORIZED — 2026-08-29
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `fix/v1-admin-completion`
-- **Application coding authorized:** PHASE 1 CATEGORIES ONLY
-- **Current implementation phase:** PHASE 1 — CATEGORY MANAGEMENT / ACTIVE
+- **Application coding authorized:** NO FURTHER IMPLEMENTATION AUTHORIZED; PHASE 2 MEDIA AWAITS OWNER DECISION
+- **Current implementation phase:** PHASE 1 — CATEGORY MANAGEMENT / COMPLETE / LOCAL GATE PASS
 - **D035 status:** ACTIVE / ARCHITECTURE APPROVED
 - **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
 - **Implementation branch:** `fix/v1-admin-completion` — CREATED FROM `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
@@ -43,14 +43,14 @@ This file is the authoritative repository record of the currently active develop
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT EXECUTED / DEFERRED
 - **Final production domain:** NOT CONFIGURED / STAGE 12
-- **Categories:** IMPLEMENTATION AUTHORIZED / PHASE 1 ACTIVE / NOT YET COMPLETE
+- **Categories:** PHASE 1 COMPLETE / LOCAL GATE PASS
 - **Category migration:** NOT REQUIRED
 - **Media:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
 - **Media migration:** NOT REQUIRED
 - **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** IMPLEMENT AND VERIFY PHASE 1 CATEGORIES; MEDIA REQUIRES A LATER EXPLICIT OWNER DECISION
+- **Next action:** OWNER DECISION — AUTHORIZE OR DEFER PHASE 2 MEDIA IMPLEMENTATION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
@@ -1330,6 +1330,23 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Implementation phases 2–5:** NOT AUTHORIZED
 - **Recommended future branch:** `fix/v1-admin-completion` — NOT CREATED
 - **Current ending boundary:** explicit owner authorization is required before application implementation; Stage 11 and Stage 12 remain blocked/not authorized
+
+## D035 Phase 1 Category Management closeout (2026-08-29)
+
+- **Branch/base:** `fix/v1-admin-completion` from accepted `main` `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
+- **Outcome:** PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS
+- **Delivered:** protected `/admin/categories`; focused loader/validation; independently authorized create/update/delete Server Actions; create-time manual or generated slug; immutable post-create slug; article-usage counts; referenced-delete protection; targeted revalidation; responsive Evidence Folio UI; loading/error states; focused Node and browser tests
+- **Focused Category tests:** 10/10 PASS
+- **Complete Node tests:** 163/163 PASS
+- **Local database security:** pgTAP 323/323 PASS against `127.0.0.1:54321`
+- **Browser/accessibility:** Playwright 16/16 PASS; axe serious/critical violations 0
+- **Static quality:** typecheck PASS; lint PASS; format check PASS; `git diff --check` PASS
+- **Dependency/build:** production dependency audit 0 vulnerabilities; production build PASS with 19 static-generation units and `/admin/categories` included
+- **Database/hosted boundary:** no migration, schema/RLS/grant change, new RPC, hosted Supabase mutation, or service-role browser exposure
+- **Storage/dependency boundary:** no Storage change and no dependency change
+- **Local cleanup:** database restored to committed synthetic seed state after verification; project-local Supabase stack stopped
+- **Still deferred:** Media implementation and `/admin/media`; Stage 11; Stage 12; hosted Analytics activation; Search Console; final-domain/DNS work; merge to `main`
+- **Next owner decision:** authorize or defer Phase 2 Media implementation
 
 ## Stage transition rule
 

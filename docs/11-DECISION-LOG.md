@@ -913,6 +913,20 @@ Category implementation requires no migration and no new RPC. Existing Category 
 
 **Status:** ACTIVE / PHASE 1 CATEGORIES IMPLEMENTATION AUTHORIZED.
 
+#### D035 Phase 1 execution closeout
+
+**Date:** 2026-08-29
+
+Phase 1 Category Management is **COMPLETE / LOCAL GATE PASS** on `fix/v1-admin-completion`. The implementation adds the independently protected `/admin/categories` surface, focused Category loading and validation, create/update/delete Server Actions, immutable post-create slugs, truthful article-usage counts, guarded deletion, targeted authoring and public-route revalidation, Evidence Folio responsive UI, loading/error states, and focused automated coverage.
+
+The complete local gate passed: focused Category tests 10/10; complete Node tests 163/163; pgTAP 323/323; Playwright 16/16; axe serious/critical violations 0; typecheck, lint, format check, `git diff --check`, production dependency audit (0 vulnerabilities), and production build (19 static-generation units with `/admin/categories` included) all PASS. Verification used only the guarded project-local Supabase stack and synthetic fixtures.
+
+No migration, schema/RLS/grant change, Storage change, hosted Supabase mutation, service-role browser exposure, dependency change, Media implementation, Stage 11 work, Stage 12 work, hosted Analytics activation, Search Console operation, or final-domain/DNS work occurred. The local database was restored to the committed synthetic seed state after verification and the project-local Supabase stack was stopped.
+
+Media remains **DESIGN APPROVED / IMPLEMENTATION NOT AUTHORIZED**. D035 remains active because the overall V1 Admin Completion gate is not complete. Stage 11 remains blocked. The next owner decision is whether to authorize **Phase 2 — Media implementation**.
+
+**Status:** ACTIVE / PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS / MEDIA NOT AUTHORIZED.
+
 ---
 
 ## New decision template
