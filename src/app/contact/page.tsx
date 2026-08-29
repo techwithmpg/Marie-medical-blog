@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import { PublicShell } from "@/components/site/public-shell";
 import { PageIntro } from "@/components/public/page-intro";
 import { ContactFormShell } from "@/components/public/contact-form-shell";
@@ -6,11 +7,21 @@ import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { getPublicSiteSettings } from "@/lib/public-data";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 
-export const metadata = {
-  title: "Contact — Marie Medere",
-  description:
-    "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.",
+const PAGE_TITLE = "Contact";
+const PAGE_DESCRIPTION =
+  "Contact and inquiry information for Marie Medere's Medical Writing Portfolio & Educational Blog.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/contact", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default async function ContactPage() {

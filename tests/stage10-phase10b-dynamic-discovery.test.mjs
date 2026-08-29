@@ -1,0 +1,399 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {
+  getSingleQueryParam,
+  hasQueryParam,
+  parsePageQuery,
+  resolveBlogDiscovery,
+  resolvePaginationDiscovery,
+  resolveTopicDiscovery,
+} from "../src/lib/discovery-query.ts";
+import { getPublicRouteDiscoveryMetadata } from "../src/lib/site-url.ts";
+
+const readSource = (relativePath) =>
+  fs.readFileSync(path.join(process.cwd(), relativePath), "utf8");
+
+test("single query parameters reject repeated array values", () => {
+  assert.equal(getSingleQueryParam(undefined), undefined);
+  assert.equal(getSingleQueryParam("medical-writing"), "medical-writing");
+  assert.equal(getSingleQueryParam(["one", "two"]), undefined);
+
+  assert.equal(hasQueryParam(undefined), false);
+  assert.equal(hasQueryParam(""), true);
+  assert.equal(hasQueryParam(["one", "two"]), true);
+});
+
+test("page query defaults cleanly to page one", () => {
+  assert.deepEqual(parsePageQuery(undefined), {
+    page: 1,
+    hasPageParam: false,
+    isMalformed: false,
+  });
+
+  assert.deepEqual(parsePageQuery(""), {
+    page: 1,
+    hasPageParam: true,
+    isMalformed: false,
+  });
+
+  assert.deepEqual(parsePageQuery("1"), {
+    page: 1,
+    hasPageParam: true,
+    isMalformed: false,
+  });
+});
+
+test("valid positive integer pagination is normalized", () => {
+  assert.deepEqual(parsePageQuery("2"), {
+    page: 2,
+    hasPageParam: true,
+    isMalformed: false,
+  });
+
+  assert.deepEqual(parsePageQuery("02"), {
+    page: 2,
+    hasPageParam: true,
+    isMalformed: false,
+  });
+});
+
+test("malformed pagination fails closed to page one", () => {
+  for (const value of ["0", "-1", "1.5", "2.0", "abc"]) {
+    assert.deepEqual(parsePageQuery(value), {
+      page: 1,
+      hasPageParam: true,
+      isMalformed: true,
+    });
+  }
+
+  assert.deepEqual(parsePageQuery(["2", "3"]), {
+    page: 1,
+    hasPageParam: true,
+    isMalformed: true,
+  });
+});
+
+test("clean first page canonicalizes to the base listing", () => {
+  assert.deepEqual(
+    resolvePaginationDiscovery("/blog", parsePageQuery(undefined), 3),
+    {
+      canonicalPath: "/blog",
+      index: true,
+    },
+  );
+
+  assert.deepEqual(
+    resolvePaginationDiscovery("/blog", parsePageQuery("1"), 3),
+    {
+      canonicalPath: "/blog",
+      index: true,
+    },
+  );
+});
+
+test("valid later pagination self-canonicalizes", () => {
+  assert.deepEqual(
+    resolvePaginationDiscovery("/blog", parsePageQuery("2"), 4),
+    {
+      canonicalPath: "/blog?page=2",
+      index: true,
+    },
+  );
+});
+
+test("out-of-range and malformed pagination never becomes indexable", () => {
+  assert.deepEqual(
+    resolvePaginationDiscovery("/blog", parsePageQuery("5"), 2),
+    {
+      canonicalPath: "/blog",
+      index: false,
+    },
+  );
+
+  assert.deepEqual(
+    resolvePaginationDiscovery("/blog", parsePageQuery("-2"), 10),
+    {
+      canonicalPath: "/blog",
+      index: false,
+    },
+  );
+});
+
+test("blog search variants take precedence over topic and pagination", () => {
+  assert.deepEqual(
+    resolveBlogDiscovery({
+      q: "blood pressure",
+      topic: "cardiology",
+      page: "2",
+      totalPages: 5,
+      canonicalTopicSlug: "cardiology",
+    }),
+    {
+      canonicalPath: "/blog",
+      index: false,
+    },
+  );
+});
+
+test("empty and repeated blog search parameters remain noindex clean-blog variants", () => {
+  for (const q of ["", ["one", "two"]]) {
+    assert.deepEqual(
+      resolveBlogDiscovery({
+        q,
+        topic: undefined,
+        page: undefined,
+        totalPages: 5,
+      }),
+      {
+        canonicalPath: "/blog",
+        index: false,
+      },
+    );
+  }
+});
+
+test("unknown and tracking parameters cannot enter canonical or social metadata", () => {
+  const discovery = resolveBlogDiscovery({
+    q: undefined,
+    topic: undefined,
+    page: undefined,
+    totalPages: 5,
+    utm_source: "unsafe-campaign-value",
+  });
+  const metadata = getPublicRouteDiscoveryMetadata(discovery.canonicalPath, {
+    routePolicy: {
+      index: discovery.index,
+      follow: true,
+    },
+    social: {
+      title: "Articles",
+      description: "Published educational writing.",
+    },
+    env: {
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+  });
+
+  assert.deepEqual(discovery, {
+    canonicalPath: "/blog",
+    index: true,
+  });
+  assert.equal(
+    metadata.alternates?.canonical,
+    "https://canonical.example.test/blog",
+  );
+  assert.equal(
+    String(metadata.openGraph?.url),
+    "https://canonical.example.test/blog",
+  );
+  assert.equal(
+    JSON.stringify(metadata).includes("unsafe-campaign-value"),
+    false,
+  );
+});
+
+test("verified blog topic filters canonicalize to the canonical topic route", () => {
+  const discovery = resolveBlogDiscovery({
+    q: undefined,
+    topic: "heart-health",
+    page: "4",
+    totalPages: 8,
+    canonicalTopicSlug: "heart-health",
+  });
+
+  assert.deepEqual(discovery, {
+    canonicalPath: "/topics/heart-health",
+    index: false,
+  });
+
+  const metadata = getPublicRouteDiscoveryMetadata(discovery.canonicalPath, {
+    env: {
+      NODE_ENV: "production",
+      SITE_URL: "https://canonical.example.test",
+      VERCEL_ENV: "production",
+    },
+  });
+
+  assert.equal(
+    metadata.alternates?.canonical,
+    "https://canonical.example.test/topics/heart-health",
+  );
+});
+
+test("invalid and repeated blog topic filters canonicalize to clean blog", () => {
+  for (const topic of ["", "missing-topic", ["one", "two"]]) {
+    assert.deepEqual(
+      resolveBlogDiscovery({
+        q: undefined,
+        topic,
+        page: "2",
+        totalPages: 8,
+        canonicalTopicSlug: null,
+      }),
+      {
+        canonicalPath: "/blog",
+        index: false,
+      },
+    );
+  }
+});
+
+test("blog pagination indexes verified pages and rejects malformed or out-of-range pages", () => {
+  assert.deepEqual(
+    resolveBlogDiscovery({
+      q: undefined,
+      topic: undefined,
+      page: "02",
+      totalPages: 3,
+    }),
+    {
+      canonicalPath: "/blog?page=2",
+      index: true,
+    },
+  );
+
+  for (const page of ["2.0", "9", ["2", "3"]]) {
+    assert.deepEqual(
+      resolveBlogDiscovery({
+        q: undefined,
+        topic: undefined,
+        page,
+        totalPages: 3,
+      }),
+      {
+        canonicalPath: "/blog",
+        index: false,
+      },
+    );
+  }
+});
+
+test("topic discovery indexes its first published page", () => {
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: undefined,
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: true,
+    },
+  );
+});
+
+test("topic discovery noindexes empty topics", () => {
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: undefined,
+      totalPages: 0,
+      hasPublishedArticles: false,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: false,
+    },
+  );
+});
+
+test("topic discovery indexes verified later pages and rejects out-of-range pages", () => {
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: "2",
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health?page=2",
+      index: true,
+    },
+  );
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: "4",
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: false,
+    },
+  );
+
+  assert.deepEqual(
+    resolveTopicDiscovery({
+      basePath: "/topics/heart-health",
+      page: "not-a-page",
+      totalPages: 3,
+      hasPublishedArticles: true,
+    }),
+    {
+      canonicalPath: "/topics/heart-health",
+      index: false,
+    },
+  );
+});
+
+test("dynamic routes reference the shared discovery metadata contract", () => {
+  const blogRoute = readSource("src/app/blog/page.tsx");
+  const topicRoute = readSource("src/app/topics/[slug]/page.tsx");
+  const articleRoute = readSource("src/app/blog/[slug]/page.tsx");
+
+  assert.match(blogRoute, /export async function generateMetadata/);
+  assert.match(blogRoute, /resolveBlogDiscovery\(/);
+  assert.match(blogRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(
+    blogRoute,
+    /social:\s*\{\s*title: BLOG_TITLE,\s*description: BLOG_DESCRIPTION/s,
+  );
+  assert.equal(blogRoute.includes("Articles | Marie Medere"), false);
+  assert.match(topicRoute, /resolveTopicDiscovery\(/);
+  assert.match(topicRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(topicRoute, /social:\s*\{\s*title,\s*description,/s);
+  assert.equal(topicRoute.includes("| Marie Medere"), false);
+  assert.match(topicRoute, /notFound\(\)/);
+  assert.match(articleRoute, /getPublicRouteDiscoveryMetadata\(/);
+  assert.match(articleRoute, /resolveArticleMetadataText\(/);
+  assert.match(articleRoute, /type:\s*"article"/);
+  assert.match(articleRoute, /publishedTime:\s*article\.published_at/);
+  assert.match(articleRoute, /modifiedTime:\s*article\.updated_at/);
+  assert.match(
+    articleRoute,
+    /authors:\s*authorName\s*\?\s*\[authorName\]\s*:\s*undefined/,
+  );
+  assert.match(articleRoute, /notFound\(\)/);
+});
+
+test("published public helpers are request memoized without weakening publication filters", () => {
+  const publicArticles = readSource("src/lib/public-articles.ts");
+  const publicData = readSource("src/lib/public-data.ts");
+
+  assert.match(publicArticles, /import \{ cache \} from "react";/);
+  assert.match(publicArticles, /export const getCategoryBySlug = cache\(/);
+  assert.match(
+    publicArticles,
+    /export const getPublishedArticleBySlug = cache\(/,
+  );
+  assert.match(
+    publicArticles,
+    /export const getMemoizedBlogViewData = cache\(/,
+  );
+  assert.match(
+    publicArticles,
+    /export const getMemoizedTopicArticles = cache\(/,
+  );
+  assert.match(
+    publicArticles,
+    /getPublishedArticleBySlugUncached[\s\S]*?\.eq\("status", "published"\)/,
+  );
+  assert.match(publicArticles, /\.eq\("status", "published"\)/);
+  assert.match(publicData, /import \{ cache \} from "react";/);
+  assert.match(publicData, /export const getPublicProfile = cache\(/);
+});

@@ -1,4 +1,9 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import {
+  resolvePublicDiscoveryImage,
+  type PublicDiscoveryImage,
+} from "@/lib/discovery-artifacts";
 
 export interface PublicProfile {
   display_name: string;
@@ -47,7 +52,7 @@ const DEFAULT_SITE_SETTINGS: PublicSiteSettings = {
   social_links: [],
 };
 
-export async function getPublicProfile(): Promise<PublicProfile> {
+async function getPublicProfileUncached(): Promise<PublicProfile> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -80,7 +85,9 @@ export async function getPublicProfile(): Promise<PublicProfile> {
   }
 }
 
-export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
+export const getPublicProfile = cache(getPublicProfileUncached);
+
+async function getPublicSiteSettingsUncached(): Promise<PublicSiteSettings> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -131,6 +138,8 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
   }
 }
 
+export const getPublicSiteSettings = cache(getPublicSiteSettingsUncached);
+
 export async function getPublicAssetUrl(
   path: string | null | undefined,
 ): Promise<string | null> {
@@ -143,6 +152,38 @@ export async function getPublicAssetUrl(
     return null;
   }
 }
+
+export interface PublicArticleAssetData {
+  publicUrl: string | null;
+  discoveryImage: PublicDiscoveryImage | null;
+}
+
+async function getPublicArticleAssetDataUncached(
+  storagePath: string | null | undefined,
+  alt: string | null | undefined,
+): Promise<PublicArticleAssetData> {
+  if (!storagePath?.trim()) {
+    return {
+      publicUrl: null,
+      discoveryImage: null,
+    };
+  }
+
+  const publicUrl = await getPublicAssetUrl(storagePath);
+
+  return {
+    publicUrl,
+    discoveryImage: resolvePublicDiscoveryImage({
+      storagePath,
+      alt,
+      publicUrl,
+    }),
+  };
+}
+
+export const getPublicArticleAssetData = cache(
+  getPublicArticleAssetDataUncached,
+);
 
 export async function getPublicCvUrl(
   cvStoragePath: string | null,

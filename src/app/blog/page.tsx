@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { PageIntro } from "@/components/public/page-intro";
 import { TopicFilterBar } from "@/components/public/topic-filter-bar";
 import { FeaturedArticle } from "@/components/public/featured-article";
@@ -6,36 +6,113 @@ import { ArticleListItem } from "@/components/public/article-list-item";
 import { PaginationControls } from "@/components/public/pagination-controls";
 import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
 import {
-  getBlogViewData,
+  getCategoryBySlug,
+  getMemoizedBlogViewData,
   getPublishedCategories,
   sanitizeSearchQuery,
   type PublicCategory,
   type PublicBlogViewData,
 } from "@/lib/public-articles";
+import {
+  getSingleQueryParam,
+  hasQueryParam,
+  parsePageQuery,
+  resolveBlogDiscovery,
+  type DiscoverySearchParams,
+} from "@/lib/discovery-query";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: "Articles | Marie Medere",
-  description:
-    "Browse published writing and educational articles from the Marie Medere Medical Writing Portfolio & Educational Blog.",
-};
+const BLOG_TITLE = "Articles";
+const BLOG_DESCRIPTION =
+  "Browse published writing and educational articles from the Marie Medere Medical Writing Portfolio & Educational Blog.";
+const BLOG_PAGE_SIZE = 6;
 
 interface BlogPageProps {
-  searchParams: Promise<{
-    q?: string;
-    topic?: string;
-    page?: string;
-  }>;
+  searchParams: Promise<DiscoverySearchParams>;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: BlogPageProps): Promise<Metadata> {
+  const query = await searchParams;
+  const pageState = parsePageQuery(query.page);
+  const requestedTopicSlug = getSingleQueryParam(query.topic)?.trim();
+
+  let canonicalTopicSlug: string | null = null;
+  let totalPages = 0;
+
+  try {
+    if (
+      !hasQueryParam(query.q) &&
+      hasQueryParam(query.topic) &&
+      requestedTopicSlug
+    ) {
+      const category = await getCategoryBySlug(requestedTopicSlug);
+      canonicalTopicSlug = category?.slug ?? null;
+    } else if (
+      !hasQueryParam(query.q) &&
+      !hasQueryParam(query.topic) &&
+      !pageState.isMalformed &&
+      pageState.page > 1
+    ) {
+      const blogData = await getMemoizedBlogViewData(
+        pageState.page,
+        BLOG_PAGE_SIZE,
+        "",
+        "",
+      );
+      totalPages = blogData.totalPages;
+    }
+
+    const discovery = resolveBlogDiscovery({
+      q: query.q,
+      topic: query.topic,
+      page: query.page,
+      totalPages,
+      canonicalTopicSlug,
+    });
+
+    return {
+      title: BLOG_TITLE,
+      description: BLOG_DESCRIPTION,
+      ...getPublicRouteDiscoveryMetadata(discovery.canonicalPath, {
+        routePolicy: {
+          index: discovery.index,
+          follow: true,
+        },
+        social: {
+          title: BLOG_TITLE,
+          description: BLOG_DESCRIPTION,
+        },
+      }),
+    };
+  } catch {
+    return {
+      title: BLOG_TITLE,
+      description: BLOG_DESCRIPTION,
+      ...getPublicRouteDiscoveryMetadata("/blog", {
+        routePolicy: {
+          index: false,
+          follow: true,
+        },
+        social: {
+          title: BLOG_TITLE,
+          description: BLOG_DESCRIPTION,
+        },
+      }),
+    };
+  }
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const { q, topic, page: rawPage } = await searchParams;
-  const parsedPage = Number(rawPage);
-  const currentPage =
-    Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  const query = await searchParams;
+  const currentPage = parsePageQuery(query.page).page;
+  const requestedQuery = getSingleQueryParam(query.q);
+  const topicSlug = getSingleQueryParam(query.topic)?.trim() || undefined;
 
-  const safeQuery = sanitizeSearchQuery(q);
+  const safeQuery = sanitizeSearchQuery(requestedQuery);
   const hasSearch = safeQuery.length > 0;
-  const isFiltered = Boolean(hasSearch || topic);
+  const isFiltered = Boolean(hasSearch || topicSlug);
 
   let blogData: PublicBlogViewData | null = null;
   let categories: PublicCategory[] = [];
@@ -43,12 +120,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   try {
     const [fetchedData, fetchedCategories] = await Promise.all([
-      getBlogViewData({
-        page: currentPage,
-        pageSize: 6,
-        topicSlug: topic,
-        searchQuery: safeQuery,
-      }),
+      getMemoizedBlogViewData(
+        currentPage,
+        BLOG_PAGE_SIZE,
+        topicSlug || "",
+        safeQuery,
+      ),
       getPublishedCategories(),
     ]);
     blogData = fetchedData;
@@ -82,7 +159,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   const sectionHeading = hasSearch
     ? "Search Results"
-    : topic
+    : topicSlug
       ? "Topic Entries"
       : "Archive Entries";
 
@@ -98,7 +175,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <div>
         <TopicFilterBar
           categories={categories}
-          activeTopicSlug={topic}
+          activeTopicSlug={topicSlug}
           activeSearchQuery={safeQuery}
         />
       </div>
@@ -133,8 +210,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 article={article}
                 index={
                   !isFiltered
-                    ? (currentPage - 1) * 6 + index + 1
-                    : (currentPage - 1) * 6 + index
+                    ? (currentPage - 1) * BLOG_PAGE_SIZE + index + 1
+                    : (currentPage - 1) * BLOG_PAGE_SIZE + index
                 }
               />
             ))}
@@ -147,7 +224,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               totalPages={totalPages}
               basePath="/blog"
               searchQuery={safeQuery}
-              topicSlug={topic}
+              topicSlug={topicSlug}
             />
           </div>
         </div>

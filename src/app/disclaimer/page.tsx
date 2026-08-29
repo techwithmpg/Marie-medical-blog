@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicShell } from "@/components/site/public-shell";
 import { PageIntro } from "@/components/public/page-intro";
@@ -7,12 +8,22 @@ import { TopicImprint } from "@/components/evidence/topic-imprint";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { buttonVariants } from "@/components/ui/button";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
-export const metadata = {
-  title: "Medical Disclaimer — Marie Medere",
-  description:
-    "Medical and educational disclaimer for Marie Medere's Medical Writing Portfolio & Educational Blog.",
+const PAGE_TITLE = "Medical Disclaimer";
+const PAGE_DESCRIPTION =
+  "Medical and educational disclaimer for Marie Medere's Medical Writing Portfolio & Educational Blog.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/disclaimer", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default function DisclaimerPage() {

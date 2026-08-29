@@ -710,6 +710,115 @@ Authorizes hosted migration apply to project `eoexnnhqzrkurbqgbtnx` and post-dep
 
 **Status:** ACTIVE / REPLACEMENT ATTEMPT CONSUMED / HOSTED DEPLOYMENT COMPLETE.
 
+### ACTIVE — D034 — Stage-10 SEO, social discovery & analytics architecture
+**Date:** 2026-08-26
+
+**Decision:**
+
+Stage 10 uses the owner-approved architecture frozen in `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`:
+
+1. One server-only site URL authority will supply `metadataBase`, canonical URLs, social URLs, JSON-LD URLs, sitemap URLs, and the robots sitemap reference.
+2. A future owner-approved `SITE_URL` may represent the verified Stage-12 custom domain. Otherwise hosted builds prefer `VERCEL_PROJECT_PRODUCTION_URL`; local development/tests use deterministic `http://localhost:3000`. `VERCEL_ENV` classifies hosted production versus preview behavior. `VERCEL_URL` and `VERCEL_BRANCH_URL` never supply canonical authority. Preview deployments emit `noindex, nofollow` and never become canonical; a hosted production gate must reject localhost or preview/deployment-specific canonical authority.
+3. Public routes will use the native Next.js App Router Metadata API: root `generateMetadata` uses safe public `site_title`, `tagline`, and `default_seo_description` settings; static `metadata` covers static route facts; and route `generateMetadata` covers query-dependent or public database-backed facts. Every indexable page receives accurate title, description, self-canonical, Open Graph, and Twitter metadata.
+4. Search, filtering, and pagination have separate discovery contracts. Clean first pages are canonical; valid blog/topic pagination pages keep their normalized `page` parameter in self-referential canonicals and may remain `index, follow`; search variants remain `noindex, follow` and canonicalize to clean `/blog`; equivalent `/blog?topic={slug}` filters remain `noindex, follow` and canonicalize to `/topics/{slug}`. Valid pagination pages need not appear in the sitemap.
+5. Social previews will use a valid public article featured image when available, otherwise one framework-native 1200×630 Evidence Folio fallback using the frozen parchment/paper, primary/muted ink, oxide, and deep-sage semantic tokens and approved Evidence Folio signature language. Social metadata and imagery may contain verified repository/public facts only.
+6. `src/app/sitemap.ts` will include canonical static public routes, published articles, and valid non-empty topics only. It will exclude admin/auth, drafts, archived/private data, preview hosts, and query duplicates.
+7. `src/app/robots.ts` will allow production public crawling, disallow `/admin`, and reference the canonical sitemap. Preview robots will disallow `/` and omit the sitemap. Robots guidance, `noindex`, canonical tags, and sitemap omission are not security controls.
+8. Published article pages may emit safely serialized `BlogPosting` JSON-LD from visible public facts. Unverified credentials, affiliations, publisher facts, claims, and medical schema types are prohibited.
+9. The only proposed Stage-10 dependency is the official `@vercel/analytics` package. Its Next.js integration must use supported `beforeSend` filtering that returns `null` for admin, private, draft, or unclassifiable routes and sanitizes every permitted public page-view URL to origin + pathname only, removing query strings and fragments before transmission. V1 has no custom events, Google Analytics, Tag Manager, ads, pixels, replay, or alternative tracking.
+10. Local Analytics integration and Vercel dashboard activation are separate boundaries. Hosted activation requires new explicit owner authorization and verified project identity.
+11. Search Console setup follows the documented runbook: verified owner-approved property/domain, sitemap submission, representative URL Inspection, Rich Results validation, and monitoring. Property creation, ownership verification, DNS/tag/file mutation, sitemap submission, and indexing requests require separate hosted authorization.
+12. Public discovery must reuse published-public data boundaries, preserve RLS/service-role secrecy, keep article content server-rendered/indexable, and never expose admin, draft, contact, comment-private, or private-settings data.
+13. No SEO, sitemap, robots, schema, social-card, Analytics-alternative, tracking, or UI library is authorized. Native Next.js APIs and existing public data helpers remain the default.
+14. Stage 10 does not implement Categories or the Media Library and does not finalize or fabricate the production custom domain.
+15. Phase 10A is documentation-only. Application implementation may begin only after this decision is explicitly owner-approved and made ACTIVE. Vercel hosted mutation and Search Console mutation remain separately owner-gated even after local implementation authorization.
+
+**Reason:**
+
+The accepted repository has basic public-route titles/descriptions and published-public data boundaries but no centralized canonical origin, complete social metadata, sitemap, robots route, article JSON-LD, branded fallback card, or Analytics integration. Freezing these contracts first prevents preview-domain canonical drift, duplicate query indexing, draft/private discovery, unverified structured facts, tracking sprawl, and Evidence Folio visual drift.
+
+**Alternatives considered:**
+
+- Hardcoding a guessed production/custom domain (rejected: Stage 12 owns final domain acceptance and no current domain is verified).
+- Using `VERCEL_URL` for canonical generation (rejected: it is deployment-specific and can make previews canonical).
+- Adding a general SEO/sitemap/schema library (rejected: native Next.js APIs cover the V1 requirement with less dependency and abstraction risk).
+- Indexing search/filter combinations (rejected: creates competing query variants without a V1 search-landing-page strategy).
+- Adding Google Analytics, Tag Manager, custom events, or tracking pixels (rejected: outside V1 and unnecessary for the Stage-10 outcome).
+- Treating `robots.txt` as privacy/security enforcement (rejected: it is voluntary crawl guidance).
+- Emitting richer medical/professional schema by inference (rejected: risks fabricated or misleading claims).
+
+**Impact:**
+
+D034 authorizes the frozen Stage-10 architecture. The project owner additionally authorized Phase 10B local implementation on 2026-08-26. Hosted Vercel changes, Search Console changes, final domain configuration, Categories, Media Library, Stage-10 merge, and Stage 11 remain separately unauthorized.
+
+**Approved by:** project owner — explicit approval on 2026-08-26: "I approve D034 — Stage-10 SEO, social discovery & analytics architecture, and I authorize Phase 10B local implementation. No hosted Vercel or Search Console mutation is authorized."
+
+#### Phase 10C execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10B is complete. The project owner has authorized **Phase 10C — Discovery Artifacts & Structured Data** for local implementation of:
+
+- the generated Evidence Folio social fallback;
+- the sitemap;
+- the robots route;
+- published-article `BlogPosting` JSON-LD;
+- focused tests and local quality verification.
+
+This authorization does not permit `@vercel/analytics`, Analytics integration, Vercel Analytics activation, any hosted Vercel mutation, Search Console mutation, final-domain configuration, Supabase mutation, schema changes, Stage-10 merge, Stage 11, Categories, or the Media Library.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I approve the next local Stage-10 discovery implementation phase after Phase 10B. Authorize local implementation of the Evidence Folio social fallback, sitemap, robots route, and published-article BlogPosting JSON-LD under D034. No Vercel hosted mutation, Analytics activation, Search Console mutation, final-domain configuration, Stage-10 merge, or Stage-11 work is authorized."
+
+#### Phase 10D execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10C is complete. The project owner has authorized **Phase 10D — Privacy-Safe Vercel Analytics Integration** for local implementation of:
+
+- the official `@vercel/analytics` dependency;
+- a minimal local Next.js Analytics component integration;
+- the D034-approved `beforeSend` privacy filter;
+- focused tests and local quality verification.
+
+This authorization does not permit hosted Vercel Analytics activation, Vercel dashboard mutation, Vercel deployment, Search Console mutation, DNS mutation, final-domain configuration, Supabase mutation, Auth or Storage changes, schema or migration work, custom Analytics events, Google Analytics, Google Tag Manager, ads or pixels, heatmaps or session replay, Categories, the Media Library, Stage-10 merge, or Stage 11.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I authorize the next local Stage-10 phase for privacy-safe Vercel Analytics integration under D034. Authorize installation of the official `@vercel/analytics` dependency, local Next.js integration, the approved `beforeSend` privacy filter, focused tests, and local quality verification. No hosted Vercel Analytics activation, Search Console mutation, final-domain configuration, Categories/Media implementation, Stage-10 merge, or Stage-11 work is authorized."
+
+#### Phase 10E execution authorization addendum
+
+**Date:** 2026-08-28
+
+Phase 10D is complete. The project owner has authorized **Phase 10E — Full Stage-10 Verification & Closeout** for:
+
+- local Supabase startup only where required by the existing integration and end-to-end test harness, with the established `127.0.0.1:54321` / `localhost:54321` local-only guard;
+- complete Stage-10 regression, rendered metadata/discovery, and Analytics privacy verification;
+- browser, accessibility, responsive, and visual verification;
+- production-build verification; and
+- Stage-10 closeout documentation.
+
+This is a verification and closeout phase, not authorization for new Stage-10 features. Any verified Stage-10 defect may receive only the smallest correction and regression coverage within D034.
+
+This authorization does not permit hosted Vercel Analytics activation, Vercel dashboard mutation, Search Console mutation, DNS mutation, final-domain configuration, hosted Supabase mutation, schema or migration changes, Categories, the Media Library, Stage-10 merge, or Stage 11.
+
+**Approved by:** project owner — explicit approval on 2026-08-28: "I authorize Phase 10E — Full Stage-10 Verification & Closeout. Authorize local Supabase startup where required for the existing integration/E2E test suite, complete Stage-10 regression testing, rendered metadata/discovery validation, Analytics privacy verification, browser/accessibility/visual checks, production build verification, and Stage-10 closeout documentation. No hosted Vercel Analytics activation, Search Console mutation, final-domain configuration, Categories/Media implementation, Stage-10 merge, or Stage-11 work is authorized."
+
+#### Phase 10E execution and local closeout record
+
+**Date:** 2026-08-29
+
+1. Phase 10E used only the guarded project-local Supabase environment at `127.0.0.1:54321`; five committed migrations and synthetic seed fixtures reset cleanly. No linked or hosted Supabase command or mutation occurred.
+2. Database/security verification passed: 323/323 pgTAP tests across 11 files and zero schema lint errors.
+3. Stage-10 focused verification passed: Phase 10B 43/43, Phase 10C 25/25, and Phase 10D 18/18 (86/86 total).
+4. The complete repository Node suite passed 153/153. Both previously unavailable Stage-8 Auth/Storage lifecycle tests passed against the local stack.
+5. Existing browser verification passed 15/15, including 390 px, 768 px, and 1440 px responsive matrices; representative WCAG A/AA/2.2 AA scans reported zero serious and zero critical violations; keyboard/focus and runtime guards passed.
+6. Rendered production-classified metadata, query variants, social fallback, sitemap, robots, article JSON-LD, admin isolation, and Analytics privacy were verified against a synthetic HTTPS authority. Hosted Analytics remained inactive.
+7. Rendered verification exposed one D034 defect: an `alternates.canonical` `URL` instance caused Next.js 16.3.2 to reapply the current `/blog` pathname to a cross-route topic canonical. Commit `62a15af` serializes the already-validated canonical to the documented string form and strengthens the topic-filter regression assertion. Rebuilt HTML now emits exactly one `/topics/{slug}` canonical matching its OG URL.
+8. Quality gates passed: typecheck, lint, format check, `git diff --check`, production dependency audit (0 vulnerabilities), and the 18-route production build.
+9. Stage-10 local implementation and Phase 10E are COMPLETE / FULL LOCAL GATE PASS. The handoff is `docs/36-STAGE-10-HANDOFF.md`.
+10. Hosted Vercel Analytics activation, Vercel dashboard mutation, Search Console, DNS/final-domain configuration, hosted Supabase mutation, Categories, Media Library, Stage-10 merge, Stage 11, and all next development work remain unauthorized or owner-gated exactly as recorded above.
+
+**Status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION.
+
 ---
 
 ## New decision template

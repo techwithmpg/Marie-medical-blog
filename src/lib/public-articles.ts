@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
 
 export interface PublicCategory {
   id: string;
@@ -56,6 +57,14 @@ export interface PublicBlogViewData {
   page: number;
   pageSize: number;
   totalPages: number;
+}
+
+export interface PublicSitemapArticle {
+  slug: string;
+  status: string;
+  published_at: string | null;
+  updated_at: string | null;
+  topic_slug: string | null;
 }
 
 export function sanitizeSearchQuery(raw: string | undefined | null): string {
@@ -165,7 +174,7 @@ export async function getPublishedCategories(): Promise<PublicCategory[]> {
   return (data || []) as PublicCategory[];
 }
 
-export async function getCategoryBySlug(
+async function getCategoryBySlugUncached(
   slug: string,
 ): Promise<PublicCategory | null> {
   if (!slug) return null;
@@ -182,6 +191,8 @@ export async function getCategoryBySlug(
 
   return data as PublicCategory | null;
 }
+
+export const getCategoryBySlug = cache(getCategoryBySlugUncached);
 
 export async function getPublishedArticles(options?: {
   page?: number;
@@ -261,6 +272,15 @@ export async function getPublishedArticles(options?: {
     totalPages,
   };
 }
+
+export const getMemoizedTopicArticles = cache(
+  async (topicSlug: string, page: number, pageSize: number) =>
+    getPublishedArticles({
+      topicSlug,
+      page,
+      pageSize,
+    }),
+);
 
 export async function getBlogViewData(options?: {
   page?: number;
@@ -365,7 +385,22 @@ export async function getBlogViewData(options?: {
   };
 }
 
-export async function getPublishedArticleBySlug(
+export const getMemoizedBlogViewData = cache(
+  async (
+    page: number,
+    pageSize: number,
+    topicSlug: string,
+    searchQuery: string,
+  ) =>
+    getBlogViewData({
+      page,
+      pageSize,
+      topicSlug: topicSlug || undefined,
+      searchQuery: searchQuery || undefined,
+    }),
+);
+
+async function getPublishedArticleBySlugUncached(
   slug: string,
 ): Promise<PublicArticleDetail | null> {
   if (!slug) return null;
@@ -420,6 +455,38 @@ export async function getPublishedArticleBySlug(
     updated_at: raw.updated_at || raw.created_at,
     references,
   };
+}
+
+export const getPublishedArticleBySlug = cache(
+  getPublishedArticleBySlugUncached,
+);
+
+export async function getPublishedSitemapArticles(): Promise<
+  PublicSitemapArticle[]
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("articles")
+    .select("slug, status, published_at, updated_at, categories ( slug )")
+    .eq("status", "published");
+
+  if (error) {
+    throw new Error("Unable to load published sitemap articles.");
+  }
+
+  return (data || []).map((row) => {
+    const category = Array.isArray(row.categories)
+      ? row.categories[0]
+      : row.categories;
+
+    return {
+      slug: row.slug,
+      status: row.status,
+      published_at: row.published_at,
+      updated_at: row.updated_at,
+      topic_slug: category?.slug || null,
+    };
+  });
 }
 
 export async function getFeaturedPublishedArticle(): Promise<PublicArticleSummary | null> {

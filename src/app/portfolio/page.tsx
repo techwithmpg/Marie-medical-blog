@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicShell } from "@/components/site/public-shell";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,12 +11,22 @@ import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { getPortfolioPublishedArticles } from "@/lib/public-articles";
 import { getPublicSiteSettings } from "@/lib/public-data";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
-export const metadata = {
-  title: "Selected Writing — Marie Medere",
-  description:
-    "Selected Writing portfolio and educational publication index by Marie Medere.",
+const PAGE_TITLE = "Selected Writing";
+const PAGE_DESCRIPTION =
+  "Selected Writing portfolio and educational publication index by Marie Medere.";
+
+export const metadata: Metadata = {
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  ...getPublicRouteDiscoveryMetadata("/portfolio", {
+    social: {
+      title: PAGE_TITLE,
+      description: PAGE_DESCRIPTION,
+    },
+  }),
 };
 
 export default async function PortfolioPage() {
