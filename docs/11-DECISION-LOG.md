@@ -988,3 +988,132 @@ No database migrations, no new tables, no bucket/policy changes, no new dependen
 **Alternatives considered:**
 **Impact:**
 **Approved by:** project owner / architecture gate
+
+---
+
+### ACTIVE — D036 Phase A — Managed Public Media Editor
+
+**Date:** 2026-08-30
+
+**Decision:** Implement the fixed V1 website media-placement editor before
+changing public-page image layouts. The fixed placements are `home_hero`,
+`about_hero`, `portfolio_hero`, `contact_hero`, `author_portrait`, and
+`default_social`. Placements store contextual alt/decorative semantics and
+independent desktop/mobile focal positions. Assigned files become site-owned
+copies under `public-assets/site/{slot}/...`.
+
+**Reason:** The accepted Evidence Folio UI is image-led, while existing Media
+Management only inventories Storage and supports article featured-image reuse.
+A persistent public-placement layer is therefore required before hero layouts
+can be implemented safely.
+
+**Impact:** D035's prior no-Media-migration assumption is superseded only for
+this fixed placement model. This does not authorize a page builder, arbitrary
+DAM, hosted Supabase deployment, Stage 11, Stage 12, final-domain work, Search
+Console changes, or hosted Analytics activation.
+
+**Approved by:** project owner — explicit local/manual authorization,
+2026-08-30.
+
+**Status:** ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / MERGE READY.
+
+
+---
+
+#### D035 / D036 implementation and local verification closeout
+
+**Date:** 2026-08-30
+
+The Pre-Stage-11 V1 Admin Completion implementation on
+`fix/v1-admin-completion` is complete and has passed the full local quality
+gate.
+
+Completed scope includes:
+
+1. D035 Phase 1 Category Management.
+2. D035 Phase 2 Media Management.
+3. D036 fixed managed-public-media placements:
+   `home_hero`, `about_hero`, `portfolio_hero`, `contact_hero`,
+   `author_portrait`, and `default_social`.
+4. Managed website images use site-owned Storage copies and persisted placement
+   metadata, including contextual alt/decorative semantics and independent
+   desktop/mobile focal positions.
+5. The public Home, About, Blog, Article, Portfolio and Contact presentation was
+   refined under the existing Evidence Folio system without changing the frozen
+   stack or introducing a page builder, generic DAM, reader accounts or
+   multi-author behavior.
+6. The owner-approved public structural layout is viewport-fluid with responsive
+   gutters. Major structural grids, images and editorial cards may fill their
+   available parent width using fluid fractional tracks. Readability-specific
+   content such as article prose, biography copy and form copy may retain
+   deliberate reading-width constraints. The admin workspace is not converted
+   to this public-page layout rule.
+7. The fixed-width public shell assumption is therefore superseded by this
+   owner-approved fluid structural rule while the Evidence Folio visual language,
+   accessibility and mobile reading requirements remain authoritative.
+
+Database change introduced by D036:
+
+- `supabase/migrations/20260830090000_managed_public_media_slots.sql`
+  adds the fixed managed-site-media persistence required by D036 with RLS.
+- This migration has been verified locally only.
+- No hosted Supabase migration or other hosted Supabase mutation was performed
+  or authorized by this closeout.
+
+Full local verification completed successfully:
+
+- pgTAP database/security suite: **323/323 PASS**;
+- complete Node regression suite: **174/174 PASS**;
+- Playwright browser suite: **17/17 PASS**;
+- TypeScript: **PASS**;
+- ESLint: **PASS**;
+- Prettier: **PASS**;
+- production build: **PASS**;
+- staged whitespace/integrity verification: **PASS**;
+- branch relationship before governance closeout:
+  `fix/v1-admin-completion` was **0 behind / 6 ahead** of accepted
+  `origin/main`.
+
+Browser-test hardening performed during closeout preserved product behavior and
+security boundaries. Tests were made rerun-safe for persistent local fixtures,
+public submission rate limits, message lifecycle navigation and redesigned
+public surfaces. Production abuse-defense limits were not weakened.
+
+The project owner has already authorized the completion sequence:
+stage/status review -> quality gate -> governance/status reconciliation ->
+commit/push branch -> normal merge preserving history -> post-merge
+verification.
+
+This record does **not** claim that the branch has been committed, pushed,
+merged or deployed yet. Those actions remain the next integration steps.
+
+**Status:** ACTIVE / D035 + D036 IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS /
+OWNER-AUTHORIZED MERGE FLOW READY.
+
+#### D036 public-layout integration addendum
+
+**Date:** 2026-08-30
+
+The owner approved the public-page structural refinement accompanying managed
+site media.
+
+The V1 public layout contract now additionally requires:
+
+- viewport-fluid public shell, header and footer with responsive gutters;
+- fluid structural grids using fractional tracks where appropriate;
+- major imagery and editorial cards should use the width available from their
+  structural parent rather than inheriting a universal desktop max-width;
+- readability constraints remain appropriate for actual prose, biographies,
+  disclaimers and form copy;
+- the admin workspace is unaffected by this public-layout rule;
+- responsive/mobile quality, accessibility, SEO/indexability, performance and
+  the Evidence Folio identity remain mandatory.
+
+This is a refinement of the accepted Evidence Folio implementation contract,
+not authorization for a new visual system, arbitrary page builder or broader
+V1 scope.
+
+**Approved by:** project owner — explicit public UI review approval,
+2026-08-30.
+
+**Status:** ACTIVE / FROZEN FOR CURRENT V1 PUBLIC STRUCTURE.

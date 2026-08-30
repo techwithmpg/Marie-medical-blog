@@ -61,6 +61,18 @@ interface ProfileUsageRow {
   cv_storage_path: string | null;
 }
 
+interface SiteMediaUsageRow {
+  slot:
+    | "home_hero"
+    | "about_hero"
+    | "portfolio_hero"
+    | "contact_hero"
+    | "author_portrait"
+    | "default_social";
+
+  storage_path: string;
+}
+
 /**
  * Recursively lists all objects in a bucket namespace up to maxDepth.
  * Handles pagination and skips directory markers cleanly.
@@ -71,7 +83,15 @@ async function listBucketObjects(
   prefix: string = "",
   currentDepth: number = 0,
   maxDepth: number = 12,
-): Promise<Array<{ path: string; name: string; metadata: RawStorageObject["metadata"]; created_at: string; updated_at: string }>> {
+): Promise<
+  Array<{
+    path: string;
+    name: string;
+    metadata: RawStorageObject["metadata"];
+    created_at: string;
+    updated_at: string;
+  }>
+> {
   if (currentDepth > maxDepth) {
     throw new Error(`Storage traversal exceeded the safe depth for ${bucket}.`);
   }
@@ -89,13 +109,11 @@ async function listBucketObjects(
   let hasMore = true;
 
   while (hasMore) {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .list(prefix, {
-        limit: PAGE_SIZE,
-        offset,
-        sortBy: { column: "name", order: "asc" },
-      });
+    const { data, error } = await supabase.storage.from(bucket).list(prefix, {
+      limit: PAGE_SIZE,
+      offset,
+      sortBy: { column: "name", order: "asc" },
+    });
 
     if (error || !data) throw new Error(`Unable to list ${bucket}.`);
 
@@ -143,18 +161,24 @@ async function resolveUsageMap(
 ): Promise<Map<string, MediaUsageInfo>> {
   const usageMap = new Map<string, MediaUsageInfo>();
 
-  const [articlesResult, profilesResult] = await Promise.all([
+  const [articlesResult, profilesResult, siteMediaResult] = await Promise.all([
     supabase
       .from("articles")
       .select("id, title, slug, status, featured_image_path")
       .not("featured_image_path", "is", null),
+
     supabase
       .from("profiles")
       .select("id, cv_storage_path")
       .not("cv_storage_path", "is", null),
+
+    supabase
+      .from("site_media_slots")
+      .select("slot, storage_path")
+      .not("storage_path", "is", null),
   ]);
 
-  if (articlesResult.error || profilesResult.error) {
+  if (articlesResult.error || profilesResult.error || siteMediaResult.error) {
     throw new Error("Unable to establish exact media usage.");
   }
 
@@ -177,13 +201,51 @@ async function resolveUsageMap(
 
   if (profilesResult.data) {
     for (const profile of profilesResult.data as ProfileUsageRow[]) {
-      if (!profile.cv_storage_path) continue;
+      if (!profile.cv_storage_path) {
+        continue;
+      }
+
       const key = `public-assets:${profile.cv_storage_path}`;
+
       usageMap.set(key, {
         state: "used",
         isUsed: true,
         canDelete: false,
         locationDescription: "Used as Marie's public CV document",
+      });
+    }
+  }
+
+  if (siteMediaResult.data) {
+    const names: Record<SiteMediaUsageRow["slot"], string> = {
+      home_hero: "Homepage Hero",
+
+      about_hero: "About Hero",
+
+      portfolio_hero: "Portfolio Hero",
+
+      contact_hero: "Contact Hero",
+
+      author_portrait: "Author Portrait",
+
+      default_social: "Default Social Image",
+    };
+
+    for (const placement of siteMediaResult.data as SiteMediaUsageRow[]) {
+      if (!placement.storage_path) {
+        continue;
+      }
+
+      const key = `public-assets:${placement.storage_path}`;
+
+      usageMap.set(key, {
+        state: "used",
+
+        isUsed: true,
+
+        canDelete: false,
+
+        locationDescription: `Used as website media: ${names[placement.slot]}`,
       });
     }
   }
@@ -217,21 +279,27 @@ export async function getAdminMediaInventory(): Promise<AdminMediaRecord[]> {
     updated_at: string;
   }> = [
     ...draftItems.map((item) => ({ ...item, bucket: "draft-assets" as const })),
-    ...publicItems.map((item) => ({ ...item, bucket: "public-assets" as const })),
+    ...publicItems.map((item) => ({
+      ...item,
+      bucket: "public-assets" as const,
+    })),
   ];
 
   // 2. Filter to images only (strictly exclude PDFs and non-image types)
   const imageItems = allRawItems.filter((item) => {
     const declaredMime = item.metadata?.mimetype?.toLowerCase();
-    if (declaredMime === "application/pdf" || item.name.toLowerCase().endsWith(".pdf")) {
+    if (
+      declaredMime === "application/pdf" ||
+      item.name.toLowerCase().endsWith(".pdf")
+    ) {
       return false; // PDFs are excluded from Media Management
     }
 
     return Boolean(
       declaredMime &&
-        ALLOWED_IMAGE_MIME_TYPES.includes(
-          declaredMime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
-        ),
+      ALLOWED_IMAGE_MIME_TYPES.includes(
+        declaredMime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
+      ),
     );
   });
 
@@ -265,7 +333,8 @@ export async function getAdminMediaInventory(): Promise<AdminMediaRecord[]> {
   for (const item of imageItems) {
     const isPrivate = item.bucket === "draft-assets";
     const rawSize = item.metadata?.size ?? item.metadata?.contentLength;
-    const size = typeof rawSize === "number" && Number.isFinite(rawSize) ? rawSize : null;
+    const size =
+      typeof rawSize === "number" && Number.isFinite(rawSize) ? rawSize : null;
     const mimeType = item.metadata?.mimetype?.toLowerCase() ?? null;
 
     // Reuse eligibility:
@@ -274,9 +343,15 @@ export async function getAdminMediaInventory(): Promise<AdminMediaRecord[]> {
     let isEligibleForReuse = true;
     let ineligibilityReason: string | null = null;
 
-    if (!mimeType || !ALLOWED_IMAGE_MIME_TYPES.includes(mimeType as (typeof ALLOWED_IMAGE_MIME_TYPES)[number])) {
+    if (
+      !mimeType ||
+      !ALLOWED_IMAGE_MIME_TYPES.includes(
+        mimeType as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
+      )
+    ) {
       isEligibleForReuse = false;
-      ineligibilityReason = "Format not supported for article reuse (requires JPEG, PNG, WebP, or AVIF).";
+      ineligibilityReason =
+        "Format not supported for article reuse (requires JPEG, PNG, WebP, or AVIF).";
     } else if (size === null || size <= 0) {
       isEligibleForReuse = false;
       ineligibilityReason = "Missing or invalid file size metadata.";
@@ -301,7 +376,9 @@ export async function getAdminMediaInventory(): Promise<AdminMediaRecord[]> {
         }
       }
     } else {
-      previewUrl = supabase.storage.from("public-assets").getPublicUrl(item.path).data.publicUrl;
+      previewUrl = supabase.storage
+        .from("public-assets")
+        .getPublicUrl(item.path).data.publicUrl;
     }
 
     // Usage
@@ -350,11 +427,13 @@ export async function checkAssetUsage(
 ): Promise<MediaUsageInfo> {
   const usageMap = await resolveUsageMap(supabase);
   const key = `${bucket}:${path}`;
-  return usageMap.get(key) ?? {
-    state: "unused",
-    isUsed: false,
-    canDelete: true,
-  };
+  return (
+    usageMap.get(key) ?? {
+      state: "unused",
+      isUsed: false,
+      canDelete: true,
+    }
+  );
 }
 
 /** Reads authoritative object facts for exact-path mutation checks. */
@@ -368,6 +447,8 @@ export async function getStorageObjectFacts(
   return {
     size: typeof data.size === "number" ? data.size : null,
     mimeType:
-      typeof data.contentType === "string" ? data.contentType.toLowerCase() : null,
+      typeof data.contentType === "string"
+        ? data.contentType.toLowerCase()
+        : null,
   };
 }

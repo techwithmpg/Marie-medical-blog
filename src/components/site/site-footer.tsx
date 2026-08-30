@@ -29,7 +29,7 @@ export function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer className="mt-auto w-full border-t border-[#D2C9BC] bg-[#FFFDF9]">
-      <div className="mx-auto max-w-[1248px] px-5 py-10 sm:px-8 sm:py-14 lg:px-12">
+      <div className="w-full min-w-0 px-5 py-10 sm:px-8 sm:py-14 lg:px-10 xl:px-12 2xl:px-16">
         <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
           {/* Identity */}
           <div className="flex flex-col space-y-2">

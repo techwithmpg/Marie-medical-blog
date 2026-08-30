@@ -168,13 +168,20 @@ export function ArticleEditor({
     const path = pendingMediaCopyPathRef.current;
     const articleId = persistedArticleIdRef.current;
     if (!path || !articleId) return null;
-    const result = await compensateUnsavedArticleImageAction({ articleId, path });
+    const result = await compensateUnsavedArticleImageAction({
+      articleId,
+      path,
+    });
     if (!result.success) {
-      return result.error ?? "The unpersisted image copy could not be cleaned up.";
+      return (
+        result.error ?? "The unpersisted image copy could not be cleaned up."
+      );
     }
     pendingMediaCopyPathRef.current = null;
     setFeaturedImagePath((current) => (current === path ? null : current));
-    setFeaturedImageAlt((current) => featuredImagePath === path ? "" : current);
+    setFeaturedImageAlt((current) =>
+      featuredImagePath === path ? "" : current,
+    );
     return null;
   };
 
@@ -233,7 +240,9 @@ export function ArticleEditor({
 
       if (!result.success) {
         const cleanupWarning = await compensatePendingMediaCopy();
-        setErrorMessage(`${result.error || "Failed to save draft."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
+        setErrorMessage(
+          `${result.error || "Failed to save draft."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
 
@@ -334,7 +343,9 @@ export function ArticleEditor({
 
       if (!result.success) {
         const cleanupWarning = await compensatePendingMediaCopy();
-        setErrorMessage(`${result.error || "Failed to publish article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
+        setErrorMessage(
+          `${result.error || "Failed to publish article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
 
@@ -413,7 +424,9 @@ export function ArticleEditor({
 
       if (!result.success) {
         const cleanupWarning = await compensatePendingMediaCopy();
-        setErrorMessage(`${result.error || "Failed to update published article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
+        setErrorMessage(
+          `${result.error || "Failed to update published article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
 
@@ -1082,7 +1095,8 @@ export function ArticleEditor({
                 const cleanupWarning = await compensatePendingMediaCopy();
                 if (cleanupWarning) setWarningMessage(cleanupWarning);
               }
-              pendingMediaCopyPathRef.current = source === "media" ? path : null;
+              pendingMediaCopyPathRef.current =
+                source === "media" ? path : null;
               setFeaturedImagePath(path);
               markDirty();
             }}

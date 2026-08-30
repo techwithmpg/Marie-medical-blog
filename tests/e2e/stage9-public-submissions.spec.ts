@@ -48,11 +48,13 @@ test.describe("Stage 9 Public Submissions E2E", () => {
       ),
     ).toBeVisible();
 
-    // Fill comment form
+    // Fill comment form with a run-specific synthetic email so repeated
+    // verification does not collide with legitimate public rate limits.
+    const commentRun = Date.now().toString();
+    const commentEmail = `stage9e-comment-auto-${commentRun}@example.invalid`;
+
     await page.locator("#commenter-name").fill("Synthetic E2E Commenter");
-    await page
-      .locator("#commenter-email")
-      .fill("stage9e-comment-auto@example.invalid");
+    await page.locator("#commenter-email").fill(commentEmail);
     await page
       .locator("#comment-body")
       .fill(
@@ -78,9 +80,7 @@ test.describe("Stage 9 Public Submissions E2E", () => {
 
     // Verify email is still absent from DOM
     const updatedBodyText = await page.textContent("body");
-    expect(updatedBodyText).not.toContain(
-      "stage9e-comment-auto@example.invalid",
-    );
+    expect(updatedBodyText).not.toContain(commentEmail);
   });
 
   test("2. Public contact form validation, submission, live counters, and reset behavior", async ({
@@ -109,19 +109,33 @@ test.describe("Stage 9 Public Submissions E2E", () => {
     await expect(page.getByText("0 / 200")).toBeVisible();
     await expect(page.getByText("0 / 5000")).toBeVisible();
 
-    // Verify medical inquiry warning and compact disclaimer
+    // Verify medical inquiry warning and the dynamic disclaimer surface.
+    // Disclaimer copy itself is configurable through Site Settings.
     await expect(page.getByText("Personal medical inquiries")).toBeVisible();
+
+    const disclaimer = page.getByRole("complementary", {
+      name: "Medical and educational disclaimer",
+    });
+
+    await expect(disclaimer).toBeVisible();
     await expect(
-      page.getByText(
-        "The content published on this website is for educational and informational purposes only",
-      ),
+      disclaimer.getByText("Medical Information & Educational Notice"),
+    ).toBeVisible();
+    await expect(
+      disclaimer.getByRole("link", {
+        name: /Read the complete medical disclaimer/,
+      }),
     ).toBeVisible();
 
-    // Fill valid contact inquiry
+    // Fill valid contact inquiry with a run-specific synthetic email so
+    // repeated browser verification remains independent of abuse limits.
+    const contactRun = Date.now().toString();
+    const contactEmail = `stage9e-contact-auto-${contactRun}@example.invalid`;
+
     await nameInput.click();
     await nameInput.fill("Synthetic Stage 9E Inquirer");
     await emailInput.click();
-    await emailInput.fill("stage9e-contact-auto@example.invalid");
+    await emailInput.fill(contactEmail);
     await subjectInput.click();
     await subjectInput.fill("Synthetic Stage 9E Professional Inquiry");
     await messageInput.click();

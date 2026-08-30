@@ -1,22 +1,36 @@
-import * as React from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { PublicShell } from "@/components/site/public-shell";
-import { buttonVariants } from "@/components/ui/button";
-import { PageIntro } from "@/components/public/page-intro";
-import { EvidenceRail } from "@/components/evidence/evidence-rail";
-import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
-import { ArticleListItem } from "@/components/public/article-list-item";
-import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
-import { SplitRule } from "@/components/evidence/split-rule";
-import { getPortfolioPublishedArticles } from "@/lib/public-articles";
-import { getPublicSiteSettings } from "@/lib/public-data";
-import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
-import { cn } from "@/lib/utils";
 
-const PAGE_TITLE = "Selected Writing";
+import { FolioMarker } from "@/components/evidence/folio-marker";
+import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
+import { HomeContactBanner } from "@/components/public/home-contact-banner";
+import {
+  PortfolioCompactCard,
+  PortfolioFeaturedCard,
+} from "@/components/public/portfolio-writing-cards";
+import { PublicShell } from "@/components/site/public-shell";
+import {
+  getPortfolioPublishedArticles,
+  type PublicArticleSummary,
+} from "@/lib/public-articles";
+import {
+  getPublicArticleAssetData,
+  getPublicSiteSettings,
+} from "@/lib/public-data";
+import { getPublicSiteMediaPlacement } from "@/lib/public-site-media";
+import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
+
+const PAGE_TITLE = "Portfolio";
+
 const PAGE_DESCRIPTION =
   "Selected Writing portfolio and educational publication index by Marie Medere.";
+
+interface PortfolioPageProps {
+  searchParams: Promise<{
+    topic?: string | string[];
+  }>;
+}
 
 export const metadata: Metadata = {
   title: PAGE_TITLE,
@@ -29,12 +43,24 @@ export const metadata: Metadata = {
   }),
 };
 
-export default async function PortfolioPage() {
-  let portfolioArticles: Awaited<
-    ReturnType<typeof getPortfolioPublishedArticles>
-  > = [];
-  const settings = await getPublicSiteSettings();
+function getTopicValue(value: string | string[] | undefined): string {
+  if (Array.isArray(value)) {
+    return value[0]?.trim() ?? "";
+  }
+
+  return value?.trim() ?? "";
+}
+
+export default async function PortfolioPage({
+  searchParams,
+}: PortfolioPageProps) {
+  const query = await searchParams;
+
+  let portfolioArticles: PublicArticleSummary[] = [];
+
   let fetchError = false;
+
+  const settings = await getPublicSiteSettings();
 
   try {
     portfolioArticles = await getPortfolioPublishedArticles();
@@ -42,121 +68,228 @@ export default async function PortfolioPage() {
     fetchError = true;
   }
 
+  const categoryMap = new Map<
+    string,
+    NonNullable<PublicArticleSummary["category"]>
+  >();
+
+  portfolioArticles.forEach((article) => {
+    if (article.category) {
+      categoryMap.set(article.category.slug, article.category);
+    }
+  });
+
+  const categories = Array.from(categoryMap.values());
+
+  const requestedTopic = getTopicValue(query.topic);
+
+  const activeTopic = categoryMap.has(requestedTopic) ? requestedTopic : "";
+
+  const visibleArticles = activeTopic
+    ? portfolioArticles.filter(
+        (article) => article.category?.slug === activeTopic,
+      )
+    : portfolioArticles;
+
+  const featuredArticles = visibleArticles.slice(0, 3);
+
+  const moreArticles = visibleArticles.slice(3);
+
+  const imageEntries = await Promise.all(
+    visibleArticles.map(async (article) => {
+      try {
+        const asset = await getPublicArticleAssetData(
+          article.featured_image_path,
+          article.featured_image_alt,
+        );
+
+        return [article.id, asset.publicUrl] as const;
+      } catch {
+        return [article.id, null] as const;
+      }
+    }),
+  );
+
+  const imageUrls: Record<string, string | null> =
+    Object.fromEntries(imageEntries);
+
+  const portfolioHero = await getPublicSiteMediaPlacement("portfolio_hero");
+
+  const mastheadFallback = featuredArticles[0]
+    ? (imageUrls[featuredArticles[0].id] ?? null)
+    : null;
+
+  const mastheadImageUrl = portfolioHero?.publicUrl ?? mastheadFallback;
+
+  const mastheadAlt = portfolioHero
+    ? portfolioHero.isDecorative
+      ? ""
+      : portfolioHero.altText
+    : (featuredArticles[0]?.featured_image_alt ?? "");
+
   return (
     <PublicShell settings={settings}>
-      <div className="space-y-16 sm:space-y-20">
-        {/* Page Header */}
-        <PageIntro
-          folioNumber={1}
-          folioLabel="Curated Works"
-          topicLabel="Portfolio"
-          topicVariant="oxide"
-          title="Selected Writing"
-          deck="Selected published medical writing and educational publications will appear here as approved content becomes available."
-        />
+      <div className="space-y-10 sm:space-y-12">
+        {/* Masthead */}
+        <section className="overflow-hidden border-b border-subtle-divider">
+          <div className="grid min-h-[300px] md:grid-cols-[minmax(0,0.56fr)_minmax(0,0.44fr)] lg:min-h-[330px]">
+            <div className="relative z-10 flex min-w-0 flex-col justify-center py-8 pr-4 sm:py-10 md:pr-10 lg:pr-14">
+              <nav aria-label="Breadcrumb" className="mb-6">
+                <ol className="text-muted-ink flex items-center gap-2 text-xs">
+                  <li>
+                    <Link href="/" className="hover:text-brand-oxide">
+                      Home
+                    </Link>
+                  </li>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-          {/* Primary Column */}
-          <div className="space-y-12 lg:col-span-8">
-            {/* Selected Articles / Curated Writing Shell */}
-            <section className="space-y-6">
-              {fetchError ? (
-                <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
-                  Unable to load published writing at this time. Please try
-                  again later.
-                </div>
-              ) : portfolioArticles.length > 0 ? (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between border-b border-[#D2C9BC] pb-3">
-                    <h2 className="font-serif text-lg font-medium text-[#242321]">
-                      Curated Publications
-                    </h2>
-                    <span className="text-xs text-[#5E5953]">
-                      {portfolioArticles.length} Selected{" "}
-                      {portfolioArticles.length === 1 ? "Work" : "Works"}
-                    </span>
-                  </div>
+                  <li aria-hidden="true">›</li>
 
-                  <div className="space-y-4">
-                    {portfolioArticles.map((article, index) => (
-                      <ArticleListItem
-                        key={article.id}
-                        article={article}
-                        index={index}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <EmptyEditorialState
-                  title="Selected Writing"
-                  description="Published medical writing entries and educational publications will appear here as entries are released."
-                  topicLabel="Publication Archive"
-                  actionHref="/blog"
-                  actionLabel="Browse All Articles"
-                />
-              )}
-            </section>
+                  <li className="text-ink">Portfolio</li>
+                </ol>
+              </nav>
 
-            {/* Inquiries Bridge */}
-            <section className="space-y-4 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-8">
-              <h2 className="font-serif text-2xl font-medium text-[#242321]">
-                Professional Inquiries
-              </h2>
-              <p className="text-sm leading-relaxed text-[#5E5953]">
-                For inquiries about Marie Medere&apos;s medical writing
-                portfolio and educational publication work, use the contact
-                page.
+              <h1 className="font-serif text-5xl leading-[0.95] font-medium tracking-tight text-ink sm:text-6xl lg:text-7xl">
+                Portfolio
+              </h1>
+
+              <p className="text-brand-oxide mt-4 text-lg font-medium">
+                Selected Writing
               </p>
-              <div className="pt-2">
-                <Link
-                  href="/contact"
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "default" }),
-                  )}
-                >
-                  Contact
-                </Link>
+
+              <p className="text-muted-ink mt-4 max-w-[60ch] text-sm leading-[1.65] sm:text-base">
+                A curated selection of published medical writing and educational
+                work.
+              </p>
+            </div>
+
+            {mastheadImageUrl && (
+              <figure className="relative hidden overflow-hidden bg-[#EEE6DA] md:block">
+                <Image
+                  src={mastheadImageUrl}
+                  alt={mastheadAlt}
+                  fill
+                  priority
+                  sizes="44vw"
+                  style={
+                    portfolioHero
+                      ? {
+                          objectPosition: `${portfolioHero.desktopFocalX}% ${portfolioHero.desktopFocalY}%`,
+                        }
+                      : undefined
+                  }
+                  className="object-cover"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-[#F6F1E8] via-[#F6F1E8]/55 to-transparent"
+                />
+              </figure>
+            )}
+          </div>
+
+          {/* Functional portfolio category filters */}
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 pb-5">
+              <Link
+                href="/portfolio"
+                aria-current={!activeTopic ? "page" : undefined}
+                className={
+                  !activeTopic
+                    ? "border-brand-oxide bg-brand-oxide inline-flex min-h-10 items-center rounded-md border px-4 text-xs font-semibold text-parchment"
+                    : "hover:border-brand-oxide hover:text-brand-oxide inline-flex min-h-10 items-center rounded-md border border-subtle-divider bg-[#FFFDF9]/45 px-4 text-xs font-medium text-ink transition-colors"
+                }
+              >
+                All
+              </Link>
+
+              {categories.map((category) => {
+                const active = activeTopic === category.slug;
+
+                return (
+                  <Link
+                    key={category.id}
+                    href={`/portfolio?topic=${encodeURIComponent(category.slug)}`}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      active
+                        ? "border-brand-oxide bg-brand-oxide inline-flex min-h-10 items-center rounded-md border px-4 text-xs font-semibold text-parchment"
+                        : "hover:border-brand-oxide hover:text-brand-oxide inline-flex min-h-10 items-center rounded-md border border-subtle-divider bg-[#FFFDF9]/45 px-4 text-xs font-medium text-ink transition-colors"
+                    }
+                  >
+                    {category.name}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {fetchError ? (
+          <div className="text-muted-ink rounded-md border border-subtle-divider bg-[#FFFDF9] p-8 text-center text-sm">
+            Unable to load selected writing at this time.
+          </div>
+        ) : visibleArticles.length === 0 ? (
+          <EmptyEditorialState
+            title="Selected Writing"
+            description="No selected published writing is available for this view."
+            actionHref="/portfolio"
+            actionLabel="View All Selected Writing"
+          />
+        ) : (
+          <>
+            {/* Featured Writing */}
+            <section>
+              <div className="mb-5">
+                <FolioMarker number={2} label="Featured Writing" />
+
+                <p className="text-muted-ink mt-2 text-xs">
+                  Selected published work from the portfolio.
+                </p>
+              </div>
+
+              <div
+                className={
+                  featuredArticles.length === 1
+                    ? "grid"
+                    : featuredArticles.length === 2
+                      ? "grid gap-4 lg:grid-cols-2"
+                      : "grid gap-4 lg:grid-cols-2 xl:grid-cols-3"
+                }
+              >
+                {featuredArticles.map((article) => (
+                  <PortfolioFeaturedCard
+                    key={article.id}
+                    article={article}
+                    imageUrl={imageUrls[article.id] ?? null}
+                  />
+                ))}
               </div>
             </section>
-          </div>
 
-          {/* Desktop Evidence Rail / Sidebar */}
-          <div className="space-y-6 lg:col-span-4">
-            <EvidenceRail
-              marker="Ref 01"
-              label="Portfolio"
-              className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
-            >
-              <div className="space-y-4">
-                <span className="font-serif text-base font-medium text-[#242321]">
-                  Selected Writing
-                </span>
-                <p className="text-xs leading-relaxed text-[#5E5953]">
-                  Approved published writing will be presented here as content
-                  becomes available.
-                </p>
+            {/* More Writing Samples */}
+            {moreArticles.length > 0 && (
+              <section>
+                <div className="mb-5">
+                  <FolioMarker number={3} label="More Writing Samples" />
 
-                <SplitRule />
-
-                <div className="pt-1">
-                  <Link
-                    href="/blog"
-                    className="inline-flex items-center text-xs font-semibold tracking-wider text-[#7B3F35] uppercase hover:underline"
-                  >
-                    Browse publication archive →
-                  </Link>
+                  <p className="text-muted-ink mt-2 text-xs">
+                    Additional selected writing across available topics.
+                  </p>
                 </div>
-              </div>
-            </EvidenceRail>
-          </div>
-        </div>
 
-        {/* Medical Disclaimer Banner */}
-        <section className="pt-4">
-          <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
-        </section>
+                <div className="grid gap-3 xl:grid-cols-2">
+                  {moreArticles.map((article) => (
+                    <PortfolioCompactCard key={article.id} article={article} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
+        {/* Same compact CTA language as homepage */}
+        <HomeContactBanner />
       </div>
     </PublicShell>
   );

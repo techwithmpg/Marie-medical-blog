@@ -21,7 +21,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Articles", href: "/blog" },
-  { label: "Selected Writing", href: "/portfolio" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Medical Disclaimer", href: "/disclaimer" },
@@ -36,7 +36,7 @@ export function MobileNav() {
         render={
           <button
             type="button"
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-[#D2C9BC] bg-card text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:ring-offset-2 focus-visible:outline-none md:hidden"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-[#D2C9BC] bg-card text-[#242321] transition-colors hover:bg-[#E8E2D7] focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:ring-offset-2 focus-visible:outline-none lg:hidden"
             aria-label="Open navigation menu"
           />
         }

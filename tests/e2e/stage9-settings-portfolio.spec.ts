@@ -42,6 +42,7 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
 
     const lastLabelInput = labelInputs.last();
     const lastUrlInput = urlInputs.last();
+    const addedSocialRowNumber = await labelInputs.count();
 
     await expect(lastLabelInput).toBeVisible();
     await lastLabelInput.fill("Synthetic Profile");
@@ -49,7 +50,9 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
 
     await page.getByRole("button", { name: "Save settings" }).click();
     await expect(
-      page.getByText('Social link #1 ("Synthetic Profile") is missing a URL.'),
+      page.getByText(
+        `Social link #${addedSocialRowNumber} ("Synthetic Profile") is missing a URL.`,
+      ),
     ).toBeVisible();
 
     // 1b. Test non-HTTPS insecure URL
@@ -57,7 +60,7 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
     await page.getByRole("button", { name: "Save settings" }).click();
     await expect(
       page.getByText(
-        'Social link #1 ("Synthetic Profile") must use a secure HTTPS URL.',
+        `Social link #${addedSocialRowNumber} ("Synthetic Profile") must use a secure HTTPS URL.`,
       ),
     ).toBeVisible();
 
@@ -98,7 +101,11 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
     ).toBeVisible();
 
     // Footer site title & social link
-    const footerLink = page.getByRole("link", { name: "Synthetic Profile" });
+    const footerLink = page
+      .locator('footer a[href="https://example.invalid/stage9e-profile"]')
+      .filter({ hasText: "Synthetic Profile" })
+      .first();
+
     await expect(footerLink).toBeVisible();
     await expect(footerLink).toHaveAttribute(
       "href",
@@ -114,15 +121,13 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
         .first(),
     ).toBeVisible();
 
-    // 3. Verify compact disclaimer propagation to other public pages
-    const pagesToCheck = [
-      "/about",
+    // 3a. Verify the compact disclaimer on the approved contextual surfaces
+    const disclaimerPagesToCheck = [
       "/contact",
-      "/portfolio",
       "/blog/plain-language-clinical-protocol-summaries",
     ];
 
-    for (const route of pagesToCheck) {
+    for (const route of disclaimerPagesToCheck) {
       await page.goto(route);
       await page.waitForLoadState("domcontentloaded");
       await expect(
@@ -131,6 +136,18 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
             "Synthetic Stage 9E educational disclaimer for local browser verification only.",
           )
           .first(),
+      ).toBeVisible();
+    }
+
+    // 3b. About and Portfolio intentionally omit a standalone compact
+    // disclaimer, while shared settings still propagate through the shell.
+    const shellPagesToCheck = ["/about", "/portfolio"];
+
+    for (const route of shellPagesToCheck) {
+      await page.goto(route);
+      await page.waitForLoadState("domcontentloaded");
+      await expect(
+        page.getByText("Synthetic Stage 9E Publication").first(),
       ).toBeVisible();
     }
 
@@ -266,9 +283,10 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
     await page.goto("/");
     await page.waitForLoadState("domcontentloaded");
     await expect(
-      page.getByText(
-        "Synthetic — Structured Methods for Patient Education Materials",
-      ),
+      page.getByRole("link", {
+        name: "Synthetic — Structured Methods for Patient Education Materials",
+        exact: true,
+      }),
     ).toBeVisible();
 
     // 4. Lead Article: Reset to no explicit lead (fallback to newest published)
@@ -283,9 +301,10 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
     await page.goto("/");
     await page.waitForLoadState("domcontentloaded");
     await expect(
-      page.getByText(
-        "Synthetic — Methodologies for Scientific Typography in Editorial Layouts",
-      ),
+      page.getByRole("link", {
+        name: "Synthetic — Methodologies for Scientific Typography in Editorial Layouts",
+        exact: true,
+      }),
     ).toBeVisible();
   });
 });

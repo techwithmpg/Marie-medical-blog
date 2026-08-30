@@ -365,18 +365,31 @@ test("Contact UI contract: form is active with live counters, reset on success, 
   assert.match(contactPageContent, /MedicalDisclaimer/);
 });
 
-test("Comment UI contract: rendered on article page after related writing with stale feedback reset", async () => {
+test("Comment UI contract: rendered after article body with support rail and stale feedback reset", async () => {
   const articlePagePath = path.join(REPO_ROOT, "src/app/blog/[slug]/page.tsx");
   const articlePageContent = await fs.readFile(articlePagePath, "utf-8");
 
-  // 1. CommentSection is placed after Related Writing
-  const relatedIndex = articlePageContent.indexOf("Related Writing");
+  // 1. Discussion follows the article body while related writing lives in the support rail
+  const articleBodyIndex = articlePageContent.indexOf("<ArticleTypography");
   const commentSectionIndex = articlePageContent.indexOf("<CommentSection");
-  assert.ok(relatedIndex !== -1, "Related Writing section should exist");
+  const supportRailIndex = articlePageContent.indexOf("<ArticleSupportRail");
+
+  assert.ok(articleBodyIndex !== -1, "ArticleTypography should exist");
+
   assert.ok(commentSectionIndex !== -1, "CommentSection should exist");
+
   assert.ok(
-    commentSectionIndex > relatedIndex,
-    "CommentSection must be placed after Related Writing",
+    commentSectionIndex > articleBodyIndex,
+    "CommentSection must follow the article body",
+  );
+
+  assert.ok(supportRailIndex !== -1, "ArticleSupportRail should exist");
+
+  assert.match(articlePageContent, /id="discussion"/);
+
+  assert.ok(
+    articlePageContent.includes("relatedArticles={relatedArticles}"),
+    "ArticleSupportRail must receive related articles",
   );
 
   // 2. Comment form includes notices & stale feedback clear on input

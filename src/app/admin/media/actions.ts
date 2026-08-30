@@ -58,7 +58,11 @@ export async function loadMediaPickerAction(): Promise<LoadMediaResult> {
   try {
     return { success: true, items: await getAdminMediaInventory() };
   } catch {
-    return { success: false, items: [], error: "Media inventory is unavailable. Please try again." };
+    return {
+      success: false,
+      items: [],
+      error: "Media inventory is unavailable. Please try again.",
+    };
   }
 }
 
@@ -73,7 +77,8 @@ export async function prepareMediaUploadAction(
 
   const parsed = prepareMediaUploadSchema.safeParse(input);
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message || "Invalid upload parameters.";
+    const firstError =
+      parsed.error.issues[0]?.message || "Invalid upload parameters.";
     return { success: false, error: firstError };
   }
 
@@ -88,9 +93,14 @@ export async function prepareMediaUploadAction(
       .createSignedUploadUrl(storagePath);
 
     if (error || !data) {
+      const detail =
+        process.env.NODE_ENV === "development" && error
+          ? ` Supabase: ${error.message}`
+          : "";
+
       return {
         success: false,
-        error: "Unable to prepare upload destination. Please try again.",
+        error: `Unable to prepare upload destination.${detail}`,
       };
     }
 
@@ -100,7 +110,10 @@ export async function prepareMediaUploadAction(
       token: data.token,
     };
   } catch {
-    return { success: false, error: "Unable to prepare upload destination. Please try again." };
+    return {
+      success: false,
+      error: "Unable to prepare upload destination. Please try again.",
+    };
   }
 }
 
@@ -115,7 +128,8 @@ export async function copyMediaToArticleAction(
 
   const parsed = copyMediaToArticleSchema.safeParse(input);
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message || "Invalid media selection parameters.";
+    const firstError =
+      parsed.error.issues[0]?.message || "Invalid media selection parameters.";
     return { success: false, error: firstError };
   }
 
@@ -133,12 +147,17 @@ export async function copyMediaToArticleAction(
   if (articleError || !article) {
     return {
       success: false,
-      error: "Article not found. Please save the draft before selecting an image.",
+      error:
+        "Article not found. Please save the draft before selecting an image.",
     };
   }
 
   // 2. Validate authoritative exact-path facts from Storage.
-  const sourceFacts = await getStorageObjectFacts(supabase, sourceBucket, sourcePath);
+  const sourceFacts = await getStorageObjectFacts(
+    supabase,
+    sourceBucket,
+    sourcePath,
+  );
   if (!sourceFacts) {
     return {
       success: false,
@@ -151,11 +170,17 @@ export async function copyMediaToArticleAction(
   if (size === null || size <= 0 || size > MAX_MEDIA_FILE_SIZE) {
     return {
       success: false,
-      error: "Selected image has missing or unsupported size metadata, or exceeds the 5 MB draft limit.",
+      error:
+        "Selected image has missing or unsupported size metadata, or exceeds the 5 MB draft limit.",
     };
   }
 
-  if (!mime || !ALLOWED_IMAGE_MIME_TYPES.includes(mime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number])) {
+  if (
+    !mime ||
+    !ALLOWED_IMAGE_MIME_TYPES.includes(
+      mime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
+    )
+  ) {
     return {
       success: false,
       error: "Selected image format is not supported for article reuse.",
@@ -176,7 +201,8 @@ export async function copyMediaToArticleAction(
       if (copyError) {
         return {
           success: false,
-          error: "Unable to copy the selected image. No article changes were saved.",
+          error:
+            "Unable to copy the selected image. No article changes were saved.",
         };
       }
     } else {
@@ -190,7 +216,8 @@ export async function copyMediaToArticleAction(
       if (copyError) {
         return {
           success: false,
-          error: "Unable to copy the selected image. No article changes were saved.",
+          error:
+            "Unable to copy the selected image. No article changes were saved.",
         };
       }
     }
@@ -200,7 +227,11 @@ export async function copyMediaToArticleAction(
       destinationPath,
     };
   } catch {
-    return { success: false, error: "Unable to copy the selected image. No article changes were saved." };
+    return {
+      success: false,
+      error:
+        "Unable to copy the selected image. No article changes were saved.",
+    };
   }
 }
 
@@ -227,7 +258,11 @@ export async function deleteMediaAction(
 
   const facts = await getStorageObjectFacts(supabase, bucket, path);
   if (!facts) {
-    return { success: false, message: "Asset was not found.", error: "NOT_FOUND" };
+    return {
+      success: false,
+      message: "Asset was not found.",
+      error: "NOT_FOUND",
+    };
   }
   if (
     facts.size === null ||
@@ -237,7 +272,11 @@ export async function deleteMediaAction(
       facts.mimeType as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
     )
   ) {
-    return { success: false, message: "Only verified Media image assets can be deleted here.", error: "INVALID_PAYLOAD" };
+    return {
+      success: false,
+      message: "Only verified Media image assets can be deleted here.",
+      error: "INVALID_PAYLOAD",
+    };
   }
 
   // Check usage twice, immediately around mutation, and fail closed if either lookup fails.
@@ -245,7 +284,11 @@ export async function deleteMediaAction(
   try {
     usage = await checkAssetUsage(supabase, bucket, path);
   } catch {
-    return { success: false, message: "Usage could not be verified. Nothing was deleted.", error: "DELETE_FAILED" };
+    return {
+      success: false,
+      message: "Usage could not be verified. Nothing was deleted.",
+      error: "DELETE_FAILED",
+    };
   }
   if (usage.isUsed) {
     return {
@@ -258,10 +301,18 @@ export async function deleteMediaAction(
   try {
     usage = await checkAssetUsage(supabase, bucket, path);
   } catch {
-    return { success: false, message: "Usage could not be rechecked. Nothing was deleted.", error: "DELETE_FAILED" };
+    return {
+      success: false,
+      message: "Usage could not be rechecked. Nothing was deleted.",
+      error: "DELETE_FAILED",
+    };
   }
   if (usage.isUsed) {
-    return { success: false, message: `Cannot delete asset: ${usage.locationDescription || "it is currently referenced"}.`, error: "IN_USE" };
+    return {
+      success: false,
+      message: `Cannot delete asset: ${usage.locationDescription || "it is currently referenced"}.`,
+      error: "IN_USE",
+    };
   }
 
   const { error: removeError } = await supabase.storage
@@ -313,7 +364,11 @@ export async function compensateUnsavedArticleImageAction(
     .eq("featured_image_path", path)
     .maybeSingle();
 
-  if (usageError) return { success: false, error: "Unable to verify image usage; cleanup was not attempted." };
+  if (usageError)
+    return {
+      success: false,
+      error: "Unable to verify image usage; cleanup was not attempted.",
+    };
   if (persistedArticle) {
     // Do NOT delete already-persisted article images
     return { success: true };
@@ -324,7 +379,10 @@ export async function compensateUnsavedArticleImageAction(
     .remove([path]);
 
   if (removeError) {
-    return { success: false, error: "Unable to clean up the unpersisted image copy." };
+    return {
+      success: false,
+      error: "Unable to clean up the unpersisted image copy.",
+    };
   }
 
   return { success: true };

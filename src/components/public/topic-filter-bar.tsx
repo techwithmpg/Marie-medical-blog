@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
+
 import type { PublicCategory } from "@/lib/public-articles";
 
 interface TopicFilterBarProps {
@@ -8,108 +10,79 @@ interface TopicFilterBarProps {
   className?: string;
 }
 
-function buildFilterUrl(topicSlug?: string, searchQuery?: string): string {
-  const params = new URLSearchParams();
-  if (searchQuery) params.set("q", searchQuery);
-  if (topicSlug) params.set("topic", topicSlug);
-
-  const qs = params.toString();
-  return qs ? `/blog?${qs}` : "/blog";
-}
-
 export function TopicFilterBar({
   categories,
   activeTopicSlug,
   activeSearchQuery,
   className = "",
 }: TopicFilterBarProps) {
-  return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Search Input Form (44px min height) */}
-      <form
-        method="GET"
-        action="/blog"
-        className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap"
-        role="search"
-      >
-        <label htmlFor="search-articles-input" className="sr-only">
-          Search articles by title or keyword
-        </label>
-        {activeTopicSlug && (
-          <input type="hidden" name="topic" value={activeTopicSlug} />
-        )}
-        <div className="relative min-w-0 flex-1">
-          <input
-            id="search-articles-input"
-            type="search"
-            name="q"
-            defaultValue={activeSearchQuery || ""}
-            placeholder="Search articles by title or excerpt..."
-            maxLength={100}
-            className="h-11 min-h-[44px] w-full rounded border border-control-border bg-paper px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/60 focus:border-oxide focus:ring-2 focus:ring-focus-slate focus:outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            className="inline-flex h-11 min-h-[44px] cursor-pointer items-center justify-center rounded bg-oxide px-5 py-2.5 text-sm font-medium text-parchment transition-colors hover:bg-oxide/90 focus:ring-2 focus:ring-focus-slate focus:outline-none"
-          >
-            Search
-          </button>
-          {activeSearchQuery && (
-            <Link
-              href={buildFilterUrl(activeTopicSlug, undefined)}
-              className="inline-flex h-11 min-h-[44px] items-center justify-center rounded border border-control-border bg-paper px-3.5 py-2.5 text-xs text-ink-muted transition-colors hover:text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
-              aria-label="Clear active search query"
-            >
-              Clear
-            </Link>
-          )}
-        </div>
-      </form>
+  const hasActiveFilters = Boolean(activeTopicSlug || activeSearchQuery);
 
-      {/* Topic Filter Pills (44px min height per interactive target) */}
-      {categories.length > 0 && (
-        <nav
-          aria-label="Filter articles by topic"
-          className="flex flex-wrap items-center gap-2 text-xs"
+  return (
+    <form
+      method="GET"
+      action="/blog"
+      role="search"
+      className={`space-y-3 ${className}`}
+    >
+      <label htmlFor="search-articles-input" className="sr-only">
+        Search articles
+      </label>
+
+      <div className="relative">
+        <Search
+          aria-hidden="true"
+          strokeWidth={1.5}
+          className="text-muted-ink absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2"
+        />
+
+        <input
+          id="search-articles-input"
+          type="search"
+          name="q"
+          defaultValue={activeSearchQuery || ""}
+          placeholder="Search articles..."
+          maxLength={100}
+          className="placeholder:text-muted-ink/70 focus:border-brand-oxide h-12 w-full border border-subtle-divider bg-[#FFFDF9]/55 pr-4 pl-11 text-sm text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
+        />
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <label htmlFor="article-topic-filter" className="sr-only">
+          Filter by topic
+        </label>
+
+        <select
+          id="article-topic-filter"
+          name="topic"
+          defaultValue={activeTopicSlug || ""}
+          className="focus:border-brand-oxide h-11 min-w-0 flex-1 border border-subtle-divider bg-[#FFFDF9]/55 px-3 text-sm text-ink focus:ring-2 focus:ring-focus-slate focus:outline-none"
         >
-          <span className="mr-1 font-semibold tracking-wider text-ink-muted uppercase">
-            Topics:
-          </span>
+          <option value="">All Topics</option>
+
+          {categories.map((category) => (
+            <option key={category.id} value={category.slug}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="submit"
+          className="border-brand-oxide bg-brand-oxide hover:bg-brand-oxide/90 h-11 border px-5 text-sm font-semibold text-parchment transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
+        >
+          Apply
+        </button>
+
+        {hasActiveFilters && (
           <Link
-            href={buildFilterUrl(undefined, activeSearchQuery)}
-            aria-current={!activeTopicSlug ? "page" : undefined}
-            className={`inline-flex min-h-[44px] items-center justify-center rounded px-4 py-2.5 font-medium transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none ${
-              !activeTopicSlug
-                ? "bg-oxide text-parchment"
-                : "border border-control-border bg-paper text-ink hover:border-oxide hover:text-oxide"
-            }`}
+            href="/blog"
+            className="border-control-boundary hover:border-brand-oxide hover:text-brand-oxide inline-flex h-11 items-center justify-center border bg-transparent px-5 text-sm text-ink transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none"
           >
-            All Articles
+            Clear Filters
           </Link>
-          {categories.map((cat) => {
-            const isActive = cat.slug === activeTopicSlug;
-            return (
-              <Link
-                key={cat.id}
-                href={buildFilterUrl(
-                  isActive ? undefined : cat.slug,
-                  activeSearchQuery,
-                )}
-                aria-current={isActive ? "page" : undefined}
-                className={`inline-flex min-h-[44px] items-center justify-center rounded px-4 py-2.5 font-medium transition-colors focus:ring-2 focus:ring-focus-slate focus:outline-none ${
-                  isActive
-                    ? "bg-oxide text-parchment"
-                    : "border border-control-border bg-paper text-ink hover:border-oxide hover:text-oxide"
-                }`}
-              >
-                {cat.name}
-              </Link>
-            );
-          })}
-        </nav>
-      )}
-    </div>
+        )}
+      </div>
+    </form>
   );
 }

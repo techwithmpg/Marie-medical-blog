@@ -11,9 +11,23 @@ set local "request.jwt.claim.sub" = '';
 
 -- 1. Anonymous can select published articles
 select results_eq(
-  'select count(*)::integer from public.articles where status = ''published''',
+  'select count(*)::integer
+     from public.articles
+    where status = ''published''
+      and id in (
+        ''20000000-0000-0000-0000-000000000001'',
+        ''20000000-0000-0000-0000-000000000002'',
+        ''20000000-0000-0000-0000-000000000003'',
+        ''20000000-0000-0000-0000-000000000004'',
+        ''20000000-0000-0000-0000-000000000005'',
+        ''20000000-0000-0000-0000-000000000006'',
+        ''20000000-0000-0000-0000-000000000007'',
+        ''20000000-0000-0000-0000-000000000008'',
+        ''20000000-0000-0000-0000-000000000009'',
+        ''20000000-0000-0000-0000-000000000010''
+      )',
   array[8],
-  'Anon can view published articles'
+  'Anon can view all published synthetic seed articles'
 );
 
 -- 2. Anonymous cannot see draft articles

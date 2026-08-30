@@ -4,14 +4,23 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion — PHASE 2 MEDIA IMPLEMENTATION COMPLETE / FULL LOCAL VERIFICATION PENDING
-- **Stage authorization:** D035 ACTIVE / PHASE 1 CATEGORIES COMPLETE / PHASE 2 MEDIA IMPLEMENTATION COMPLETE / VERIFICATION PENDING — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / GOVERNANCE CLOSEOUT / MERGE READY
+- **Stage authorization:** D035 + D036 ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / OWNER-AUTHORIZED MERGE FLOW — 2026-08-30
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
 - **Active working branch:** `fix/v1-admin-completion`
-- **Application coding authorized:** PHASE 2 MEDIA IMPLEMENTATION COMPLETE ON `fix/v1-admin-completion`
-- **Current implementation phase:** PHASE 2 — MEDIA MANAGEMENT / IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING
-- **D035 status:** ACTIVE / ARCHITECTURE APPROVED
+- **Application coding authorized:** NO FURTHER PRODUCT IMPLEMENTATION IN THIS GATE — CLOSEOUT AND OWNER-AUTHORIZED INTEGRATION ONLY
+- **Current implementation phase:** GATE CLOSEOUT — GOVERNANCE / HANDOFF / COMMIT / PUSH / NORMAL MERGE / POST-MERGE VERIFICATION
+- **D035 status:** ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / MERGE READY
+- **D036 status:** ACTIVE / MANAGED PUBLIC MEDIA + PUBLIC INTEGRATION COMPLETE / FULL LOCAL GATE PASS
+- **D036 migration:** `supabase/migrations/20260830090000_managed_public_media_slots.sql` — LOCAL ONLY / HOSTED NOT DEPLOYED
+- **D036 fixed placements:** `home_hero`, `about_hero`, `portfolio_hero`, `contact_hero`, `author_portrait`, `default_social`
+- **Public structural layout:** OWNER APPROVED / VIEWPORT-FLUID SHELL + RESPONSIVE GUTTERS / FLUID STRUCTURAL GRIDS / READING-WIDTH CONSTRAINTS RETAINED FOR PROSE
+- **Gate-2 verification:** PASS — Node 174/174; pgTAP 323/323; Playwright 17/17; TypeScript; ESLint; Prettier; production build; staged diff integrity
+- **Gate-2 branch relationship:** `fix/v1-admin-completion` = 0 behind / 6 ahead of accepted `origin/main` before final governance commit
+- **Accepted main during Gate-2 closeout:** `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
+- **Merge flow:** OWNER AUTHORIZED — GOVERNANCE CLOSEOUT → COMMIT/PUSH BRANCH → NORMAL MERGE PRESERVING HISTORY → POST-MERGE VERIFICATION
+
 - **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
 - **Implementation branch:** `fix/v1-admin-completion` — CREATED FROM `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
@@ -45,12 +54,12 @@ This file is the authoritative repository record of the currently active develop
 - **Final production domain:** NOT CONFIGURED / STAGE 12
 - **Categories:** PHASE 1 COMPLETE / LOCAL GATE PASS
 - **Category migration:** NOT REQUIRED
-- **Media:** PHASE 2 IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING — unit tests 10/10 PASS, tsc PASS, focused ESLint PASS; Storage E2E PENDING; Playwright browser E2E PENDING; full regression PENDING
+- **Media:** D035 PHASE 2 + D036 MANAGED PUBLIC MEDIA COMPLETE / FULL LOCAL GATE PASS — complete Node regression 174/174 PASS; pgTAP 323/323 PASS; Playwright 17/17 PASS; typecheck/lint/format/build/diff integrity PASS
 - **Media migration:** NOT REQUIRED
-- **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
+- **Hosted Supabase migration for this gate:** D036 LOCAL MIGRATION `20260830090000_managed_public_media_slots.sql` EXISTS / LOCAL VERIFICATION PASS / HOSTED DEPLOYMENT NOT EXECUTED OR AUTHORIZED BY THIS CLOSEOUT
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** RUN COMPLETE PHASE 2 LOCAL VERIFICATION — Storage E2E + Playwright E2E + full Node regression + pgTAP + build → IF ALL PASS: record FULL LOCAL GATE PASS → OWNER DECISION ON INTEGRATION/MERGE
+- **Next action:** FINALIZE GOVERNANCE + HANDOFF → COMMIT/PUSH `fix/v1-admin-completion` → EXECUTE OWNER-AUTHORIZED NORMAL MERGE → POST-MERGE VERIFICATION → DO NOT START STAGE 11 WITHOUT NEW EXPLICIT AUTHORIZATION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
