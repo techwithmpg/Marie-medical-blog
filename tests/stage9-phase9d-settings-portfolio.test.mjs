@@ -647,25 +647,59 @@ test("N. Character counters start at 0 when settings are empty or null", async (
   );
 });
 
-test("O. Disclaimer propagation across all public pages and admin preview while /disclaimer remains independent", async () => {
-  const publicPageFiles = [
-    "src/app/page.tsx",
-    "src/app/blog/[slug]/page.tsx",
+test("O. Disclaimer propagation across approved public surfaces and admin preview while /disclaimer remains independent", async () => {
+  // About and Portfolio intentionally omit standalone compact disclaimer
+  // blocks, while still receiving shared site settings through PublicShell.
+  const shellManagedPages = [
     "src/app/portfolio/page.tsx",
-    "src/app/contact/page.tsx",
     "src/app/about/page.tsx",
   ];
 
-  for (const relPath of publicPageFiles) {
+  for (const relPath of shellManagedPages) {
     const fullPath = path.join(ROOT, relPath);
+
     assert.ok(fs.existsSync(fullPath), `${relPath} must exist`);
+
     const pageContent = fs.readFileSync(fullPath, "utf8");
+
     assert.ok(
-      pageContent.includes("<MedicalDisclaimer") &&
-        pageContent.includes("disclaimerText={settings.disclaimer_text}"),
-      `${relPath} must pass disclaimerText={settings.disclaimer_text} to MedicalDisclaimer`,
+      pageContent.includes("<PublicShell") &&
+        pageContent.includes("settings={settings}"),
+      `${relPath} must pass live settings to PublicShell`,
     );
   }
+
+  // Homepage retains its compact dynamic disclaimer.
+  const homepagePath = path.join(ROOT, "src/app/page.tsx");
+  const homepageContent = fs.readFileSync(homepagePath, "utf8");
+
+  assert.ok(
+    homepageContent.includes("<MedicalDisclaimer") &&
+      homepageContent.includes("disclaimerText={settings.disclaimer_text}"),
+    "Homepage must pass the live disclaimer to MedicalDisclaimer",
+  );
+
+  // The article reading layout delegates disclaimer rendering to its
+  // support rail while preserving the live settings value.
+  const articlePagePath = path.join(ROOT, "src/app/blog/[slug]/page.tsx");
+  const articlePageContent = fs.readFileSync(articlePagePath, "utf8");
+
+  assert.ok(
+    articlePageContent.includes("<ArticleSupportRail") &&
+      articlePageContent.includes("disclaimerText={settings.disclaimer_text}"),
+    "Article page must pass the live disclaimer to ArticleSupportRail",
+  );
+
+  // Contact retains the explicit inline medical disclaimer because the
+  // inquiry form is the relevant contextual surface for that warning.
+  const contactPagePath = path.join(ROOT, "src/app/contact/page.tsx");
+  const contactPageContent = fs.readFileSync(contactPagePath, "utf8");
+
+  assert.ok(
+    contactPageContent.includes("<MedicalDisclaimer") &&
+      contactPageContent.includes("disclaimerText={settings.disclaimer_text}"),
+    "Contact page must pass the live disclaimer to MedicalDisclaimer",
+  );
 
   // Verify /disclaimer page remains independent
   const disclaimerPagePath = path.join(ROOT, "src/app/disclaimer/page.tsx");

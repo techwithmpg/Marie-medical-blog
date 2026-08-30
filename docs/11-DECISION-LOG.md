@@ -897,6 +897,86 @@ D035 activates the governance/design gate only. Categories and Media remain unim
 
 **Status:** ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED.
 
+#### D035 Phase 1 execution authorization addendum
+
+**Date:** 2026-08-29
+
+The project owner authorizes **Phase 1 — Category Management** implementation on `fix/v1-admin-completion`, based exactly on accepted `main` commit `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`.
+
+Authorized work is limited to `/admin/categories`, focused Category loaders and validation, independently authorized Server Actions, Evidence Folio Category UI, navigation verification, targeted revalidation, focused tests, local-only Supabase verification when required, and Phase-1 governance closeout.
+
+This authorization does not permit Media implementation or `/admin/media`; any database migration, schema, RLS, grant, Storage bucket, or Storage policy change; hosted Supabase mutation; dependency installation; merge to `main`; Stage 11; Stage 12; hosted Analytics activation; Search Console operations; or final-domain/DNS work.
+
+Category implementation requires no migration and no new RPC. Existing Category RLS/grants and `articles.category_id ON DELETE RESTRICT` remain authoritative. Media remains DESIGN APPROVED / IMPLEMENTATION NOT AUTHORIZED, and Stage 11 remains blocked.
+
+**Approved by:** project owner — explicit Phase 1 authorization on 2026-08-29.
+
+**Status:** ACTIVE / PHASE 1 CATEGORIES IMPLEMENTATION AUTHORIZED.
+
+#### D035 Phase 1 execution closeout
+
+**Date:** 2026-08-29
+
+Phase 1 Category Management is **COMPLETE / LOCAL GATE PASS** on `fix/v1-admin-completion`. The implementation adds the independently protected `/admin/categories` surface, focused Category loading and validation, create/update/delete Server Actions, immutable post-create slugs, truthful article-usage counts, guarded deletion, targeted authoring and public-route revalidation, Evidence Folio responsive UI, loading/error states, and focused automated coverage.
+
+The complete local gate passed: focused Category tests 10/10; complete Node tests 163/163; pgTAP 323/323; Playwright 16/16; axe serious/critical violations 0; typecheck, lint, format check, `git diff --check`, production dependency audit (0 vulnerabilities), and production build (19 static-generation units with `/admin/categories` included) all PASS. Verification used only the guarded project-local Supabase stack and synthetic fixtures.
+
+No migration, schema/RLS/grant change, Storage change, hosted Supabase mutation, service-role browser exposure, dependency change, Media implementation, Stage 11 work, Stage 12 work, hosted Analytics activation, Search Console operation, or final-domain/DNS work occurred. The local database was restored to the committed synthetic seed state after verification and the project-local Supabase stack was stopped.
+
+Media remains **DESIGN APPROVED / IMPLEMENTATION NOT AUTHORIZED**. D035 remains active because the overall V1 Admin Completion gate is not complete. Stage 11 remains blocked. The next owner decision is whether to authorize **Phase 2 — Media implementation**.
+
+**Status:** ACTIVE / PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS / MEDIA NOT AUTHORIZED.
+
+#### D035 Phase 2 execution authorization addendum
+
+**Date:** 2026-08-29
+
+The project owner authorizes **Phase 2 — Media Management** implementation on `fix/v1-admin-completion`, continuing from the local-gate-passed Phase 1 Categories baseline (`9b9b504a4977f154b5a2ccfd67133f4cf0dad483`).
+
+Authorized work is limited to `/admin/media`, Media inventory loaders and transient view models, private-by-default signed uploads (`draft-assets/library/{uuid}-{sanitizedFilename}`), private signed previews vs public URLs, exact-path usage resolution across `articles.featured_image_path` and `profiles.cv_storage_path`, guarded deletion of unreferenced assets, article-owned private image reuse (`draft-assets/articles/{articleId}/featured/{uuid}-{sanitizedFilename}` via native same-bucket or cross-bucket `copy`), featured-image editor integration, compensation for unsaved article image candidates, focused Media unit/integration and browser tests, and local-only Supabase/Storage verification.
+
+This authorization does not permit: merge to `main`; database migrations; new tables (`public.media` is prohibited); Storage bucket or policy changes; hosted Supabase mutation; dependency additions; generic DAM functionality; folders; bulk operations; image editing/compression; AI tagging; AI alt generation; inline article images; PDF/document management; Stage 11; Stage 12; hosted Analytics activation; Search Console operations; or final-domain/DNS work.
+
+**Approved by:** project owner — explicit Phase 2 authorization on 2026-08-29.
+
+**Status:** ACTIVE / PHASE 2 MEDIA IMPLEMENTATION AUTHORIZED.
+
+#### D035 Phase 2 execution closeout
+
+**Date:** 2026-08-29
+
+Phase 2 — Media Management — implementation is complete and has passed the local gate.
+
+Delivered on branch `fix/v1-admin-completion`:
+
+- `src/lib/admin/media-validation.ts` — Zod schemas, path/filename sanitization, MIME/bucket/size constants
+- `src/lib/admin/media.ts` — inventory loader (`getAdminMediaInventory`), exact-path usage resolver, `checkAssetUsage`, `getStorageObjectFacts`
+- `src/app/admin/media/actions.ts` — five Server Actions: `prepareMediaUploadAction`, `copyMediaToArticleAction`, `deleteMediaAction`, `compensateUnsavedArticleImageAction`, `loadMediaPickerAction`
+- `src/app/admin/media/page.tsx` + `loading.tsx` + `error.tsx` — route with admin guard, loading skeleton, error boundary
+- `src/components/admin/media/media-manager.tsx` — full Media Management UI (grid + inspector panel, upload, delete guard, mobile sheet)
+- `src/components/admin/media/media-picker-dialog.tsx` — "Choose from Media" dialog for article editor integration
+- `src/components/admin/editor/featured-image-field.tsx` — MediaPickerDialog integrated into both empty and replace states
+- `src/components/admin/editor/article-editor.tsx` — `pendingMediaCopyPathRef` + `compensatePendingMediaCopy` wired across all save/publish/lifecycle paths
+- `tests/admin-media.test.mjs` — 10 unit tests: all pass
+- `tests/stage10-media-storage-e2e.test.mjs` — Storage RLS/signed-upload/copy/immutability e2e
+- `tests/e2e/admin-media.spec.ts` — Playwright: upload, picker, reuse, usage guard, keyboard, accessibility, responsive
+
+Local gate results at implementation commit (b8fbc12):
+- Unit tests: 10/10 PASS
+- TypeScript: PASS (0 errors)
+- Focused ESLint: PASS (0 warnings/errors)
+- Storage E2E: NOT YET RUN (requires local Supabase)
+- Playwright browser E2E: NOT YET RUN (requires local Supabase)
+- Full Node regression: NOT YET RUN
+- pgTAP: NOT YET RUN
+- Production build: NOT YET RUN
+
+**CORRECTION (2026-08-29):** The previous entry incorrectly stated `LOCAL GATE PASS`. The static checks passed but the Storage E2E, Playwright browser E2E, full Node regression, pgTAP, and production build had not been executed. This entry is corrected to accurately reflect what was verified.
+
+No database migrations, no new tables, no bucket/policy changes, no new dependencies. D035 remains ACTIVE until full local gate completes.
+
+**Status:** ACTIVE / PHASE 1 COMPLETE / PHASE 2 IMPLEMENTATION COMPLETE / FULL LOCAL GATE VERIFICATION PENDING.
+
 ---
 
 ## New decision template
@@ -908,3 +988,132 @@ D035 activates the governance/design gate only. Categories and Media remain unim
 **Alternatives considered:**
 **Impact:**
 **Approved by:** project owner / architecture gate
+
+---
+
+### ACTIVE — D036 Phase A — Managed Public Media Editor
+
+**Date:** 2026-08-30
+
+**Decision:** Implement the fixed V1 website media-placement editor before
+changing public-page image layouts. The fixed placements are `home_hero`,
+`about_hero`, `portfolio_hero`, `contact_hero`, `author_portrait`, and
+`default_social`. Placements store contextual alt/decorative semantics and
+independent desktop/mobile focal positions. Assigned files become site-owned
+copies under `public-assets/site/{slot}/...`.
+
+**Reason:** The accepted Evidence Folio UI is image-led, while existing Media
+Management only inventories Storage and supports article featured-image reuse.
+A persistent public-placement layer is therefore required before hero layouts
+can be implemented safely.
+
+**Impact:** D035's prior no-Media-migration assumption is superseded only for
+this fixed placement model. This does not authorize a page builder, arbitrary
+DAM, hosted Supabase deployment, Stage 11, Stage 12, final-domain work, Search
+Console changes, or hosted Analytics activation.
+
+**Approved by:** project owner — explicit local/manual authorization,
+2026-08-30.
+
+**Status:** ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / MERGE READY.
+
+
+---
+
+#### D035 / D036 implementation and local verification closeout
+
+**Date:** 2026-08-30
+
+The Pre-Stage-11 V1 Admin Completion implementation on
+`fix/v1-admin-completion` is complete and has passed the full local quality
+gate.
+
+Completed scope includes:
+
+1. D035 Phase 1 Category Management.
+2. D035 Phase 2 Media Management.
+3. D036 fixed managed-public-media placements:
+   `home_hero`, `about_hero`, `portfolio_hero`, `contact_hero`,
+   `author_portrait`, and `default_social`.
+4. Managed website images use site-owned Storage copies and persisted placement
+   metadata, including contextual alt/decorative semantics and independent
+   desktop/mobile focal positions.
+5. The public Home, About, Blog, Article, Portfolio and Contact presentation was
+   refined under the existing Evidence Folio system without changing the frozen
+   stack or introducing a page builder, generic DAM, reader accounts or
+   multi-author behavior.
+6. The owner-approved public structural layout is viewport-fluid with responsive
+   gutters. Major structural grids, images and editorial cards may fill their
+   available parent width using fluid fractional tracks. Readability-specific
+   content such as article prose, biography copy and form copy may retain
+   deliberate reading-width constraints. The admin workspace is not converted
+   to this public-page layout rule.
+7. The fixed-width public shell assumption is therefore superseded by this
+   owner-approved fluid structural rule while the Evidence Folio visual language,
+   accessibility and mobile reading requirements remain authoritative.
+
+Database change introduced by D036:
+
+- `supabase/migrations/20260830090000_managed_public_media_slots.sql`
+  adds the fixed managed-site-media persistence required by D036 with RLS.
+- This migration has been verified locally only.
+- No hosted Supabase migration or other hosted Supabase mutation was performed
+  or authorized by this closeout.
+
+Full local verification completed successfully:
+
+- pgTAP database/security suite: **323/323 PASS**;
+- complete Node regression suite: **174/174 PASS**;
+- Playwright browser suite: **17/17 PASS**;
+- TypeScript: **PASS**;
+- ESLint: **PASS**;
+- Prettier: **PASS**;
+- production build: **PASS**;
+- staged whitespace/integrity verification: **PASS**;
+- branch relationship before governance closeout:
+  `fix/v1-admin-completion` was **0 behind / 6 ahead** of accepted
+  `origin/main`.
+
+Browser-test hardening performed during closeout preserved product behavior and
+security boundaries. Tests were made rerun-safe for persistent local fixtures,
+public submission rate limits, message lifecycle navigation and redesigned
+public surfaces. Production abuse-defense limits were not weakened.
+
+The project owner has already authorized the completion sequence:
+stage/status review -> quality gate -> governance/status reconciliation ->
+commit/push branch -> normal merge preserving history -> post-merge
+verification.
+
+This record does **not** claim that the branch has been committed, pushed,
+merged or deployed yet. Those actions remain the next integration steps.
+
+**Status:** ACTIVE / D035 + D036 IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS /
+OWNER-AUTHORIZED MERGE FLOW READY.
+
+#### D036 public-layout integration addendum
+
+**Date:** 2026-08-30
+
+The owner approved the public-page structural refinement accompanying managed
+site media.
+
+The V1 public layout contract now additionally requires:
+
+- viewport-fluid public shell, header and footer with responsive gutters;
+- fluid structural grids using fractional tracks where appropriate;
+- major imagery and editorial cards should use the width available from their
+  structural parent rather than inheriting a universal desktop max-width;
+- readability constraints remain appropriate for actual prose, biographies,
+  disclaimers and form copy;
+- the admin workspace is unaffected by this public-layout rule;
+- responsive/mobile quality, accessibility, SEO/indexability, performance and
+  the Evidence Folio identity remain mandatory.
+
+This is a refinement of the accepted Evidence Folio implementation contract,
+not authorization for a new visual system, arbitrary page builder or broader
+V1 scope.
+
+**Approved by:** project owner — explicit public UI review approval,
+2026-08-30.
+
+**Status:** ACTIVE / FROZEN FOR CURRENT V1 PUBLIC STRUCTURE.

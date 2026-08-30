@@ -37,6 +37,7 @@ import {
   deleteArticleAction,
   type SaveDraftReferenceInput,
 } from "@/app/admin/articles/actions";
+import { compensateUnsavedArticleImageAction } from "@/app/admin/media/actions";
 import { TiptapEditor } from "./tiptap-editor";
 import { FeaturedImageField } from "./featured-image-field";
 import { ReferenceLedger } from "./reference-ledger";
@@ -109,6 +110,7 @@ export function ArticleEditor({
   const [featuredImageAlt, setFeaturedImageAlt] = React.useState<string>(
     article?.featured_image_alt || "",
   );
+  const pendingMediaCopyPathRef = React.useRef<string | null>(null);
   const [seoTitle, setSeoTitle] = React.useState(article?.seo_title || "");
   const [seoDescription, setSeoDescription] = React.useState(
     article?.seo_description || "",
@@ -160,6 +162,27 @@ export function ArticleEditor({
     setTimeout(() => {
       setToastMessage((curr) => (curr === msg ? null : curr));
     }, 6000);
+  };
+
+  const compensatePendingMediaCopy = async (): Promise<string | null> => {
+    const path = pendingMediaCopyPathRef.current;
+    const articleId = persistedArticleIdRef.current;
+    if (!path || !articleId) return null;
+    const result = await compensateUnsavedArticleImageAction({
+      articleId,
+      path,
+    });
+    if (!result.success) {
+      return (
+        result.error ?? "The unpersisted image copy could not be cleaned up."
+      );
+    }
+    pendingMediaCopyPathRef.current = null;
+    setFeaturedImagePath((current) => (current === path ? null : current));
+    setFeaturedImageAlt((current) =>
+      featuredImagePath === path ? "" : current,
+    );
+    return null;
   };
 
   // Find category object for preview
@@ -216,9 +239,14 @@ export function ArticleEditor({
       }
 
       if (!result.success) {
-        setErrorMessage(result.error || "Failed to save draft.");
+        const cleanupWarning = await compensatePendingMediaCopy();
+        setErrorMessage(
+          `${result.error || "Failed to save draft."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
+
+      pendingMediaCopyPathRef.current = null;
 
       if (result.articleId) {
         persistedArticleIdRef.current = result.articleId;
@@ -247,7 +275,8 @@ export function ArticleEditor({
         return;
       }
       const msg = err instanceof Error ? err.message : "Failed to save draft.";
-      setErrorMessage(msg);
+      const cleanupWarning = await compensatePendingMediaCopy();
+      setErrorMessage(`${msg}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
     } finally {
       setSaving(false);
     }
@@ -313,9 +342,14 @@ export function ArticleEditor({
       }
 
       if (!result.success) {
-        setErrorMessage(result.error || "Failed to publish article.");
+        const cleanupWarning = await compensatePendingMediaCopy();
+        setErrorMessage(
+          `${result.error || "Failed to publish article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
+
+      pendingMediaCopyPathRef.current = null;
 
       // Success
       setStatus("published");
@@ -331,7 +365,8 @@ export function ArticleEditor({
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to publish article.";
-      setErrorMessage(msg);
+      const cleanupWarning = await compensatePendingMediaCopy();
+      setErrorMessage(`${msg}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
     } finally {
       setPublishing(false);
     }
@@ -388,9 +423,14 @@ export function ArticleEditor({
       }
 
       if (!result.success) {
-        setErrorMessage(result.error || "Failed to update published article.");
+        const cleanupWarning = await compensatePendingMediaCopy();
+        setErrorMessage(
+          `${result.error || "Failed to update published article."}${cleanupWarning ? ` ${cleanupWarning}` : ""}`,
+        );
         return;
       }
+
+      pendingMediaCopyPathRef.current = null;
 
       if (changeRevisionRef.current === savingRevision) {
         setIsDirty(false);
@@ -400,7 +440,8 @@ export function ArticleEditor({
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Failed to update article.";
-      setErrorMessage(msg);
+      const cleanupWarning = await compensatePendingMediaCopy();
+      setErrorMessage(`${msg}${cleanupWarning ? ` ${cleanupWarning}` : ""}`);
     } finally {
       setUpdatingPublished(false);
     }
@@ -1048,7 +1089,14 @@ export function ArticleEditor({
             articleId={persistedArticleId || article?.id || null}
             imagePath={featuredImagePath}
             imageAlt={featuredImageAlt}
-            onImagePathChange={(path) => {
+            onImagePathChange={async (path, source) => {
+              const previousPending = pendingMediaCopyPathRef.current;
+              if (previousPending && previousPending !== path) {
+                const cleanupWarning = await compensatePendingMediaCopy();
+                if (cleanupWarning) setWarningMessage(cleanupWarning);
+              }
+              pendingMediaCopyPathRef.current =
+                source === "media" ? path : null;
               setFeaturedImagePath(path);
               markDirty();
             }}

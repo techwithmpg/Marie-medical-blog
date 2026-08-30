@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { PageIntro } from "@/components/public/page-intro";
 import { TopicFilterBar } from "@/components/public/topic-filter-bar";
-import { FeaturedArticle } from "@/components/public/featured-article";
-import { ArticleListItem } from "@/components/public/article-list-item";
-import { PaginationControls } from "@/components/public/pagination-controls";
+import { FolioMarker } from "@/components/evidence/folio-marker";
+import { BlogFeaturedDiscovery } from "@/components/public/blog-featured-discovery";
+import { BlogLatestArticles } from "@/components/public/blog-latest-articles";
 import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
 import {
   getCategoryBySlug,
@@ -21,6 +21,7 @@ import {
   type DiscoverySearchParams,
 } from "@/lib/discovery-query";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
+import { getPublicArticleAssetData } from "@/lib/public-data";
 
 const BLOG_TITLE = "Articles";
 const BLOG_DESCRIPTION =
@@ -117,6 +118,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   let blogData: PublicBlogViewData | null = null;
   let categories: PublicCategory[] = [];
   let fetchError = false;
+  let leadImageUrl: string | null = null;
 
   try {
     const [fetchedData, fetchedCategories] = await Promise.all([
@@ -134,6 +136,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     fetchError = true;
   }
 
+  if (blogData?.leadArticle) {
+    try {
+      const assetData = await getPublicArticleAssetData(
+        blogData.leadArticle.featured_image_path,
+        blogData.leadArticle.featured_image_alt,
+      );
+      leadImageUrl = assetData.publicUrl;
+    } catch {
+      leadImageUrl = null;
+    }
+  }
   if (fetchError || !blogData) {
     return (
       <div className="space-y-12 sm:space-y-16">
@@ -161,73 +174,72 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     ? "Search Results"
     : topicSlug
       ? "Topic Entries"
-      : "Archive Entries";
+      : "Latest Articles";
 
+  const articleImageEntries = await Promise.all(
+    articles.map(async (article) => {
+      try {
+        const assetData = await getPublicArticleAssetData(
+          article.featured_image_path,
+          article.featured_image_alt,
+        );
+
+        return [article.id, assetData.publicUrl] as const;
+      } catch {
+        return [article.id, null] as const;
+      }
+    }),
+  );
+
+  const articleImageUrls: Record<string, string | null> =
+    Object.fromEntries(articleImageEntries);
   return (
-    <div className="space-y-12 sm:space-y-16">
-      <PageIntro
-        title="Articles"
-        topicLabel="Editorial Archive"
-        deck="Browse published writing and educational articles by topic or search."
-      />
+    <div className="space-y-10 sm:space-y-12">
+      {/* 01 — Articles masthead + discovery controls */}
+      <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
+        <div className="lg:col-span-5">
+          <FolioMarker number={1} label="Editorial Archive" />
 
-      {/* Filter and Search Bar */}
-      <div>
-        <TopicFilterBar
-          categories={categories}
-          activeTopicSlug={topicSlug}
-          activeSearchQuery={safeQuery}
-        />
-      </div>
+          <h1 className="mt-5 font-serif text-5xl leading-none font-medium tracking-tight text-ink sm:text-6xl">
+            Articles
+          </h1>
 
-      {/* Lead Story Hero (Unfiltered Page 1 only) */}
-      {leadArticle && (
-        <div>
-          <FeaturedArticle
-            article={leadArticle}
-            isExplicitlyFeatured={isLeadExplicitlyFeatured}
-            headingLevel="h2"
+          <p className="text-muted-ink mt-4 max-w-lg text-base leading-relaxed sm:text-lg">
+            Browse published writing and educational articles by topic or
+            search.
+          </p>
+        </div>
+
+        <div className="lg:col-span-7">
+          <TopicFilterBar
+            categories={categories}
+            activeTopicSlug={topicSlug}
+            activeSearchQuery={safeQuery}
           />
         </div>
+      </section>
+
+      {/* Featured article + topic discovery */}
+      {leadArticle && (
+        <BlogFeaturedDiscovery
+          article={leadArticle}
+          imageUrl={leadImageUrl}
+          categories={categories}
+          isExplicitlyFeatured={isLeadExplicitlyFeatured}
+        />
       )}
-
-      {/* Main / Supporting Articles Grid */}
+      {/* 02 — Latest / filtered article entries */}
       {articles.length > 0 ? (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-subtle-divider pb-3">
-            <h2 className="font-serif text-lg font-medium text-ink">
-              {sectionHeading}
-            </h2>
-            <span className="text-muted-ink text-xs">
-              Showing {articles.length} of {totalCount}
-            </span>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            {articles.map((article, index) => (
-              <ArticleListItem
-                key={article.id}
-                article={article}
-                index={
-                  !isFiltered
-                    ? (currentPage - 1) * BLOG_PAGE_SIZE + index + 1
-                    : (currentPage - 1) * BLOG_PAGE_SIZE + index
-                }
-              />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="pt-6">
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              basePath="/blog"
-              searchQuery={safeQuery}
-              topicSlug={topicSlug}
-            />
-          </div>
-        </div>
+        <BlogLatestArticles
+          articles={articles}
+          imageUrls={articleImageUrls}
+          heading={sectionHeading}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          searchQuery={safeQuery}
+          topicSlug={topicSlug}
+        />
       ) : (
         !leadArticle && (
           <div className="pt-4">

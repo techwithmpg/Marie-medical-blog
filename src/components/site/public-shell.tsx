@@ -38,7 +38,7 @@ export async function PublicShell({
         id="main-content"
         tabIndex={-1}
         className={cn(
-          "mx-auto w-full max-w-[1248px] flex-1 px-5 py-8 focus:outline-none sm:px-8 sm:py-12 lg:px-12 lg:py-16",
+          "w-full min-w-0 flex-1 px-5 py-8 focus:outline-none sm:px-8 sm:py-12 lg:px-10 lg:py-16 xl:px-12 2xl:px-16",
           className,
         )}
       >

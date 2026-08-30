@@ -14,7 +14,13 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   // Submit login form
   await page.getByRole("button", { name: "Sign in" }).click();
 
-  // Wait for redirect to admin area
-  await page.waitForURL(/\/admin(\/.*)?$/, { timeout: 15000 });
+  // Wait for an authenticated admin destination.
+  // The login page itself must not satisfy this navigation wait.
+  await page.waitForURL(
+    (url) =>
+      url.pathname.startsWith("/admin") && url.pathname !== "/admin/login",
+    { timeout: 15000 },
+  );
+
   await expect(page).not.toHaveURL(/\/admin\/login/);
 }

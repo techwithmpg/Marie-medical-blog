@@ -427,7 +427,7 @@ test("static public routes declare unsuffixed titles, canonicals, and social met
     [
       "src/app/portfolio/page.tsx",
       "/portfolio",
-      "Selected Writing",
+      "Portfolio",
       "Selected Writing — Marie Medere",
     ],
     [

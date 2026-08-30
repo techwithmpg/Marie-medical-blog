@@ -6,8 +6,10 @@ import { ContactFormShell } from "@/components/public/contact-form-shell";
 import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { SplitRule } from "@/components/evidence/split-rule";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
+import { ManagedSiteImage } from "@/components/public/managed-site-image";
 import { getPublicSiteSettings } from "@/lib/public-data";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
+import { getPublicSiteMediaSlot } from "@/lib/public-site-media";
 
 const PAGE_TITLE = "Contact";
 const PAGE_DESCRIPTION =
@@ -25,20 +27,38 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const settings = await getPublicSiteSettings();
+  const [settings, contactHero] = await Promise.all([
+    getPublicSiteSettings(),
+    getPublicSiteMediaSlot("contact_hero"),
+  ]);
 
   return (
     <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-20">
         {/* Page Header */}
-        <PageIntro
-          folioNumber={1}
-          folioLabel="Communication"
-          topicLabel="Inquiries"
-          topicVariant="oxide"
-          title="Contact"
-          deck="For professional medical writing inquiries, editorial discussions, and publication communications."
-        />
+        <div className="grid items-center gap-8 md:grid-cols-12 md:gap-10">
+          <div className="md:col-span-7">
+            <PageIntro
+              folioNumber={1}
+              folioLabel="Communication"
+              topicLabel="Inquiries"
+              topicVariant="oxide"
+              title="Contact"
+              deck="For professional medical writing inquiries, editorial discussions, and publication communications."
+            />
+          </div>
+
+          {contactHero ? (
+            <div className="hidden md:col-span-5 md:block">
+              <ManagedSiteImage
+                media={contactHero}
+                priority
+                sizes="42vw"
+                className="aspect-[4/3] w-full"
+              />
+            </div>
+          ) : null}
+        </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">

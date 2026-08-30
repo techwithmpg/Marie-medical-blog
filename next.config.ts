@@ -20,7 +20,12 @@ function getRemoteImagePatterns() {
 }
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1"],
+
   images: {
+    // Next.js 16 blocks private/local IP image optimization by default.
+    // This is enabled only for the local Supabase development environment.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
     remotePatterns: getRemoteImagePatterns(),
   },
 };

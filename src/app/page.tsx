@@ -1,43 +1,53 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { PublicShell } from "@/components/site/public-shell";
 import { buttonVariants } from "@/components/ui/button";
 import { FolioMarker } from "@/components/evidence/folio-marker";
-import { SplitRule } from "@/components/evidence/split-rule";
 import { TopicImprint } from "@/components/evidence/topic-imprint";
-import { EvidenceRail } from "@/components/evidence/evidence-rail";
 import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
-import { EmptyEditorialState } from "@/components/public/empty-editorial-state";
-import { ArticleListItem } from "@/components/public/article-list-item";
-import { FeaturedArticle } from "@/components/public/featured-article";
+import { HomeContactBanner } from "@/components/public/home-contact-banner";
+import { HomeDiscoverySections } from "@/components/public/home-discovery-sections";
+import { ManagedSiteImage } from "@/components/public/managed-site-image";
 import { getPublicProfile, getPublicSiteSettings } from "@/lib/public-data";
 import { getPublicRouteDiscoveryMetadata } from "@/lib/site-url";
+import { getPublicSiteMediaSlot } from "@/lib/public-site-media";
 import {
   getFeaturedPublishedArticle,
   getLatestPublishedArticles,
+  getPortfolioPublishedArticles,
+  getPublishedCategories,
   type PublicArticleSummary,
+  type PublicCategory,
 } from "@/lib/public-articles";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = getPublicRouteDiscoveryMetadata("/");
 
 export default async function HomePage() {
-  const [profile, settings] = await Promise.all([
+  const [profile, settings, homeHero] = await Promise.all([
     getPublicProfile(),
     getPublicSiteSettings(),
+    getPublicSiteMediaSlot("home_hero"),
   ]);
 
   let leadArticle: PublicArticleSummary | null = null;
   let isLeadExplicitlyFeatured = false;
   let supportingArticles: PublicArticleSummary[] = [];
+  let categories: PublicCategory[] = [];
+  let selectedWriting: PublicArticleSummary[] = [];
   let fetchError = false;
 
   try {
-    const [fetchedFeatured, fetchedLatest] = await Promise.all([
-      getFeaturedPublishedArticle(),
-      getLatestPublishedArticles(4),
-    ]);
+    const [fetchedFeatured, fetchedLatest, fetchedCategories] =
+      await Promise.all([
+        getFeaturedPublishedArticle(),
+        getLatestPublishedArticles(4),
+        getPublishedCategories(),
+      ]);
+
+    categories = fetchedCategories;
 
     if (fetchedFeatured) {
       leadArticle = fetchedFeatured;
@@ -54,6 +64,11 @@ export default async function HomePage() {
     fetchError = true;
   }
 
+  try {
+    selectedWriting = (await getPortfolioPublishedArticles()).slice(0, 4);
+  } catch {
+    selectedWriting = [];
+  }
   const siteTitle =
     settings.site_title || profile.display_name || "Marie Medere";
   const tagline =
@@ -65,224 +80,201 @@ export default async function HomePage() {
     profile.short_bio ||
     "A professional medical writing portfolio and educational publication dedicated to clear, evidence-based communication.";
 
-  const hasPublishedContent = Boolean(leadArticle);
-
   return (
     <PublicShell settings={settings}>
       <div className="space-y-16 sm:space-y-24">
         {/* Section 01: Professional & Editorial Positioning */}
-        <section className="space-y-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <FolioMarker number={1} label="Publication Masthead" />
-            <TopicImprint variant="oxide">Medical Writing</TopicImprint>
-          </div>
+        <section className="relative isolate overflow-hidden">
+          {homeHero ? (
+            <>
+              <div className="absolute inset-y-0 right-[-12%] w-[76%] md:hidden">
+                <ManagedSiteImage
+                  media={homeHero}
+                  priority
+                  sizes="76vw"
+                  className="h-full w-full"
+                />
+              </div>
 
-          <div className="max-w-4xl space-y-3">
-            <h1 className="font-serif text-4xl leading-[1.12] font-medium tracking-tight text-[#242321] sm:text-5xl lg:text-6xl">
-              {siteTitle}
-            </h1>
-            <p className="font-serif text-xl font-normal text-[#7B3F35] sm:text-2xl">
-              {tagline}
-            </p>
-          </div>
-
-          <p className="max-w-2xl font-sans text-lg leading-relaxed text-[#5E5953] sm:text-xl">
-            {introText}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Link
-              href="/blog"
-              className={cn(buttonVariants({ variant: "default", size: "lg" }))}
-            >
-              Explore Articles
-            </Link>
-            <Link
-              href="/portfolio"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-            >
-              Selected Writing
-            </Link>
-            <Link
-              href="/about"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-            >
-              About the Author
-            </Link>
-            <Link
-              href="/contact"
-              className={cn(
-                buttonVariants({ variant: "secondary", size: "lg" }),
-              )}
-            >
-              Contact
-            </Link>
-          </div>
-
-          <SplitRule className="pt-6" />
-        </section>
-
-        {/* Section 02: Publication Scope & Evidence Rail */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3">
-            <FolioMarker number={2} label="Editorial Foundations" />
-            <TopicImprint variant="sage">Purpose &amp; Scope</TopicImprint>
-          </div>
-
-          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-            {/* Primary reading & structural column */}
-            <div className="space-y-6 lg:col-span-8">
-              <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl lg:text-4xl">
-                Evidence-Led Medical Communication
-              </h2>
-
-              <p className="text-base leading-relaxed text-[#242321] sm:text-lg">
-                This platform serves as an independent publication and writing
-                portfolio. Its objective is to present medical communication,
-                educational writing, and healthcare topics with clarity and
-                referenced sources.
-              </p>
-
-              <p className="text-base leading-relaxed text-[#5E5953]">
-                Published materials emphasize clear organization, accessible
-                language, and responsible educational presentation.
-              </p>
-            </div>
-
-            {/* Desktop Evidence Rail */}
-            <div className="space-y-6 lg:col-span-4">
-              <EvidenceRail
-                marker="Ref 01"
-                label="Publication Approach"
-                className="rounded-md border border-[#D2C9BC] bg-[#FFFDF9]/80 p-5"
-              >
-                <div className="space-y-3">
-                  <span className="font-serif text-base font-medium text-[#242321]">
-                    Clear, Referenced Communication
-                  </span>
-                  <p className="text-xs leading-relaxed text-[#5E5953]">
-                    This publication is designed to present medical writing with
-                    clear structure, readable language, and visible references
-                    where appropriate.
-                  </p>
-                </div>
-              </EvidenceRail>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 03: Selected Writing Overview */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3">
-            <FolioMarker number={3} label="Selected Writing" />
-            <TopicImprint variant="oxide">Portfolio</TopicImprint>
-          </div>
-
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div className="space-y-2">
-              <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-                Recent Writing
-              </h2>
-              <p className="max-w-xl text-base leading-relaxed text-[#5E5953]">
-                Published writing and educational articles.
-              </p>
-            </div>
-            <Link
-              href="/blog"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-            >
-              Browse All Articles →
-            </Link>
-          </div>
-
-          {fetchError ? (
-            <div className="bg-reading-surface text-muted-ink rounded-lg border border-subtle-divider p-8 text-center text-sm">
-              Unable to load published writing at this time. Please try again
-              later.
-            </div>
-          ) : hasPublishedContent && leadArticle ? (
-            <div className="space-y-6">
-              <FeaturedArticle
-                article={leadArticle}
-                isExplicitlyFeatured={isLeadExplicitlyFeatured}
-                headingLevel="h3"
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-r from-[#F6F1E8] via-[#F6F1E8]/96 via-[58%] to-[#F6F1E8]/20 md:hidden"
               />
-              {supportingArticles.length > 0 && (
-                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                  {supportingArticles.map((article, index) => (
-                    <ArticleListItem
+            </>
+          ) : null}
+
+          <div className="relative z-10 grid min-h-[430px] items-center md:grid-cols-12 md:gap-0 lg:min-h-[480px]">
+            <div className="max-w-[88%] py-12 md:col-span-6 md:max-w-none md:pr-10 lg:col-span-5 lg:pr-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <FolioMarker number={1} label="Publication Masthead" />
+                <TopicImprint variant="oxide">Medical Writing</TopicImprint>
+              </div>
+
+              <h1 className="mt-7 font-serif text-4xl leading-[1.02] font-medium tracking-tight text-[#242321] sm:text-5xl lg:text-[4rem]">
+                {siteTitle}
+              </h1>
+
+              <p className="mt-5 max-w-lg font-serif text-xl leading-snug text-[#7B3F35] sm:text-2xl">
+                {tagline}
+              </p>
+
+              <p className="mt-7 max-w-xl font-sans text-base leading-relaxed text-[#5E5953] sm:text-lg">
+                {introText}
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/blog"
+                  className={cn(
+                    buttonVariants({
+                      variant: "default",
+                      size: "lg",
+                    }),
+                  )}
+                >
+                  Explore Articles
+                </Link>
+
+                <Link
+                  href="/portfolio"
+                  className={cn(
+                    buttonVariants({
+                      variant: "outline",
+                      size: "lg",
+                    }),
+                  )}
+                >
+                  Selected Writing
+                </Link>
+              </div>
+            </div>
+
+            {homeHero ? (
+              <div className="relative hidden h-full min-h-[430px] md:col-span-6 md:block lg:col-span-7 lg:-mr-6">
+                <ManagedSiteImage
+                  media={homeHero}
+                  priority
+                  sizes="(max-width: 1024px) 50vw, 58vw"
+                  className="absolute inset-0"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#F6F1E8] to-transparent lg:w-32"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#F6F1E8]/35 to-transparent"
+                />
+              </div>
+            ) : null}
+          </div>
+        </section>
+        {/* Sections 02 + 03: Latest Articles & Explore Topics */}
+        <HomeDiscoverySections
+          leadArticle={leadArticle}
+          supportingArticles={supportingArticles}
+          isLeadExplicitlyFeatured={isLeadExplicitlyFeatured}
+          categories={categories}
+          fetchError={fetchError}
+        />
+        {/* Sections 04 + 05: Selected Writing & About Marie */}
+        <section className="-mt-6 border-t border-subtle-divider py-8 sm:-mt-10 sm:py-9">
+          <div className="grid items-stretch lg:grid-cols-12">
+            {/* 04 — Selected Writing */}
+            <div className="lg:col-span-8 lg:pr-10">
+              <div className="flex items-center justify-between gap-4">
+                <FolioMarker number={4} label="Selected Writing" />
+
+                <Link
+                  href="/portfolio"
+                  className="text-brand-oxide hidden text-[0.68rem] font-semibold tracking-wide hover:underline sm:inline-flex"
+                >
+                  View all writing →
+                </Link>
+              </div>
+
+              {selectedWriting.length > 0 ? (
+                <div
+                  className={cn(
+                    "mt-5 grid gap-x-7 gap-y-5",
+                    selectedWriting.length <= 2
+                      ? "sm:grid-cols-2"
+                      : "sm:grid-cols-2 xl:grid-cols-4",
+                  )}
+                >
+                  {selectedWriting.map((article, index) => (
+                    <Link
                       key={article.id}
-                      article={article}
-                      index={index + 1}
-                    />
+                      href={`/blog/${article.slug}`}
+                      className="group relative border-t border-subtle-divider pt-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <FileText
+                          aria-hidden="true"
+                          strokeWidth={1.45}
+                          className="text-brand-oxide mt-0.5 h-4 w-4 shrink-0"
+                        />
+
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span className="text-brand-oxide font-serif text-[0.72rem]">
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+
+                            {article.category && (
+                              <span className="text-muted-ink text-[0.56rem] font-semibold tracking-[0.09em] uppercase">
+                                {article.category.name}
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="group-hover:text-brand-oxide mt-2 font-serif text-[1.03rem] leading-[1.14] font-medium tracking-tight text-ink transition-colors">
+                            {article.title}
+                          </h3>
+                        </div>
+                      </div>
+                    </Link>
                   ))}
                 </div>
+              ) : (
+                <p className="text-muted-ink mt-5 max-w-xl border-t border-subtle-divider pt-4 text-sm leading-relaxed">
+                  Selected published writing will appear here as articles are
+                  featured for the portfolio.
+                </p>
               )}
-            </div>
-          ) : (
-            <EmptyEditorialState
-              title="Selected Writing"
-              description="Published articles and selected medical writing entries will appear here as publications are released."
-              topicLabel="Publication Archive"
-              actionHref="/blog"
-              actionLabel="View Article Archive"
-            />
-          )}
-        </section>
 
-        {/* Section 04: About Marie Bridge */}
-        <section className="space-y-6 rounded-md border border-[#D2C9BC] bg-[#FFFDF9] p-8 sm:p-12">
-          <div className="flex items-center gap-3">
-            <FolioMarker number={4} label="Author Profile" />
-            <TopicImprint variant="sage">About</TopicImprint>
-          </div>
-
-          <div className="max-w-3xl space-y-4">
-            <h2 className="font-serif text-2xl font-medium tracking-tight text-[#242321] sm:text-3xl">
-              About Marie Medere
-            </h2>
-            <p className="text-base leading-relaxed text-[#5E5953] sm:text-lg">
-              {profile.short_bio ||
-                "Marie Medere authors medical writing and educational publications focused on clarity, scientific accuracy, and accessible communication."}
-            </p>
-            <div className="pt-2">
               <Link
-                href="/about"
-                className={cn(
-                  buttonVariants({ variant: "default", size: "default" }),
-                )}
+                href="/portfolio"
+                className="text-brand-oxide mt-5 inline-flex text-xs font-semibold tracking-wide hover:underline sm:hidden"
               >
-                Read Full Profile &amp; Approach
+                View selected writing →
               </Link>
             </div>
+
+            {/* 05 — About Marie */}
+            <aside className="mt-8 border-t border-subtle-divider pt-7 lg:col-span-4 lg:mt-0 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+              <FolioMarker number={5} label="About Marie" />
+
+              <div className="mt-5 max-w-md">
+                <p className="text-sm leading-[1.65] text-[#45413D] sm:text-[0.95rem]">
+                  {profile.short_bio ||
+                    "Professional profile information will appear here as approved content becomes available."}
+                </p>
+
+                <Link
+                  href="/about"
+                  className="text-brand-oxide mt-4 inline-flex text-xs font-semibold tracking-wide hover:underline"
+                >
+                  Learn more about my approach →
+                </Link>
+              </div>
+            </aside>
           </div>
         </section>
-
-        {/* Section 05: Contact CTA */}
-        <section className="space-y-6 text-center">
-          <div className="flex justify-center">
-            <FolioMarker number={5} label="Inquiries" />
-          </div>
-
-          <h2 className="font-serif text-3xl font-medium tracking-tight text-[#242321] sm:text-4xl">
-            Contact &amp; Inquiries
-          </h2>
-
-          <p className="mx-auto max-w-xl text-base leading-relaxed text-[#5E5953] sm:text-lg">
-            For professional inquiries regarding medical writing and educational
-            publications.
-          </p>
-
-          <div className="pt-2">
-            <Link
-              href="/contact"
-              className={cn(buttonVariants({ variant: "default", size: "lg" }))}
-            >
-              Contact
-            </Link>
-          </div>
-        </section>
-
+        {/* Compact Professional Contact Banner */}
+        <HomeContactBanner />
         {/* Section 06: Medical Disclaimer Banner */}
         <section className="pt-4">
           <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />

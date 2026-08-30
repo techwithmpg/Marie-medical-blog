@@ -12,7 +12,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Articles", href: "/blog" },
-  { label: "Selected Writing", href: "/portfolio" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -28,11 +28,11 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   return (
     <header className="w-full border-b border-[#D2C9BC] bg-[#F6F1E8]/90 backdrop-blur-xs">
-      <div className="mx-auto flex max-w-[1248px] items-center justify-between px-5 py-4 sm:px-8 lg:px-12">
+      <div className="flex w-full min-w-0 items-center justify-between px-5 py-4 sm:px-8 lg:px-10 xl:px-12 2xl:px-16">
         {/* Brand identity wordmark */}
         <Link
           href="/"
-          className="group flex flex-col rounded-xs focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
+          className="group flex shrink-0 flex-col rounded-xs focus-visible:ring-2 focus-visible:ring-[#265D7A] focus-visible:outline-none"
         >
           <span className="font-serif text-2xl font-medium tracking-tight text-[#242321] transition-colors group-hover:text-[#7B3F35] sm:text-[1.65rem]">
             {siteTitle}
@@ -45,7 +45,7 @@ export function SiteHeader({
         {/* Desktop Navigation */}
         <nav
           aria-label="Main Navigation"
-          className="hidden items-center space-x-6 md:flex lg:space-x-8"
+          className="ml-auto hidden items-center gap-[clamp(1.25rem,2.2vw,2.75rem)] lg:flex"
         >
           {navLinks.map((link) => (
             <Link
@@ -59,7 +59,7 @@ export function SiteHeader({
         </nav>
 
         {/* CTA & Mobile Menu */}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3 lg:ml-[clamp(1.25rem,2vw,2.5rem)]">
           <div className="hidden sm:block">
             <Link
               href="/contact"

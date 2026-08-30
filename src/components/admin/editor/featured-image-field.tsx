@@ -5,12 +5,16 @@ import Image from "next/image";
 import { Upload, X, AlertCircle, ImageIcon, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { MediaPickerDialog } from "@/components/admin/media/media-picker-dialog";
 
 interface FeaturedImageFieldProps {
   articleId?: string | null;
   imagePath: string | null;
   imageAlt: string | null;
-  onImagePathChange: (path: string | null) => void;
+  onImagePathChange: (
+    path: string | null,
+    source?: "upload" | "media",
+  ) => void | Promise<void>;
   onImageAltChange: (alt: string) => void;
   disabled?: boolean;
 }
@@ -134,7 +138,7 @@ export function FeaturedImageField({
         return;
       }
 
-      onImagePathChange(storagePath);
+      await onImagePathChange(storagePath, "upload");
       if (!imageAlt) {
         onImageAltChange("");
       }
@@ -149,7 +153,7 @@ export function FeaturedImageField({
 
   const handleRemoveImage = () => {
     if (uploading || disabled) return;
-    onImagePathChange(null);
+    void onImagePathChange(null);
     onImageAltChange("");
     setPreviewUrl(null);
     setUploadError(null);
@@ -240,7 +244,7 @@ export function FeaturedImageField({
 
           {/* Replace Action */}
           {!disabled && (
-            <div>
+            <div className="flex flex-wrap gap-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -268,11 +272,19 @@ export function FeaturedImageField({
                   </>
                 )}
               </button>
+              <MediaPickerDialog
+                articleId={articleId}
+                disabled={uploading}
+                onSelected={(path) => {
+                  onImageAltChange("");
+                  return onImagePathChange(path, "media");
+                }}
+              />
             </div>
           )}
         </div>
       ) : (
-        <div>
+        <div className="space-y-3">
           <input
             ref={fileInputRef}
             type="file"
@@ -310,6 +322,16 @@ export function FeaturedImageField({
               </>
             )}
           </button>
+          <div className="flex justify-center">
+            <MediaPickerDialog
+              articleId={articleId}
+              disabled={disabled || uploading}
+              onSelected={(path) => {
+                onImageAltChange("");
+                return onImagePathChange(path, "media");
+              }}
+            />
+          </div>
         </div>
       )}
 

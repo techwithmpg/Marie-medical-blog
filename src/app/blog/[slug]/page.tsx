@@ -2,11 +2,16 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ArticleHeader } from "@/components/public/article-header";
+import { ArticleReadingRail } from "@/components/public/article-reading-rails";
+import { KeyTakeaways } from "@/components/public/key-takeaways";
+import { ArticleSupportRail } from "@/components/public/article-support-rail";
 import { ArticleTypography } from "@/components/public/article-typography";
+import {
+  extractArticleOutline,
+  extractKeyTakeaways,
+} from "@/lib/article-outline";
 import { ReferenceLedger } from "@/components/evidence/reference-ledger";
 import { AuthorBlock } from "@/components/public/author-block";
-import { MedicalDisclaimer } from "@/components/public/medical-disclaimer";
-import { ArticleListItem } from "@/components/public/article-list-item";
 import {
   getPublishedArticleBySlug,
   getRelatedPublishedArticles,
@@ -196,90 +201,120 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
     image: discoveryImage,
   });
 
+  const articleOutline = extractArticleOutline(article.content_json);
+
+  const keyTakeaways = extractKeyTakeaways(article.content_json, {
+    allowSyntheticFallback: article.title
+      .trim()
+      .toLowerCase()
+      .startsWith("synthetic"),
+  });
+  const relatedImageEntries = await Promise.all(
+    relatedArticles.map(async (relatedArticle) => {
+      try {
+        const assetData = await getPublicArticleAssetData(
+          relatedArticle.featured_image_path,
+          relatedArticle.featured_image_alt,
+        );
+
+        return [relatedArticle.id, assetData.publicUrl] as const;
+      } catch {
+        return [relatedArticle.id, null] as const;
+      }
+    }),
+  );
+
+  const relatedImageUrls: Record<string, string | null> =
+    Object.fromEntries(relatedImageEntries);
   return (
-    <article className="mx-auto max-w-4xl space-y-12 sm:space-y-16">
+    <article className="w-full min-w-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
-      {/* Article Header */}
-      <ArticleHeader
-        title={article.title}
-        excerpt={article.excerpt}
-        category={article.category}
-        publishedAt={article.published_at}
-        updatedAt={article.updated_at}
-        readingTimeMinutes={article.reading_time_minutes}
-      />
 
-      {/* Featured Media (Only rendered when URL and alt text both exist) */}
-      {hasValidImage && featuredImageUrl && article.featured_image_alt && (
-        <div className="overflow-hidden rounded-md border border-subtle-divider">
-          <Image
-            src={featuredImageUrl}
-            alt={article.featured_image_alt}
-            width={1200}
-            height={630}
-            className="h-auto max-h-[480px] w-full object-cover"
-            sizes="(max-width: 896px) 100vw, 896px"
-            priority={false}
-          />
-        </div>
-      )}
+      <div className="grid w-full min-w-0 gap-8 xl:grid-cols-[minmax(180px,15vw)_minmax(0,1fr)_minmax(240px,20vw)] xl:items-start xl:gap-x-[clamp(28px,4vw,68px)]">
+        {/* Left article navigation */}
+        <aside className="order-2 w-full xl:sticky xl:top-24 xl:order-1">
+          <div className="space-y-5">
+            <ArticleReadingRail
+              items={articleOutline}
+              hasReferences={article.references.length > 0}
+            />
 
-      {/* Long-form Article Body */}
-      <section aria-label="Article content">
-        <ArticleTypography contentJson={article.content_json} />
-      </section>
-
-      {/* Reference Ledger */}
-      {article.references.length > 0 && (
-        <section>
-          <ReferenceLedger
-            title="References & Evidence Sources"
-            headingLevel="h2"
-            items={article.references}
-          />
-        </section>
-      )}
-
-      {/* Author Block */}
-      <div>
-        <AuthorBlock profile={profile} />
-      </div>
-
-      {/* Medical Disclaimer Banner */}
-      <div>
-        <MedicalDisclaimer disclaimerText={settings.disclaimer_text} />
-      </div>
-
-      {/* Related Writing (Category Relevancy only) */}
-      {relatedArticles.length > 0 && (
-        <section className="border-t border-subtle-divider pt-12">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="font-serif text-2xl font-medium tracking-tight text-ink">
-              Related Writing
-            </h2>
-            {article.category && (
-              <span className="text-deep-sage font-sans text-xs font-semibold tracking-wider uppercase">
-                {article.category.name}
-              </span>
-            )}
+            <KeyTakeaways items={keyTakeaways} />
           </div>
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {relatedArticles.map((relArticle, index) => (
-              <ArticleListItem
-                key={relArticle.id}
-                article={relArticle}
-                index={index}
+        </aside>
+
+        {/* Main reading column */}
+        <main className="order-1 w-full min-w-0 xl:order-2">
+          <ArticleHeader
+            title={article.title}
+            excerpt={article.excerpt}
+            category={article.category}
+            publishedAt={article.published_at}
+            updatedAt={article.updated_at}
+            readingTimeMinutes={article.reading_time_minutes}
+            authorName={profile.display_name}
+            authorTagline={profile.professional_tagline}
+          />
+
+          {hasValidImage && featuredImageUrl && article.featured_image_alt && (
+            <figure className="mt-7 overflow-hidden border border-subtle-divider bg-[#EEE6DA]">
+              <Image
+                src={featuredImageUrl}
+                alt={article.featured_image_alt}
+                width={1200}
+                height={630}
+                className="h-auto max-h-[430px] w-full object-cover"
+                sizes="(max-width: 1024px) 100vw, 720px"
               />
-            ))}
-          </div>
-        </section>
-      )}
+            </figure>
+          )}
 
-      {/* Discussion & Public Comments */}
-      <CommentSection articleId={article.id} comments={approvedComments} />
+          <section
+            id="article-content"
+            aria-label="Article content"
+            className="scroll-mt-28 pt-10"
+          >
+            <ArticleTypography
+              contentJson={article.content_json}
+              className="w-full max-w-[78ch]"
+            />
+          </section>
+
+          {article.references.length > 0 && (
+            <section id="references" className="scroll-mt-28 pt-8">
+              <ReferenceLedger
+                title="References & Evidence Sources"
+                headingLevel="h2"
+                items={article.references}
+              />
+            </section>
+          )}
+
+          <div id="about-author" className="scroll-mt-28 pt-8">
+            <AuthorBlock profile={profile} />
+          </div>
+
+          <div id="discussion" className="scroll-mt-28 pt-10">
+            <CommentSection
+              articleId={article.id}
+              comments={approvedComments}
+            />
+          </div>
+        </main>
+
+        {/* Right evidence / related / disclaimer rail */}
+        <aside className="order-3 w-full xl:sticky xl:top-24">
+          <ArticleSupportRail
+            references={article.references}
+            relatedArticles={relatedArticles}
+            relatedImageUrls={relatedImageUrls}
+            disclaimerText={settings.disclaimer_text}
+          />
+        </aside>
+      </div>
     </article>
   );
 }

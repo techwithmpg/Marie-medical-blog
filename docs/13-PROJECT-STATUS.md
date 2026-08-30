@@ -4,16 +4,25 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion Gate — Categories + Media — DESIGN APPROVED / IMPLEMENTATION PENDING OWNER AUTHORIZATION
-- **Stage authorization:** D035 ACTIVE / ARCHITECTURE APPROVED / IMPLEMENTATION NOT YET AUTHORIZED — 2026-08-29
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / GOVERNANCE CLOSEOUT / MERGE READY
+- **Stage authorization:** D035 + D036 ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / OWNER-AUTHORIZED MERGE FLOW — 2026-08-30
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
-- **Active working branch:** `main`
-- **Application coding authorized:** NONE — D035 GOVERNANCE/DESIGN ACTIVATION ONLY
-- **Current implementation phase:** GOVERNANCE/DESIGN ACTIVATION COMPLETE / IMPLEMENTATION PENDING OWNER AUTHORIZATION
-- **D035 status:** ACTIVE / ARCHITECTURE APPROVED
+- **Active working branch:** `fix/v1-admin-completion`
+- **Application coding authorized:** NO FURTHER PRODUCT IMPLEMENTATION IN THIS GATE — CLOSEOUT AND OWNER-AUTHORIZED INTEGRATION ONLY
+- **Current implementation phase:** GATE CLOSEOUT — GOVERNANCE / HANDOFF / COMMIT / PUSH / NORMAL MERGE / POST-MERGE VERIFICATION
+- **D035 status:** ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / MERGE READY
+- **D036 status:** ACTIVE / MANAGED PUBLIC MEDIA + PUBLIC INTEGRATION COMPLETE / FULL LOCAL GATE PASS
+- **D036 migration:** `supabase/migrations/20260830090000_managed_public_media_slots.sql` — LOCAL ONLY / HOSTED NOT DEPLOYED
+- **D036 fixed placements:** `home_hero`, `about_hero`, `portfolio_hero`, `contact_hero`, `author_portrait`, `default_social`
+- **Public structural layout:** OWNER APPROVED / VIEWPORT-FLUID SHELL + RESPONSIVE GUTTERS / FLUID STRUCTURAL GRIDS / READING-WIDTH CONSTRAINTS RETAINED FOR PROSE
+- **Gate-2 verification:** PASS — Node 174/174; pgTAP 323/323; Playwright 17/17; TypeScript; ESLint; Prettier; production build; staged diff integrity
+- **Gate-2 branch relationship:** `fix/v1-admin-completion` = 0 behind / 6 ahead of accepted `origin/main` before final governance commit
+- **Accepted main during Gate-2 closeout:** `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
+- **Merge flow:** OWNER AUTHORIZED — GOVERNANCE CLOSEOUT → COMMIT/PUSH BRANCH → NORMAL MERGE PRESERVING HISTORY → POST-MERGE VERIFICATION
+
 - **D035 design specification:** `docs/37-V1-ADMIN-COMPLETION-DESIGN.md`
-- **Recommended future implementation branch:** `fix/v1-admin-completion` — NOT CREATED / NOT AUTHORIZED
+- **Implementation branch:** `fix/v1-admin-completion` — CREATED FROM `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
 - **Phase 10A status:** COMPLETE / EXTERNAL REVIEW PASS / D034 OWNER APPROVED
 - **D034 status:** ACTIVE / FROZEN FOR STAGE-10 IMPLEMENTATION
 - **Phase 10B status:** COMPLETE / LOCAL QUALITY GATE PASS
@@ -43,14 +52,14 @@ This file is the authoritative repository record of the currently active develop
 - **Vercel hosted mutation:** NOT AUTHORIZED
 - **Google Search Console mutation:** NOT EXECUTED / DEFERRED
 - **Final production domain:** NOT CONFIGURED / STAGE 12
-- **Categories:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
+- **Categories:** PHASE 1 COMPLETE / LOCAL GATE PASS
 - **Category migration:** NOT REQUIRED
-- **Media:** DESIGN APPROVED / NOT IMPLEMENTED / IMPLEMENTATION NOT AUTHORIZED
+- **Media:** D035 PHASE 2 + D036 MANAGED PUBLIC MEDIA COMPLETE / FULL LOCAL GATE PASS — complete Node regression 174/174 PASS; pgTAP 323/323 PASS; Playwright 17/17 PASS; typecheck/lint/format/build/diff integrity PASS
 - **Media migration:** NOT REQUIRED
-- **Hosted Supabase migration for this gate:** NOT REQUIRED / NOT AUTHORIZED
+- **Hosted Supabase migration for this gate:** D036 LOCAL MIGRATION `20260830090000_managed_public_media_slots.sql` EXISTS / LOCAL VERIFICATION PASS / HOSTED DEPLOYMENT NOT EXECUTED OR AUTHORIZED BY THIS CLOSEOUT
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** EXPLICIT OWNER AUTHORIZATION FOR `fix/v1-admin-completion` IMPLEMENTATION
+- **Next action:** FINALIZE GOVERNANCE + HANDOFF → COMMIT/PUSH `fix/v1-admin-completion` → EXECUTE OWNER-AUTHORIZED NORMAL MERGE → POST-MERGE VERIFICATION → DO NOT START STAGE 11 WITHOUT NEW EXPLICIT AUTHORIZATION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
@@ -1330,6 +1339,23 @@ Stage 7 is complete, verified, and merged into `main`:
 - **Implementation phases 2–5:** NOT AUTHORIZED
 - **Recommended future branch:** `fix/v1-admin-completion` — NOT CREATED
 - **Current ending boundary:** explicit owner authorization is required before application implementation; Stage 11 and Stage 12 remain blocked/not authorized
+
+## D035 Phase 1 Category Management closeout (2026-08-29)
+
+- **Branch/base:** `fix/v1-admin-completion` from accepted `main` `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
+- **Outcome:** PHASE 1 CATEGORIES COMPLETE / LOCAL GATE PASS
+- **Delivered:** protected `/admin/categories`; focused loader/validation; independently authorized create/update/delete Server Actions; create-time manual or generated slug; immutable post-create slug; article-usage counts; referenced-delete protection; targeted revalidation; responsive Evidence Folio UI; loading/error states; focused Node and browser tests
+- **Focused Category tests:** 10/10 PASS
+- **Complete Node tests:** 163/163 PASS
+- **Local database security:** pgTAP 323/323 PASS against `127.0.0.1:54321`
+- **Browser/accessibility:** Playwright 16/16 PASS; axe serious/critical violations 0
+- **Static quality:** typecheck PASS; lint PASS; format check PASS; `git diff --check` PASS
+- **Dependency/build:** production dependency audit 0 vulnerabilities; production build PASS with 19 static-generation units and `/admin/categories` included
+- **Database/hosted boundary:** no migration, schema/RLS/grant change, new RPC, hosted Supabase mutation, or service-role browser exposure
+- **Storage/dependency boundary:** no Storage change and no dependency change
+- **Local cleanup:** database restored to committed synthetic seed state after verification; project-local Supabase stack stopped
+- **Still deferred:** Media implementation and `/admin/media`; Stage 11; Stage 12; hosted Analytics activation; Search Console; final-domain/DNS work; merge to `main`
+- **Next owner decision:** authorize or defer Phase 2 Media implementation
 
 ## Stage transition rule
 
