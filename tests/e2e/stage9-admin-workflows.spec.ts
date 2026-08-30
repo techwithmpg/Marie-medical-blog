@@ -134,7 +134,11 @@ test.describe("Stage 9 Admin Moderation & Inbox Workflows E2E", () => {
 
     const deleteBtn = hiddenCommentCard.getByRole("button", { name: "Delete" });
     await deleteBtn.click();
-    await page.waitForLoadState("domcontentloaded");
+
+    // Server Actions update the current RSC tree rather than causing a new
+    // document load. Wait for the actual moderation result before navigating
+    // so this lifecycle check cannot race the delete request.
+    await expect(page.getByText(commentBody)).not.toBeVisible();
 
     // Verify comment is completely removed from admin
     await page.goto("/admin/comments?status=all");

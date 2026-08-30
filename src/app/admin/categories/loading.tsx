@@ -1,6 +1,11 @@
 export default function AdminCategoriesLoading() {
   return (
-    <div className="space-y-6" aria-busy="true" aria-label="Loading Categories">
+    <div
+      className="space-y-6"
+      role="status"
+      aria-busy="true"
+      aria-label="Loading Categories"
+    >
       <div className="border-b border-subtle-divider pb-5">
         <div className="h-3 w-36 animate-pulse rounded bg-subtle-field" />
         <div className="mt-3 h-8 w-64 animate-pulse rounded bg-subtle-field" />
