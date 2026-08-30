@@ -1179,3 +1179,36 @@ Production deployment is not claimed. Stage 11 and Stage 12 remain
 
 **Status:** ACTIVE / D035 + D036 IMPLEMENTATION COMPLETE / MERGED /
 POST-MERGE QUALITY GATE PASS / CANONICAL SYNCHRONIZATION CONFIRMED.
+
+## ACTIVE — D037 — Stage 11 quality, security and production hardening
+
+**Date:** 2026-08-30
+
+**Decision:** Activate Stage 11 — Quality, Security & Production Hardening.
+
+Stage 11 is authorized to inspect, verify and correct existing V1 defects within
+the frozen architecture and product scope, including:
+
+1. accessibility and WCAG 2.2 AA conformance;
+2. responsive and cross-browser usability;
+3. Evidence Folio visual-contract regression;
+4. performance and public-page loading behavior;
+5. Supabase/RLS/public-private security boundaries;
+6. error, empty and loading states;
+7. production build and configuration correctness;
+8. dependency and runtime configuration review;
+9. regression coverage for defects corrected during the stage.
+
+Stage 11 does not authorize Stage 12 launch/content work, new product features,
+stack replacement, reader accounts, multi-author workflows, hosted production
+deployment, or hosted Supabase mutation unless separately authorized by the
+project owner.
+
+The existing unfinished footer refinement may be carried into Stage 11 as a
+visual-conformance correction, provided it remains within the accepted Evidence
+Folio contract and passes the Stage 11 verification gate.
+
+**Approved by:** project owner — explicit Stage 11 activation instruction,
+2026-08-30.
+
+**Status:** ACTIVE / OWNER AUTHORIZED / STAGE 11 IMPLEMENTATION PERMITTED.
