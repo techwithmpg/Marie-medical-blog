@@ -13,16 +13,30 @@ placements are available to the single admin, and the approved Evidence Folio
 public surfaces have been integrated with managed imagery and the owner-approved
 fluid structural layout.
 
-The work is complete locally and is ready for the already authorized
-integration/merge flow. This handoff does not claim merge or production
-deployment.
+The owner-authorized normal local merge is complete and the required post-merge
+quality gate has passed. The repository is now in final governance closeout
+before the authorized canonical `main` push.
+
+This handoff does not claim production deployment, hosted D036 migration
+deployment, or canonical GitHub synchronization until the final push is
+independently verified.
 
 ## Canonical context
 
-- Accepted `main` during Gate-2 closeout:
+- Accepted `main` before integration:
   `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
-- Working branch: `fix/v1-admin-completion`
-- Pre-governance branch relationship: 0 behind / 6 ahead of accepted main
+- Approved implementation branch:
+  `fix/v1-admin-completion`
+- Approved branch head:
+  `4682c1b1bc2843a4aea1bd2f16379f9fb08ffe06`
+- Local normal merge commit:
+  `a018704a0d9ed68db3bd49f83c84212d80167ab5`
+- Merge first parent:
+  `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
+- Merge second parent:
+  `4682c1b1bc2843a4aea1bd2f16379f9fb08ffe06`
+- Canonical `origin/main` during post-merge closeout:
+  `6fc9d6d1618e4308d88abaf9a5757032f619fc5c` — final push pending
 - Decisions: D035 and D036
 - D036 specification: `docs/38-D036-MANAGED-PUBLIC-MEDIA-EDITOR.md`
 
@@ -73,7 +87,7 @@ The Evidence Folio visual direction remains authoritative.
 
 ## Verification performed
 
-Final local gate:
+Pre-merge full local gate:
 
 - complete Node regression: 174/174 PASS;
 - pgTAP: 323/323 PASS;
@@ -84,8 +98,36 @@ Final local gate:
 - production build: PASS;
 - staged diff/whitespace integrity: PASS.
 
-The browser closeout also hardened E2E fixture isolation without weakening
-production security behavior. Public comment/contact rate limits remain intact.
+Post-merge verification:
+
+- local normal merge structure and parent identities: PASS;
+- merge tree identity against the approved branch: PASS before the two
+  verification-only test corrections;
+- complete Node regression: 174/174 PASS;
+- TypeScript: PASS;
+- ESLint: PASS;
+- Prettier: PASS;
+- full Playwright: 17/17 PASS;
+- pgTAP after Playwright mutations: 323/323 PASS;
+- diff integrity: PASS;
+- production build: previously PASS on the same application/source tree.
+
+Two deterministic verification corrections were required:
+
+- `supabase/tests/database/06_admin_access.test.sql` now restores/scopes its
+  canonical synthetic comment fixtures transactionally so persistent browser
+  mutations cannot invalidate admin-access assertions;
+- `tests/e2e/stage9-settings-portfolio.spec.ts` now resolves the actual newest
+  published local article when verifying automatic homepage lead fallback
+  instead of assuming a fixed seed remains newest.
+
+These corrections affect test determinism only. They do not weaken RLS,
+submission abuse controls, admin authorization, publication behavior or the
+approved public UI.
+
+A Docker Desktop/WSL stale `E:` bind-mount condition interrupted the first
+post-merge pgTAP attempt. The local Docker/WSL runtime was recovered without a
+repository, dependency, schema or production configuration change.
 
 ## Known limitations
 
@@ -106,26 +148,32 @@ editing/compression, multilingual CMS or native application was introduced.
 
 ## Next-stage readiness
 
-**READY FOR OWNER-AUTHORIZED INTEGRATION/MERGE.**
+**READY FOR OWNER-AUTHORIZED CANONICAL PUSH / VERIFICATION.**
 
-The already authorized sequence is:
+The implementation branch has been committed/pushed, the normal
+history-preserving local merge is complete, and the required post-merge quality
+gate has passed.
 
-1. finish governance reconciliation;
-2. commit and push `fix/v1-admin-completion`;
-3. verify local/remote branch identity;
-4. perform a normal history-preserving merge into synchronized `main`;
-5. run required post-merge verification;
-6. push and verify canonical `main`;
-7. only after canonical confirmation, remove the short-lived branch if desired.
+The remaining authorized sequence is:
+
+1. finish this governance reconciliation;
+2. commit the two verified test-isolation corrections and governance closeout
+   on local `main`;
+3. verify the closeout commit is clean and `origin/main` has not moved;
+4. push local `main` to `origin/main`;
+5. independently verify the canonical GitHub SHA and history;
+6. only after canonical confirmation, remove `fix/v1-admin-completion` locally
+   and remotely if desired.
 
 Stage 11 is **NOT AUTHORIZED** by this handoff and must not begin merely because
 this gate is merge-ready.
 
 ## Project status update
 
-`docs/13-PROJECT-STATUS.md` records this gate as implementation complete,
-full local gate passed and merge-ready.
+`docs/13-PROJECT-STATUS.md` now records the local normal merge commit, the
+post-merge quality-gate result, the deterministic verification corrections and
+the final canonical-push boundary.
 
-After the normal merge and post-merge verification, project status must be
-reconciled again to record the canonical merge commit and the next
-owner-controlled authorization boundary.
+Stage 11 remains **NOT AUTHORIZED**. A new explicit owner authorization is still
+required after canonical `main` synchronization before Stage 11 implementation
+may begin.

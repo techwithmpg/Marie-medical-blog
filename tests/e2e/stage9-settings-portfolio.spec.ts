@@ -1,6 +1,66 @@
+import fs from "node:fs";
+import path from "node:path";
 import { test, expect } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { ensureLocalSupabaseTarget } from "./helpers/local-only";
 import { loginAsAdmin } from "./helpers/auth";
+
+function readLocalEnvValue(name: string): string {
+  const processValue = process.env[name]?.trim();
+
+  if (processValue) {
+    return processValue;
+  }
+
+  const envPath = path.resolve(process.cwd(), ".env.local");
+
+  if (!fs.existsSync(envPath)) {
+    throw new Error(
+      "Local E2E configuration error: " +
+        name +
+        " is unavailable and .env.local does not exist.",
+    );
+  }
+
+  const content = fs.readFileSync(envPath, "utf8");
+  const match = content.match(new RegExp("^" + name + "=(.+)$", "m"));
+  const value = match?.[1]?.trim().replace(/^["']|["']$/g, "");
+
+  if (!value) {
+    throw new Error(
+      "Local E2E configuration error: " + name + " is not configured.",
+    );
+  }
+
+  return value;
+}
+
+function createLocalPublicSupabaseClient() {
+  const url = readLocalEnvValue("NEXT_PUBLIC_SUPABASE_URL");
+  const publishableKey = readLocalEnvValue(
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  );
+
+  const parsed = new URL(url);
+
+  if (
+    parsed.protocol !== "http:" ||
+    (parsed.hostname !== "127.0.0.1" && parsed.hostname !== "localhost") ||
+    parsed.port !== "54321"
+  ) {
+    throw new Error(
+      "HARD LOCAL GUARD: fallback verification may only query local Supabase.",
+    );
+  }
+
+  return createClient(url, publishableKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  });
+}
 
 test.beforeAll(() => {
   ensureLocalSupabaseTarget();
@@ -297,14 +357,37 @@ test.describe("Stage 9 Settings & Portfolio Featurings E2E", () => {
     await page.getByRole("button", { name: "Update Lead Article" }).click();
     await page.waitForLoadState("networkidle");
 
-    // Verify public homepage falls back to newest published article
+    // Resolve the current newest public article instead of assuming mutable
+    // local development data still has a specific synthetic seed as newest.
+    const publicSupabase = createLocalPublicSupabaseClient();
+
+    const { data: fallbackArticles, error: fallbackError } =
+      await publicSupabase
+        .from("articles")
+        .select("title, slug")
+        .eq("status", "published")
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
+        .limit(1);
+
+    expect(fallbackError).toBeNull();
+    expect(fallbackArticles).toHaveLength(1);
+
+    const fallbackArticle = fallbackArticles![0];
+
+    // Verify the homepage uses the actual newest public article as fallback.
     await page.goto("/");
     await page.waitForLoadState("domcontentloaded");
-    await expect(
-      page.getByRole("link", {
-        name: "Synthetic — Methodologies for Scientific Typography in Editorial Layouts",
-        exact: true,
-      }),
-    ).toBeVisible();
+
+    const latestBadge = page.getByText("Latest", { exact: true }).first();
+    await expect(latestBadge).toBeVisible();
+
+    const latestLeadCard = latestBadge.locator("xpath=ancestor::article[1]");
+    const fallbackSelector = 'a[href="/blog/' + fallbackArticle.slug + '"]';
+    const fallbackLink = latestLeadCard.locator(fallbackSelector);
+
+    await expect(fallbackLink).toBeVisible();
+    await expect(fallbackLink).toContainText(fallbackArticle.title);
   });
 });

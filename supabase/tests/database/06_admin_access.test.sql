@@ -4,6 +4,46 @@
 begin;
 select plan(12);
 
+-- Restore the canonical synthetic comment fixtures inside this transaction.
+-- Previous browser verification may legitimately mutate/delete local rows.
+-- The final rollback keeps this setup non-persistent.
+insert into public.comments (
+  id,
+  article_id,
+  commenter_name,
+  commenter_email,
+  body,
+  status,
+  moderated_at
+)
+values
+  (
+    '40000000-0000-0000-0000-000000000001',
+    '20000000-0000-0000-0000-000000000001',
+    'Synthetic Approved Comment',
+    'synthetic-approved@example.invalid',
+    'Synthetic approved comment fixture for local administrative access testing.',
+    'approved',
+    now()
+  ),
+  (
+    '40000000-0000-0000-0000-000000000002',
+    '20000000-0000-0000-0000-000000000001',
+    'Synthetic Pending Comment',
+    'synthetic-pending@example.invalid',
+    'Synthetic pending comment fixture for local administrative access testing.',
+    'pending',
+    null
+  )
+on conflict (id) do update
+set
+  article_id = excluded.article_id,
+  commenter_name = excluded.commenter_name,
+  commenter_email = excluded.commenter_email,
+  body = excluded.body,
+  status = excluded.status,
+  moderated_at = excluded.moderated_at;
+
 -- Switch to authenticated admin role
 set local role authenticated;
 set local "request.jwt.claims" = '{"role": "authenticated", "sub": "00000000-0000-0000-0000-000000000001", "email": "synthetic-admin@example.invalid"}';
@@ -55,11 +95,16 @@ select lives_ok(
   'Admin can delete articles'
 );
 
--- 6. Admin can see all comments including pending
+-- 6. Admin can see all synthetic seed comments including pending
 select results_eq(
-  'select count(*)::integer from public.comments',
+  'select count(*)::integer
+     from public.comments
+    where id in (
+      ''40000000-0000-0000-0000-000000000001'',
+      ''40000000-0000-0000-0000-000000000002''
+    )',
   array[2],
-  'Admin can view all comments across statuses'
+  'Admin can view all synthetic seed comments across statuses'
 );
 
 -- 7. Admin can select commenter_email
@@ -87,11 +132,13 @@ select lives_ok(
   'Admin can approve pending comments'
 );
 
--- 11. Admin can see contact messages
+-- 11. Admin can see the synthetic seed contact message
 select results_eq(
-  'select count(*)::integer from public.contact_messages',
+  'select count(*)::integer
+     from public.contact_messages
+    where id = ''50000000-0000-0000-0000-000000000001''',
   array[1],
-  'Admin can view contact messages'
+  'Admin can view the synthetic seed contact message'
 );
 
 -- 12. Admin can update contact message status

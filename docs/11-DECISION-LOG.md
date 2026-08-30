@@ -1117,3 +1117,43 @@ V1 scope.
 2026-08-30.
 
 **Status:** ACTIVE / FROZEN FOR CURRENT V1 PUBLIC STRUCTURE.
+
+#### D035 / D036 post-merge integration closeout
+
+**Date:** 2026-08-30
+
+The owner-authorized V1 Admin Completion integration has completed its local
+normal merge and required post-merge quality gate.
+
+- Approved implementation branch head:
+  `4682c1b1bc2843a4aea1bd2f16379f9fb08ffe06`.
+- Accepted `main` first parent:
+  `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`.
+- Local normal merge commit:
+  `a018704a0d9ed68db3bd49f83c84212d80167ab5`.
+- Post-merge Node regression: 174/174 PASS.
+- Post-merge Playwright: 17/17 PASS.
+- Post-merge pgTAP after browser mutations: 323/323 PASS.
+- TypeScript, ESLint, Prettier and diff integrity: PASS.
+- Production build had already passed on the same application/source tree.
+
+Post-merge verification exposed mutable local-test-state assumptions only.
+`06_admin_access.test.sql` was made transactionally deterministic for canonical
+synthetic comment fixtures, and the portfolio E2E fallback assertion now
+resolves the actual newest published local article rather than assuming a fixed
+seed remains newest.
+
+These are verification-only corrections. No product behavior, frozen V1 scope,
+RLS policy, abuse limit, schema, dependency, managed-media contract or public UI
+decision changed.
+
+A stale Docker Desktop/WSL `E:` bind mount interrupted the first pgTAP attempt
+and was repaired as local runtime state only. No repository or production
+configuration change was required.
+
+Canonical GitHub `main` synchronization remains pending the already authorized
+final push. D036's hosted Supabase migration remains **NOT DEPLOYED** by this
+closeout. Stage 11 and Stage 12 remain **NOT AUTHORIZED**.
+
+**Status:** ACTIVE / D035 + D036 IMPLEMENTATION COMPLETE / LOCAL NORMAL MERGE
+COMPLETE / POST-MERGE QUALITY GATE PASS / FINAL CANONICAL PUSH PENDING.

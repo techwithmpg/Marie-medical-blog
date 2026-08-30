@@ -4,19 +4,24 @@ This file is the authoritative repository record of the currently active develop
 
 ## Current status
 
-- **Current stage:** Pre-Stage-11 V1 Admin Completion — IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / GOVERNANCE CLOSEOUT / MERGE READY
-- **Stage authorization:** D035 + D036 ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / OWNER-AUTHORIZED MERGE FLOW — 2026-08-30
+- **Current stage:** Pre-Stage-11 V1 Admin Completion — LOCAL MERGE COMPLETE / POST-MERGE QUALITY GATE PASS / FINAL CANONICAL PUSH PENDING
+- **Stage authorization:** D035 + D036 ACTIVE / IMPLEMENTATION COMPLETE / POST-MERGE QUALITY GATE PASS / OWNER-AUTHORIZED CANONICAL PUSH — 2026-08-30
 - **D035 canonical base:** `e8a7784fee2044d9be3aee80818f69784b2b5d7f`
 - **Canonical Stage-10 base:** `33736919c1cb5208faaf3d0ca63d9796fc98db3d`
-- **Active working branch:** `fix/v1-admin-completion`
-- **Application coding authorized:** NO FURTHER PRODUCT IMPLEMENTATION IN THIS GATE — CLOSEOUT AND OWNER-AUTHORIZED INTEGRATION ONLY
-- **Current implementation phase:** GATE CLOSEOUT — GOVERNANCE / HANDOFF / COMMIT / PUSH / NORMAL MERGE / POST-MERGE VERIFICATION
+- **Active working branch:** `main` — LOCAL POST-MERGE CLOSEOUT / NOT YET PUSHED TO `origin/main`
+- **Application coding authorized:** NO FURTHER PRODUCT IMPLEMENTATION IN THIS GATE — FINAL CLOSEOUT / CANONICAL PUSH / VERIFICATION ONLY
+- **Current implementation phase:** FINAL CLOSEOUT — GOVERNANCE RECONCILIATION / CLOSEOUT COMMIT / CANONICAL PUSH / LIVE VERIFICATION
 - **D035 status:** ACTIVE / IMPLEMENTATION COMPLETE / FULL LOCAL GATE PASS / MERGE READY
 - **D036 status:** ACTIVE / MANAGED PUBLIC MEDIA + PUBLIC INTEGRATION COMPLETE / FULL LOCAL GATE PASS
 - **D036 migration:** `supabase/migrations/20260830090000_managed_public_media_slots.sql` — LOCAL ONLY / HOSTED NOT DEPLOYED
 - **D036 fixed placements:** `home_hero`, `about_hero`, `portfolio_hero`, `contact_hero`, `author_portrait`, `default_social`
 - **Public structural layout:** OWNER APPROVED / VIEWPORT-FLUID SHELL + RESPONSIVE GUTTERS / FLUID STRUCTURAL GRIDS / READING-WIDTH CONSTRAINTS RETAINED FOR PROSE
 - **Gate-2 verification:** PASS — Node 174/174; pgTAP 323/323; Playwright 17/17; TypeScript; ESLint; Prettier; production build; staged diff integrity
+- **Local integration merge commit:** `a018704a0d9ed68db3bd49f83c84212d80167ab5`
+- **Local integration merge parents:** first parent `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`; second parent `4682c1b1bc2843a4aea1bd2f16379f9fb08ffe06`
+- **Post-merge quality gate:** PASS — Node 174/174; Playwright 17/17; pgTAP 323/323 rerun after browser mutations; TypeScript; ESLint; Prettier; diff integrity; production build previously PASS on the same application tree
+- **Post-merge deterministic test corrections:** `supabase/tests/database/06_admin_access.test.sql` and `tests/e2e/stage9-settings-portfolio.spec.ts` only; no production application behavior, RLS, abuse limits, schema or UI contract changed
+- **Post-merge runtime recovery:** Docker Desktop/WSL host bind-mount state was repaired locally; no repository/runtime dependency change resulted
 - **Gate-2 branch relationship:** `fix/v1-admin-completion` = 0 behind / 6 ahead of accepted `origin/main` before final governance commit
 - **Accepted main during Gate-2 closeout:** `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
 - **Merge flow:** OWNER AUTHORIZED — GOVERNANCE CLOSEOUT → COMMIT/PUSH BRANCH → NORMAL MERGE PRESERVING HISTORY → POST-MERGE VERIFICATION
@@ -59,7 +64,7 @@ This file is the authoritative repository record of the currently active develop
 - **Hosted Supabase migration for this gate:** D036 LOCAL MIGRATION `20260830090000_managed_public_media_slots.sql` EXISTS / LOCAL VERIFICATION PASS / HOSTED DEPLOYMENT NOT EXECUTED OR AUTHORIZED BY THIS CLOSEOUT
 - **Stage 11:** NOT AUTHORIZED / BLOCKED UNTIL THE V1 ADMIN COMPLETION GATE IS IMPLEMENTED, TESTED, RECONCILED, MERGED, AND VERIFIED
 - **Stage 12:** NOT AUTHORIZED
-- **Next action:** FINALIZE GOVERNANCE + HANDOFF → COMMIT/PUSH `fix/v1-admin-completion` → EXECUTE OWNER-AUTHORIZED NORMAL MERGE → POST-MERGE VERIFICATION → DO NOT START STAGE 11 WITHOUT NEW EXPLICIT AUTHORIZATION
+- **Next action:** COMMIT FINAL POST-MERGE TEST + GOVERNANCE CLOSEOUT ON LOCAL `main` → PUSH OWNER-AUTHORIZED `main` → VERIFY CANONICAL GITHUB SHA → OPTIONAL FIX-BRANCH CLEANUP → DO NOT START STAGE 11 WITHOUT NEW EXPLICIT AUTHORIZATION
 - **Stage-10 design specification:** `docs/35-STAGE-10-SEO-SOCIAL-ANALYTICS-DESIGN.md`
 - **Phase 9A status:** COMPLETE / EXTERNAL PASS
 - **Phase 9A final reviewed head:** `a329d34234b24def8607a5dea1747ddef800c393`
