@@ -13,13 +13,11 @@ placements are available to the single admin, and the approved Evidence Folio
 public surfaces have been integrated with managed imagery and the owner-approved
 fluid structural layout.
 
-The owner-authorized normal local merge is complete and the required post-merge
-quality gate has passed. The repository is now in final governance closeout
-before the authorized canonical `main` push.
+The owner-authorized normal merge, post-merge quality gate, canonical `main`
+push and independent GitHub verification are complete.
 
-This handoff does not claim production deployment, hosted D036 migration
-deployment, or canonical GitHub synchronization until the final push is
-independently verified.
+This handoff does not claim production deployment or hosted D036 migration
+deployment. Stage 11 remains subject to a new explicit owner authorization.
 
 ## Canonical context
 
@@ -35,8 +33,8 @@ independently verified.
   `6fc9d6d1618e4308d88abaf9a5757032f619fc5c`
 - Merge second parent:
   `4682c1b1bc2843a4aea1bd2f16379f9fb08ffe06`
-- Canonical `origin/main` during post-merge closeout:
-  `6fc9d6d1618e4308d88abaf9a5757032f619fc5c` — final push pending
+- First canonical post-merge closeout head independently verified on GitHub:
+  `98e4695d17287207dcd54255224a405bf8955e71`
 - Decisions: D035 and D036
 - D036 specification: `docs/38-D036-MANAGED-PUBLIC-MEDIA-EDITOR.md`
 
@@ -148,22 +146,15 @@ editing/compression, multilingual CMS or native application was introduced.
 
 ## Next-stage readiness
 
-**READY FOR OWNER-AUTHORIZED CANONICAL PUSH / VERIFICATION.**
+**V1 ADMIN COMPLETION GATE CLOSED / CANONICAL INTEGRATION COMPLETE.**
 
-The implementation branch has been committed/pushed, the normal
-history-preserving local merge is complete, and the required post-merge quality
-gate has passed.
+The implementation branch was committed and pushed, the normal
+history-preserving merge completed, the post-merge quality gate passed, and
+canonical GitHub `main` synchronization was independently verified.
 
-The remaining authorized sequence is:
-
-1. finish this governance reconciliation;
-2. commit the two verified test-isolation corrections and governance closeout
-   on local `main`;
-3. verify the closeout commit is clean and `origin/main` has not moved;
-4. push local `main` to `origin/main`;
-5. independently verify the canonical GitHub SHA and history;
-6. only after canonical confirmation, remove `fix/v1-admin-completion` locally
-   and remotely if desired.
+The short-lived `fix/v1-admin-completion` branch may now be removed after this
+final governance-only reconciliation is pushed and verified. Stage 11 remains
+**NOT AUTHORIZED** until the project owner explicitly activates it.
 
 Stage 11 is **NOT AUTHORIZED** by this handoff and must not begin merely because
 this gate is merge-ready.
