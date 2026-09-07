@@ -1212,3 +1212,26 @@ Folio contract and passes the Stage 11 verification gate.
 2026-08-30.
 
 **Status:** ACTIVE / OWNER AUTHORIZED / STAGE 11 IMPLEMENTATION PERMITTED.
+
+### D037 Addendum — Bounded Stage 11 admin quality hardening pass
+
+**Date:** 2026-09-07
+
+The owner explicitly authorized an in-place admin quality refinement on
+`stage/11-quality-hardening`, based on accepted `origin/main`
+`ecd813394a09259d489c352edc46ca95d1a0ae65`.
+
+The bounded pass authorizes only existing V1 admin-workspace improvements:
+shared navigation and control recipes, operational read-only dashboard data,
+correct filter semantics, responsive Articles and Portfolio layouts, quiet
+motion/reduced-motion behavior, accessible confirmations, pending/error/loading
+feedback, and unsaved Article Editor navigation protection. It does not
+authorize new routes, schema or migration changes, dependencies, public-site
+redesign, hosted mutations, deployment, Stage 12 work, or a merge to `main`.
+
+The pass is locally complete. Its verification record is maintained in
+`docs/41-STAGE-11-ADMIN-QUALITY-HANDOFF.md`. A normal merge still requires a
+separate explicit owner authorization.
+
+**Status:** ACTIVE / BOUNDED ADMIN QUALITY PASS COMPLETE / LOCAL GATE PASS /
+OWNER REVIEW AND SEPARATE MERGE AUTHORIZATION REQUIRED.

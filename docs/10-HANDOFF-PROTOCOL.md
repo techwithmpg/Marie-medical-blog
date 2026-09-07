@@ -45,6 +45,10 @@ State any tempting but out-of-scope items intentionally left out.
 ## Rule for the next agent
 The next agent must read the most recent handoff before modifying the stage output.
 
+**Current handoff:** `docs/41-STAGE-11-ADMIN-QUALITY-HANDOFF.md` — bounded Stage
+11 admin quality hardening complete locally; owner review and separate merge
+authorization required.
+
 ---
 
 ## Stage handoff note — D035 Phase 2 Media Management — 2026-08-29
