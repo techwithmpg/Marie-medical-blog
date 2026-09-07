@@ -140,10 +140,18 @@ test("D. Comments moderation page UI contract", async () => {
     "Must configure noindex/nofollow robots metadata",
   );
 
-  // Verify tabs
+  // Verify URL-driven filters use navigation semantics rather than ARIA tabs.
+  const adminUiPath = path.join(ROOT, "src/components/admin/admin-ui.tsx");
+  const adminUi = fs.readFileSync(adminUiPath, "utf8");
   assert.ok(
-    content.includes('role="tablist"') && content.includes('role="tab"'),
-    "Must render accessible tabs with role tablist and tab",
+    content.includes("AdminFilterNav") &&
+      adminUi.includes("<nav aria-label={label}") &&
+      adminUi.includes('aria-current={isActive ? "page" : undefined}'),
+    "Must render accessible URL-driven filter navigation with current-page state",
+  );
+  assert.ok(
+    !content.includes('role="tablist"') && !content.includes('role="tab"'),
+    "Must not apply tab semantics to links that perform page navigation",
   );
   assert.ok(
     content.includes('"pending"') &&
@@ -169,8 +177,9 @@ test("D. Comments moderation page UI contract", async () => {
       content.includes('name="operation"') &&
       content.includes('value="approve"') &&
       content.includes('value="hide"') &&
-      content.includes('value="delete"'),
-    "Must render moderation action forms with approve, hide, and delete operations",
+      content.includes("ConfirmationDialog") &&
+      content.includes('operation: "delete"'),
+    "Must render approve and hide forms plus a confirmed delete operation",
   );
 });
 

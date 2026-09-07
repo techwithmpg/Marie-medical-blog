@@ -15,6 +15,12 @@ import {
 } from "@/lib/admin/messages";
 import { updateContactMessageStatusAction } from "./actions";
 import { cn, formatAdminDate } from "@/lib/utils";
+import {
+  AdminFilterNav,
+  AdminPageHeader,
+  AdminStatusBadge,
+} from "@/components/admin/admin-ui";
+import { AdminSubmitButton } from "@/components/admin/admin-submit-button";
 
 export const metadata: Metadata = {
   title: "Messages | Marie Medere Workspace",
@@ -67,70 +73,28 @@ export default async function AdminMessagesPage({
   const getStatusBadge = (status: AdminMessageStatus) => {
     switch (status) {
       case "new":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-oxide/30 bg-oxide/10 px-2.5 py-0.5 text-xs font-semibold text-oxide">
-            <span className="size-1.5 rounded-full bg-oxide" />
-            New
-          </span>
-        );
+        return <AdminStatusBadge tone="oxide">New</AdminStatusBadge>;
       case "read":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
-            <span className="size-1.5 rounded-full bg-success" />
-            Read
-          </span>
-        );
+        return <AdminStatusBadge tone="success">Read</AdminStatusBadge>;
       case "archived":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-muted/20 bg-ink-muted/10 px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
-            <span className="size-1.5 rounded-full bg-ink-muted" />
-            Archived
-          </span>
-        );
+        return <AdminStatusBadge tone="muted">Archived</AdminStatusBadge>;
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Inbox Workspace Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-subtle-divider pb-5 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
-            Contact Inbox
-          </h2>
-          <p className="mt-1 text-sm text-ink-muted">
-            Review and organize inquiries, editorial requests, and
-            communications received through the contact form.
-          </p>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Contact Inbox"
+        description="Review and organize inquiries, editorial requests, and communications received through the contact form."
+      />
 
       {/* Filter Tabs */}
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="tablist"
-        aria-label="Contact message status filter"
-      >
-        {filterTabs.map((tab) => {
-          const isActive = validStatus === tab.value;
-          return (
-            <Link
-              key={tab.value}
-              href={tab.href}
-              role="tab"
-              aria-selected={isActive}
-              className={cn(
-                "inline-flex min-h-[44px] items-center rounded-md px-3.5 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
-                isActive
-                  ? "bg-subtle-field font-bold text-oxide shadow-2xs"
-                  : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field/50 hover:text-ink",
-              )}
-            >
-              {tab.label}
-            </Link>
-          );
-        })}
-      </div>
+      <AdminFilterNav
+        label="Contact message status filter"
+        items={filterTabs}
+        activeValue={validStatus}
+      />
 
       {/* Same-Page Inbox Grid */}
       {messages.length === 0 ? (
@@ -252,13 +216,13 @@ export default async function AdminMessagesPage({
                           value={selectedMessage.id}
                         />
                         <input type="hidden" name="operation" value="read" />
-                        <button
-                          type="submit"
+                        <AdminSubmitButton
+                          pendingLabel="Marking read…"
                           className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md bg-success/15 px-4 py-2 text-xs font-semibold text-success transition-colors hover:bg-success/25 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                         >
                           <CheckCircle2 className="size-3.5" />
                           Mark Read
-                        </button>
+                        </AdminSubmitButton>
                       </form>
 
                       <form action={updateContactMessageStatusAction}>
@@ -268,13 +232,13 @@ export default async function AdminMessagesPage({
                           value={selectedMessage.id}
                         />
                         <input type="hidden" name="operation" value="archive" />
-                        <button
-                          type="submit"
+                        <AdminSubmitButton
+                          pendingLabel="Archiving…"
                           className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-4 py-2 text-xs font-semibold text-ink-muted transition-colors hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                         >
                           <Archive className="size-3.5" />
                           Archive
-                        </button>
+                        </AdminSubmitButton>
                       </form>
                     </>
                   )}
@@ -287,13 +251,13 @@ export default async function AdminMessagesPage({
                         value={selectedMessage.id}
                       />
                       <input type="hidden" name="operation" value="archive" />
-                      <button
-                        type="submit"
+                      <AdminSubmitButton
+                        pendingLabel="Archiving…"
                         className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-4 py-2 text-xs font-semibold text-ink-muted transition-colors hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                       >
                         <Archive className="size-3.5" />
                         Archive Message
-                      </button>
+                      </AdminSubmitButton>
                     </form>
                   )}
 
@@ -305,13 +269,13 @@ export default async function AdminMessagesPage({
                         value={selectedMessage.id}
                       />
                       <input type="hidden" name="operation" value="restore" />
-                      <button
-                        type="submit"
+                      <AdminSubmitButton
+                        pendingLabel="Restoring…"
                         className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md bg-oxide/10 px-4 py-2 text-xs font-semibold text-oxide transition-colors hover:bg-oxide/20 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                       >
                         <RotateCcw className="size-3.5" />
                         Restore to Read
-                      </button>
+                      </AdminSubmitButton>
                     </form>
                   )}
                 </div>

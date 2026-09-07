@@ -15,7 +15,14 @@ import {
   type AdminCommentStatus,
 } from "@/lib/admin/comments";
 import { moderateCommentAction } from "./actions";
-import { cn, formatAdminDate } from "@/lib/utils";
+import { formatAdminDate } from "@/lib/utils";
+import {
+  AdminFilterNav,
+  AdminPageHeader,
+  AdminStatusBadge,
+} from "@/components/admin/admin-ui";
+import { AdminSubmitButton } from "@/components/admin/admin-submit-button";
+import { ConfirmationDialog } from "@/components/admin/confirmation-dialog";
 
 export const metadata: Metadata = {
   title: "Comments | Marie Medere Workspace",
@@ -70,69 +77,29 @@ export default async function AdminCommentsPage({
     switch (status) {
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-0.5 text-xs font-semibold text-warning">
-            <span className="size-1.5 rounded-full bg-warning" />
-            Pending Review
-          </span>
+          <AdminStatusBadge tone="warning">Pending Review</AdminStatusBadge>
         );
       case "approved":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
-            <span className="size-1.5 rounded-full bg-success" />
-            Approved
-          </span>
-        );
+        return <AdminStatusBadge tone="success">Approved</AdminStatusBadge>;
       case "hidden":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-muted/20 bg-ink-muted/10 px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
-            <span className="size-1.5 rounded-full bg-ink-muted" />
-            Hidden
-          </span>
-        );
+        return <AdminStatusBadge tone="muted">Hidden</AdminStatusBadge>;
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Moderation Workspace Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-subtle-divider pb-5 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
-            Comment Moderation
-          </h2>
-          <p className="mt-1 text-sm text-ink-muted">
-            Review reader responses, moderate submissions, and maintain
-            discussion quality across published articles.
-          </p>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Comment Moderation"
+        description="Review reader responses, moderate submissions, and maintain discussion quality across published articles."
+      />
 
       {/* Filter Tabs */}
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="tablist"
-        aria-label="Comment moderation status filter"
-      >
-        {filterTabs.map((tab) => {
-          const isActive = validStatus === tab.value;
-          return (
-            <Link
-              key={tab.value}
-              href={tab.href}
-              role="tab"
-              aria-selected={isActive}
-              className={cn(
-                "inline-flex min-h-[44px] items-center rounded-md px-3.5 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
-                isActive
-                  ? "bg-subtle-field font-bold text-oxide shadow-2xs"
-                  : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field/50 hover:text-ink",
-              )}
-            >
-              {tab.label}
-            </Link>
-          );
-        })}
-      </div>
+      <AdminFilterNav
+        label="Comment moderation status filter"
+        items={filterTabs}
+        activeValue={validStatus}
+      />
 
       {/* Comments List */}
       {comments.length === 0 ? (
@@ -226,13 +193,13 @@ export default async function AdminCommentsPage({
                         value={comment.id}
                       />
                       <input type="hidden" name="operation" value="approve" />
-                      <button
-                        type="submit"
+                      <AdminSubmitButton
+                        pendingLabel="Approving…"
                         className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md bg-success/15 px-3.5 py-2 text-xs font-semibold text-success transition-colors hover:bg-success/25 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                       >
                         <ShieldCheck className="size-3.5" />
                         Approve
-                      </button>
+                      </AdminSubmitButton>
                     </form>
                   )}
 
@@ -244,27 +211,31 @@ export default async function AdminCommentsPage({
                         value={comment.id}
                       />
                       <input type="hidden" name="operation" value="hide" />
-                      <button
-                        type="submit"
+                      <AdminSubmitButton
+                        pendingLabel="Hiding…"
                         className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-subtle-divider bg-paper px-3.5 py-2 text-xs font-semibold text-ink-muted transition-colors hover:bg-subtle-field hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
                       >
                         <EyeOff className="size-3.5" />
                         Hide
-                      </button>
+                      </AdminSubmitButton>
                     </form>
                   )}
 
-                  <form action={moderateCommentAction}>
-                    <input type="hidden" name="commentId" value={comment.id} />
-                    <input type="hidden" name="operation" value="delete" />
-                    <button
-                      type="submit"
-                      className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-warning/30 bg-paper px-3.5 py-2 text-xs font-semibold text-warning transition-colors hover:bg-warning/10 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
-                    >
-                      <Trash2 className="size-3.5" />
-                      Delete
-                    </button>
-                  </form>
+                  <ConfirmationDialog
+                    trigger={
+                      <button className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border border-warning/30 bg-paper px-3.5 py-2 text-xs font-semibold text-warning transition-colors hover:bg-warning/10 focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none">
+                        <Trash2 className="size-3.5" />
+                        Delete
+                      </button>
+                    }
+                    title="Delete this comment?"
+                    description="This permanently removes the comment from the moderation workspace. This action cannot be undone."
+                    confirmLabel="Delete comment"
+                    pendingLabel="Deleting…"
+                    destructive
+                    action={moderateCommentAction}
+                    fields={{ commentId: comment.id, operation: "delete" }}
+                  />
                 </div>
               </div>
             );

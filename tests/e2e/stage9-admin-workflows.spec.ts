@@ -60,13 +60,15 @@ test.describe("Stage 9 Admin Moderation & Inbox Workflows E2E", () => {
       page.getByRole("heading", { name: "Comment Moderation" }),
     ).toBeVisible();
 
-    // Verify filter tabs exist (rendered with role="tab")
+    // Verify URL-driven filters use link semantics and expose the current page.
     await expect(
-      page.getByRole("tab", { name: "Pending Review" }),
+      page.getByRole("link", { name: "Pending Review" }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Approved" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Hidden" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "All Comments" }),
     ).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Approved" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Hidden" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "All Comments" })).toBeVisible();
 
     // Verify private commenter email is visible in admin
     await expect(page.getByText(commenterEmail)).toBeVisible();
@@ -134,6 +136,11 @@ test.describe("Stage 9 Admin Moderation & Inbox Workflows E2E", () => {
 
     const deleteBtn = hiddenCommentCard.getByRole("button", { name: "Delete" });
     await deleteBtn.click();
+    const deleteDialog = page.getByRole("dialog", {
+      name: "Delete this comment?",
+    });
+    await expect(deleteDialog).toBeVisible();
+    await deleteDialog.getByRole("button", { name: "Delete comment" }).click();
 
     // Server Actions update the current RSC tree rather than causing a new
     // document load. Wait for the actual moderation result before navigating
@@ -180,13 +187,15 @@ test.describe("Stage 9 Admin Moderation & Inbox Workflows E2E", () => {
       page.getByRole("heading", { name: "Contact Inbox" }),
     ).toBeVisible();
 
-    // Verify filter tabs exist (rendered with role="tab")
+    // Verify URL-driven filters use link semantics and expose the current page.
     await expect(
-      page.getByRole("tab", { name: "New Inquiries" }),
+      page.getByRole("link", { name: "New Inquiries" }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Read" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Archived" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "All Messages" }),
     ).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Read" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Archived" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "All Messages" })).toBeVisible();
 
     // Locate seeded contact message
     const messageSubject =

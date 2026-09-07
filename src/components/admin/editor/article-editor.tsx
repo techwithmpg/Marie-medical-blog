@@ -42,6 +42,7 @@ import { TiptapEditor } from "./tiptap-editor";
 import { FeaturedImageField } from "./featured-image-field";
 import { ReferenceLedger } from "./reference-ledger";
 import { ArticlePreviewModal } from "./article-preview-modal";
+import { UnsavedChangesGuard } from "./unsaved-changes-guard";
 import { PublishModal } from "./publish-modal";
 import {
   UnpublishModal,
@@ -147,6 +148,11 @@ export function ArticleEditor({
   const [archiveModalOpen, setArchiveModalOpen] = React.useState(false);
   const [restoreModalOpen, setRestoreModalOpen] = React.useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const titleHasError = Boolean(errorMessage?.toLowerCase().includes("title"));
+  const bodyHasError = Boolean(
+    errorMessage?.toLowerCase().includes("body") ||
+    errorMessage?.toLowerCase().includes("content"),
+  );
 
   const markDirty = () => {
     changeRevisionRef.current += 1;
@@ -600,6 +606,7 @@ export function ArticleEditor({
 
   return (
     <div className="space-y-6">
+      <UnsavedChangesGuard active={isDirty} />
       {/* Top Workspace Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-subtle-divider pb-4">
         {/* Left Side: Navigation & Lifecycle Identification */}
@@ -889,7 +896,11 @@ export function ArticleEditor({
 
       {/* Controlled Error Banner */}
       {errorMessage && (
-        <div className="flex animate-in items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive duration-200 fade-in">
+        <div
+          id="article-editor-error"
+          role="alert"
+          className="flex animate-in items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive duration-200 fade-in motion-reduce:animate-none"
+        >
           <AlertCircle className="size-5 shrink-0" />
           <p className="font-medium">{errorMessage}</p>
         </div>
@@ -953,6 +964,10 @@ export function ArticleEditor({
               id="article-title"
               type="text"
               value={title}
+              aria-invalid={titleHasError || undefined}
+              aria-describedby={
+                titleHasError ? "article-editor-error" : undefined
+              }
               onChange={(e) => {
                 setTitle(e.target.value);
                 markDirty();
@@ -966,20 +981,31 @@ export function ArticleEditor({
           {/* Tiptap Rich Text Editor */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-semibold tracking-wider text-ink uppercase">
+              <span
+                id="article-body-label"
+                className="text-xs font-semibold tracking-wider text-ink uppercase"
+              >
                 Article Body
               </span>
               <span className="text-xs text-ink-muted">
                 Evidence Folio Tiptap Canvas
               </span>
             </div>
-            <TiptapEditor
-              initialContent={contentJson}
-              onChange={(json) => {
-                setContentJson(json);
-                markDirty();
-              }}
-            />
+            <div
+              aria-labelledby="article-body-label"
+              aria-invalid={bodyHasError || undefined}
+              aria-describedby={
+                bodyHasError ? "article-editor-error" : undefined
+              }
+            >
+              <TiptapEditor
+                initialContent={contentJson}
+                onChange={(json) => {
+                  setContentJson(json);
+                  markDirty();
+                }}
+              />
+            </div>
           </div>
 
           {/* Structured Reference Ledger */}

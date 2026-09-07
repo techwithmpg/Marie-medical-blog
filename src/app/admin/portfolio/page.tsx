@@ -8,6 +8,8 @@ import {
   togglePortfolioFeaturedAction,
 } from "@/app/admin/portfolio/actions";
 import { cn } from "@/lib/utils";
+import { AdminPageHeader } from "@/components/admin/admin-ui";
+import { AdminSubmitButton } from "@/components/admin/admin-submit-button";
 
 export const metadata: Metadata = {
   title: "Portfolio & Featuring | Marie Medere Workspace",
@@ -31,16 +33,10 @@ export default async function AdminPortfolioPage() {
   return (
     <div className="space-y-8">
       {/* Workspace Header */}
-      <div className="border-b border-subtle-divider pb-5">
-        <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
-          Portfolio &amp; Featuring
-        </h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          Designate the primary publication lead article for the homepage and
-          curate the list of published works featured in the Selected Writing
-          portfolio.
-        </p>
-      </div>
+      <AdminPageHeader
+        title="Portfolio & Featuring"
+        description="Designate the primary publication lead article for the homepage and curate the published works featured in Selected Writing."
+      />
 
       {articles.length === 0 ? (
         <div className="rounded-lg border border-subtle-divider bg-paper p-8 text-center">
@@ -60,7 +56,7 @@ export default async function AdminPortfolioPage() {
       ) : (
         <div className="space-y-8">
           {/* Section 1: Lead Featured Article Control */}
-          <section className="space-y-4 rounded-lg border border-subtle-divider bg-paper p-6 shadow-xs">
+          <section className="space-y-4 overflow-x-hidden rounded-lg border border-subtle-divider bg-paper p-4 shadow-xs sm:p-6">
             <div className="flex items-center gap-2 border-b border-subtle-divider pb-3">
               <Star className="size-5 text-oxide" />
               <h3 className="font-serif text-lg font-semibold text-ink">
@@ -99,12 +95,12 @@ export default async function AdminPortfolioPage() {
                 ))}
               </select>
 
-              <button
-                type="submit"
+              <AdminSubmitButton
+                pendingLabel="Updating lead…"
                 className="inline-flex min-h-[44px] cursor-pointer items-center justify-center rounded-md bg-oxide px-5 py-2.5 text-sm font-semibold text-paper shadow-xs transition-colors hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
               >
                 Update Lead Article
-              </button>
+              </AdminSubmitButton>
             </form>
 
             {currentLead && (
@@ -119,7 +115,7 @@ export default async function AdminPortfolioPage() {
           </section>
 
           {/* Section 2: Selected Writing Curated Portfolio */}
-          <section className="space-y-4 rounded-lg border border-subtle-divider bg-paper p-6 shadow-xs">
+          <section className="space-y-4 rounded-lg border border-subtle-divider bg-paper p-4 shadow-xs sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-subtle-divider pb-3">
               <div>
                 <h3 className="font-serif text-lg font-semibold text-ink">
@@ -144,7 +140,70 @@ export default async function AdminPortfolioPage() {
               </span>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="divide-y divide-subtle-divider/70 xl:hidden">
+              {articles.map((article) => (
+                <article
+                  key={article.id}
+                  className={cn(
+                    "space-y-3 py-4 first:pt-0 last:pb-0",
+                    article.is_portfolio_featured &&
+                      "rounded-md bg-parchment/30 px-3",
+                  )}
+                >
+                  <div>
+                    <h4 className="font-serif text-base font-semibold text-ink">
+                      {article.title}
+                    </h4>
+                    <p className="mt-0.5 font-mono text-xs break-all text-ink-muted">
+                      /blog/{article.slug}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+                    <span>{article.category_name || "Uncategorized"}</span>
+                    {article.is_portfolio_featured ? (
+                      <span className="rounded-sm border border-success/30 bg-success/10 px-2 py-0.5 font-semibold text-success uppercase">
+                        Portfolio featured
+                      </span>
+                    ) : null}
+                    {article.is_featured ? (
+                      <span className="rounded-sm border border-oxide/30 bg-oxide/10 px-2 py-0.5 font-semibold text-oxide uppercase">
+                        Lead article
+                      </span>
+                    ) : null}
+                  </div>
+                  <form action={togglePortfolioFeaturedAction}>
+                    <input type="hidden" name="articleId" value={article.id} />
+                    <input
+                      type="hidden"
+                      name="operation"
+                      value={
+                        article.is_portfolio_featured ? "unfeature" : "feature"
+                      }
+                    />
+                    <AdminSubmitButton
+                      pendingLabel="Updating portfolio…"
+                      className={cn(
+                        "inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none sm:w-auto",
+                        article.is_portfolio_featured
+                          ? "border-subtle-divider bg-paper text-warning hover:bg-warning/10"
+                          : "border-subtle-divider bg-paper text-ink hover:bg-subtle-field",
+                      )}
+                    >
+                      {article.is_portfolio_featured ? (
+                        <MinusCircle className="size-3.5" />
+                      ) : (
+                        <PlusCircle className="size-3.5 text-oxide" />
+                      )}
+                      {article.is_portfolio_featured
+                        ? "Remove"
+                        : "Feature in Portfolio"}
+                    </AdminSubmitButton>
+                  </form>
+                </article>
+              ))}
+            </div>
+
+            <div className="hidden overflow-x-auto xl:block">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-subtle-divider text-xs font-semibold tracking-wider text-ink-muted uppercase">
@@ -221,8 +280,8 @@ export default async function AdminPortfolioPage() {
                                 : "feature"
                             }
                           />
-                          <button
-                            type="submit"
+                          <AdminSubmitButton
+                            pendingLabel="Updating…"
                             className={cn(
                               "inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
                               article.is_portfolio_featured
@@ -241,7 +300,7 @@ export default async function AdminPortfolioPage() {
                                 <span>Feature in Portfolio</span>
                               </>
                             )}
-                          </button>
+                          </AdminSubmitButton>
                         </form>
                       </td>
                     </tr>

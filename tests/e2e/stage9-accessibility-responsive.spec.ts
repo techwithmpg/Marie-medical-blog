@@ -11,10 +11,13 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
   test("1. Responsive matrix and horizontal overflow check across viewports", async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(120000);
     const viewports = [
       { name: "Desktop", width: 1440, height: 900 },
+      { name: "Desktop compact", width: 1280, height: 800 },
+      { name: "Tablet landscape", width: 1024, height: 768 },
       { name: "Tablet", width: 768, height: 1024 },
+      { name: "Mobile wide", width: 430, height: 932 },
       { name: "Mobile", width: 390, height: 844 },
     ];
 
@@ -51,7 +54,10 @@ test.describe("Stage 9 Accessibility, Responsive & Runtime Verification", () => 
     // Check admin pages under all viewports
     await loginAsAdmin(page);
     const adminRoutes = [
+      "/admin",
+      "/admin/articles",
       "/admin/comments",
+      "/admin/media",
       "/admin/messages",
       "/admin/settings",
       "/admin/portfolio",

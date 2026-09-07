@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getAdminArticles, type ArticleStatus } from "@/lib/admin/articles";
+import {
+  AdminFilterNav,
+  AdminPageHeader,
+  AdminStatusBadge,
+} from "@/components/admin/admin-ui";
 import { cn, formatAdminDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -59,78 +64,37 @@ export default async function AdminArticlesPage({
   const getStatusBadge = (status: ArticleStatus) => {
     switch (status) {
       case "draft":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-0.5 text-xs font-semibold text-warning">
-            <span className="size-1.5 rounded-full bg-warning" />
-            Draft
-          </span>
-        );
+        return <AdminStatusBadge tone="warning">Draft</AdminStatusBadge>;
       case "published":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
-            <span className="size-1.5 rounded-full bg-success" />
-            Published
-          </span>
-        );
+        return <AdminStatusBadge tone="success">Published</AdminStatusBadge>;
       case "archived":
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-muted/20 bg-ink-muted/10 px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
-            <span className="size-1.5 rounded-full bg-ink-muted" />
-            Archived
-          </span>
-        );
+        return <AdminStatusBadge tone="muted">Archived</AdminStatusBadge>;
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Editorial Workspace Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-subtle-divider pb-5 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
-            Articles Workspace
-          </h2>
-          <p className="mt-1 text-sm text-ink-muted">
-            Manage drafts, publish medical research, and operate the Evidence
-            Folio publishing workflow.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/articles/new"
-          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-md bg-oxide px-4 py-2.5 text-sm font-semibold text-paper shadow-xs transition-colors hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
-        >
-          <Plus className="size-4" />
-          New Article
-        </Link>
-      </div>
+      <AdminPageHeader
+        title="Articles Workspace"
+        description="Manage drafts, publish medical research, and operate the Evidence Folio publishing workflow."
+        action={
+          <Link
+            href="/admin/articles/new"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-oxide px-4 py-2.5 text-sm font-semibold text-paper shadow-xs transition-colors duration-[var(--admin-motion-fast)] hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none motion-reduce:transition-none"
+          >
+            <Plus className="size-4" />
+            New Article
+          </Link>
+        }
+      />
 
       {/* Filter Tabs */}
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="tablist"
-        aria-label="Article status filter"
-      >
-        {filterTabs.map((tab) => {
-          const isActive = validStatus === tab.value;
-          return (
-            <Link
-              key={tab.value}
-              href={tab.href}
-              role="tab"
-              aria-selected={isActive}
-              className={cn(
-                "inline-flex min-h-[44px] items-center rounded-md px-3.5 py-2 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none",
-                isActive
-                  ? "bg-subtle-field font-bold text-oxide shadow-2xs"
-                  : "border border-subtle-divider bg-paper text-ink-muted hover:bg-subtle-field/50 hover:text-ink",
-              )}
-            >
-              {tab.label}
-            </Link>
-          );
-        })}
-      </div>
+      <AdminFilterNav
+        label="Article status filter"
+        items={filterTabs}
+        activeValue={validStatus}
+      />
 
       {/* Articles Table / List */}
       {articles.length === 0 ? (
@@ -157,7 +121,7 @@ export default async function AdminArticlesPage({
       ) : (
         <div className="overflow-hidden rounded-lg border border-subtle-divider bg-paper shadow-xs">
           {/* Desktop Table View */}
-          <div className="hidden overflow-x-auto md:block">
+          <div className="hidden overflow-x-auto xl:block">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-subtle-divider bg-parchment/70 text-xs font-semibold tracking-wider text-ink-muted uppercase">
                 <tr>
@@ -274,7 +238,7 @@ export default async function AdminArticlesPage({
           </div>
 
           {/* Mobile Card List View */}
-          <div className="divide-y divide-subtle-divider/60 md:hidden">
+          <div className="divide-y divide-subtle-divider/60 xl:hidden">
             {articles.map((article) => {
               const isDraft = article.status === "draft";
               const isPublished = article.status === "published";

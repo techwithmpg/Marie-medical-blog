@@ -10,7 +10,7 @@ interface FooterLink {
 const footerLinks: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "Articles", href: "/blog" },
-  { label: "Selected Writing", href: "/portfolio" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Disclaimer", href: "/disclaimer" },
@@ -29,27 +29,29 @@ export function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer className="mt-auto w-full border-t border-[#D2C9BC] bg-[#FFFDF9]">
-      <div className="w-full min-w-0 px-5 py-10 sm:px-8 sm:py-14 lg:px-10 xl:px-12 2xl:px-16">
-        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
+      <div className="w-full min-w-0 px-5 py-8 sm:px-8 sm:py-9 lg:px-10 xl:px-12 2xl:px-16">
+        <div className="grid grid-cols-1 items-start gap-7 md:grid-cols-3 md:gap-10 lg:gap-14">
           {/* Identity */}
-          <div className="flex flex-col space-y-2">
-            <span className="font-serif text-xl font-medium tracking-tight text-[#242321]">
+          <div className="space-y-2 md:justify-self-start">
+            <p className="font-serif text-xl font-medium tracking-tight text-[#242321]">
               {siteTitle}
-            </span>
-            <p className="max-w-sm text-xs leading-relaxed text-[#5E5953]">
+            </p>
+
+            <p className="max-w-xs text-xs leading-5 text-[#5E5953]">
               {tagline || "Medical Writing Portfolio & Educational Blog"}
             </p>
           </div>
 
-          {/* Navigation & Social */}
-          <div className="flex flex-col space-y-4">
-            <div className="flex flex-col space-y-2">
-              <span className="font-sans text-xs font-semibold tracking-wider text-[#7B3F35] uppercase">
+          {/* Navigation + Social */}
+          <div className="space-y-4 md:max-w-md md:justify-self-center">
+            <div className="space-y-2">
+              <p className="font-sans text-[11px] font-semibold tracking-[0.16em] text-[#7B3F35] uppercase">
                 Navigation
-              </span>
+              </p>
+
               <nav
                 aria-label="Footer Navigation"
-                className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#5E5953]"
+                className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-[#4F4A45]"
               >
                 {footerLinks.map((link) => (
                   <Link
@@ -63,15 +65,16 @@ export function SiteFooter({
               </nav>
             </div>
 
-            {socialLinks && socialLinks.length > 0 && (
-              <div className="flex flex-col space-y-2 pt-2">
-                <span className="font-sans text-xs font-semibold tracking-wider text-[#7B3F35] uppercase">
+            {socialLinks.length > 0 && (
+              <div className="space-y-2">
+                <p className="font-sans text-[11px] font-semibold tracking-[0.16em] text-[#7B3F35] uppercase">
                   Connect
-                </span>
-                <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-[#5E5953]">
-                  {socialLinks.map((link, idx) => (
+                </p>
+
+                <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-[#5E5953]">
+                  {socialLinks.map((link, index) => (
                     <a
-                      key={idx}
+                      key={`${link.url}-${index}`}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -86,16 +89,17 @@ export function SiteFooter({
           </div>
 
           {/* Disclaimer */}
-          <div className="flex flex-col space-y-2">
-            <span className="font-sans text-xs font-semibold tracking-wider text-[#7B3F35] uppercase">
+          <div className="max-w-sm space-y-2 md:justify-self-end">
+            <p className="font-sans text-[11px] font-semibold tracking-[0.16em] text-[#7B3F35] uppercase">
               Medical Disclaimer
-            </span>
-            <p className="text-xs leading-relaxed text-[#5E5953]">
+            </p>
+
+            <p className="max-w-md text-xs leading-5 text-[#5E5953]">
               This publication provides educational content only and does not
               constitute medical advice. Read the full{" "}
               <Link
                 href="/disclaimer"
-                className="text-[#704037] underline underline-offset-2 hover:text-[#582A22]"
+                className="text-[#704037] underline underline-offset-2 transition-colors hover:text-[#582A22]"
               >
                 medical disclaimer
               </Link>
@@ -104,9 +108,16 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-[#D2C9BC] pt-6 text-xs text-[#5E5953] sm:flex-row">
+        <div className="mt-7 flex flex-col gap-2 border-t border-[#D2C9BC] pt-5 text-xs text-[#5E5953] sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {siteTitle}. All rights reserved.
+          </p>
+
+          <p>
+            Built by{" "}
+            <span className="font-semibold text-[#7B3F35]">
+              MPG Technologies
+            </span>
           </p>
         </div>
       </div>

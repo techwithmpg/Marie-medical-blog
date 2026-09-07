@@ -72,6 +72,26 @@
   --radius: 0.375rem;
 }
 
+.admin-workspace {
+  --admin-motion-fast: 150ms;
+  --admin-motion-standard: 200ms;
+  --admin-motion-emphasis: 280ms;
+  --admin-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --admin-ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-workspace *,
+  .admin-workspace *::before,
+  .admin-workspace *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .admin-workspace :where(.animate-pulse, .animate-spin) {
+    animation: none !important;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--border);

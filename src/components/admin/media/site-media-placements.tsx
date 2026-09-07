@@ -24,6 +24,7 @@ import type { AdminMediaRecord } from "@/lib/admin/media";
 import type { AdminSiteMediaPlacement } from "@/lib/admin/site-media";
 import type { SiteMediaSlot } from "@/lib/admin/site-media-validation";
 import { cn } from "@/lib/utils";
+import { ConfirmationDialog } from "@/components/admin/confirmation-dialog";
 
 interface Props {
   initialPlacements: AdminSiteMediaPlacement[];
@@ -91,6 +92,9 @@ export function SiteMediaPlacements({ initialPlacements }: Props) {
   const [pickerOpen, setPickerOpen] = React.useState(false);
 
   const [editorOpen, setEditorOpen] = React.useState(false);
+  const [clearingSlot, setClearingSlot] = React.useState<SiteMediaSlot | null>(
+    null,
+  );
 
   const [activeSlot, setActiveSlot] = React.useState<SiteMediaSlot | null>(
     null,
@@ -252,43 +256,34 @@ export function SiteMediaPlacements({ initialPlacements }: Props) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Clear ${placement.label}? The original Media Library image will not be deleted.`,
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
     setError(null);
-
-    const result = await clearSiteMediaAction({
-      slot: placement.slot,
-    });
-
-    if (!result.success) {
-      setError(result.error ?? "Unable to clear the website image.");
-
-      return;
+    setClearingSlot(placement.slot);
+    try {
+      const result = await clearSiteMediaAction({ slot: placement.slot });
+      if (!result.success) {
+        setError(result.error ?? "Unable to clear the website image.");
+        return;
+      }
+      setPlacements((current) =>
+        current.map((item) =>
+          item.slot === placement.slot
+            ? {
+                ...item,
+                storagePath: null,
+                previewUrl: null,
+                altText: null,
+                isDecorative: false,
+                desktopFocalX: 50,
+                desktopFocalY: 50,
+                mobileFocalX: 50,
+                mobileFocalY: 50,
+              }
+            : item,
+        ),
+      );
+    } finally {
+      setClearingSlot(null);
     }
-
-    setPlacements((current) =>
-      current.map((item) =>
-        item.slot === placement.slot
-          ? {
-              ...item,
-              storagePath: null,
-              previewUrl: null,
-              altText: null,
-              isDecorative: false,
-              desktopFocalX: 50,
-              desktopFocalY: 50,
-              mobileFocalX: 50,
-              mobileFocalY: 50,
-            }
-          : item,
-      ),
-    );
   }
 
   const editorPreview =
@@ -402,14 +397,25 @@ export function SiteMediaPlacements({ initialPlacements }: Props) {
                       Crop & Alt
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => clearPlacement(placement)}
-                      className="inline-flex min-h-[40px] items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive hover:bg-destructive hover:text-paper"
-                    >
-                      <Trash2 className="size-3.5" />
-                      Clear
-                    </button>
+                    <ConfirmationDialog
+                      trigger={
+                        <button
+                          type="button"
+                          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive hover:bg-destructive hover:text-paper focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-50"
+                        >
+                          <Trash2 className="size-3.5" />
+                          {clearingSlot === placement.slot
+                            ? "Clearing…"
+                            : "Clear"}
+                        </button>
+                      }
+                      title={`Clear ${placement.label}?`}
+                      description="This removes the image from this website placement. The original Media Library image will not be deleted."
+                      confirmLabel="Clear placement"
+                      destructive
+                      disabled={clearingSlot !== null}
+                      onConfirm={() => void clearPlacement(placement)}
+                    />
                   </>
                 ) : null}
               </div>

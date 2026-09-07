@@ -127,7 +127,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("bold")}
             title="Bold"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("bold") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -145,7 +145,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("italic")}
             title="Italic"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("italic") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -163,7 +163,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("strike")}
             title="Strikethrough"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("strike") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -181,7 +181,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("code")}
             title="Inline Code"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("code") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -202,7 +202,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("heading", { level: 2 })}
             title="Heading 2"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("heading", { level: 2 }) &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -220,7 +220,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("heading", { level: 3 })}
             title="Heading 3"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("heading", { level: 3 }) &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -239,7 +239,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("bulletList")}
             title="Bullet List"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("bulletList") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -255,7 +255,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("orderedList")}
             title="Numbered List"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("orderedList") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -271,7 +271,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("blockquote")}
             title="Blockquote"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("blockquote") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -287,7 +287,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("codeBlock")}
             title="Code Block"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("codeBlock") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -301,7 +301,7 @@ export function TiptapToolbar({
             disabled={disabled}
             aria-label="Horizontal Rule"
             title="Horizontal Divider"
-            className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9"
           >
             <Minus className="size-4" />
           </button>
@@ -317,7 +317,7 @@ export function TiptapToolbar({
             aria-pressed={editor.isActive("link")}
             title="Link"
             className={cn(
-              "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40",
+              "flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9",
               editor.isActive("link") &&
                 "bg-subtle-field font-semibold text-oxide",
             )}
@@ -332,7 +332,7 @@ export function TiptapToolbar({
               disabled={disabled}
               aria-label="Remove link"
               title="Remove Link"
-              className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-oxide transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-oxide transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9"
             >
               <Unlink className="size-4" />
             </button>
@@ -347,7 +347,7 @@ export function TiptapToolbar({
             disabled={disabled || !editor.can().chain().focus().undo().run()}
             aria-label="Undo (Ctrl+Z)"
             title="Undo"
-            className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9"
           >
             <Undo2 className="size-4" />
           </button>
@@ -358,7 +358,7 @@ export function TiptapToolbar({
             disabled={disabled || !editor.can().chain().focus().redo().run()}
             aria-label="Redo (Ctrl+Y)"
             title="Redo"
-            className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xs p-1.5 text-ink transition-colors hover:bg-subtle-field focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none disabled:opacity-40 sm:min-h-9 sm:min-w-9"
           >
             <Redo2 className="size-4" />
           </button>
@@ -396,7 +396,7 @@ export function TiptapToolbar({
               type="button"
               onClick={handleApplyLink}
               aria-label="Apply link"
-              className="inline-flex min-h-[36px] items-center gap-1 rounded-sm bg-oxide px-3 py-1 text-xs font-medium text-paper transition-colors hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
+              className="inline-flex min-h-11 items-center gap-1 rounded-sm bg-oxide px-3 py-1 text-xs font-medium text-paper transition-colors hover:bg-oxide-link focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none sm:min-h-9"
             >
               <Check className="size-3.5" />
               Apply
@@ -405,7 +405,7 @@ export function TiptapToolbar({
               type="button"
               onClick={() => setShowLinkInput(false)}
               aria-label="Cancel link"
-              className="inline-flex min-h-[36px] items-center justify-center rounded-sm border border-subtle-divider bg-paper p-1.5 text-ink-muted transition-colors hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-sm border border-subtle-divider bg-paper p-1.5 text-ink-muted transition-colors hover:text-ink focus-visible:ring-2 focus-visible:ring-focus-slate focus-visible:outline-none sm:min-h-9"
             >
               <X className="size-4" />
             </button>
